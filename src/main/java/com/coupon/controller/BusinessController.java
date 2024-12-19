@@ -3,6 +3,7 @@ package com.coupon.controller;
 import com.coupon.model.BusinessDTO;
 import com.coupon.service.BusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,16 +46,19 @@ public class BusinessController {
             }
 
             BusinessDTO businessdto = Bservice.saveBusiness(dto);
-            return ResponseEntity.ok(businessdto);
+
+            return new ResponseEntity<>(businessdto, HttpStatus.CREATED);
 
         } catch (IOException e) {
-            System.out.println("Here is an error: " + e);
-            e.printStackTrace();
-            return null;
+            // Log and handle IO exception
+            System.out.println("Here is an error: " + e.getMessage()
+            );
+          //  e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // Return a 500 Internal Server Error
         } catch (Exception ex) {
-            System.out.println("Here is an error: " + ex);
-            ex.printStackTrace();
-            return null;
+            System.out.println("Here is an error: " + ex.getMessage());
+          //  ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);  // Return a 400 Bad Request error
         }
     }
 
