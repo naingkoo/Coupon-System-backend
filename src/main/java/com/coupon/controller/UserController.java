@@ -7,6 +7,8 @@ import com.coupon.responObject.HttpResponse;
 import com.coupon.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +27,9 @@ public class UserController {
 	}
 
     @PostMapping("/addUser")
-    public UserEntity addUser(@RequestBody UserEntity user) {
-        return userService.addUser(user);
+    public ResponseEntity<UserEntity> addUser(@RequestBody UserEntity user) {
+       user= userService.addUser(user);
+       return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
 

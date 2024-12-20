@@ -51,7 +51,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 System.out.println("here is llooooooooopppppppppppppppppppppppppppppppppp");
                 // response.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid user token");
             }
-
         } catch (ExpiredJwtException e) {
             setErrorResponse(response, 498, "Token has expired.");
             return; // Stop further processing

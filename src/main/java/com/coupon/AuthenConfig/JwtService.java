@@ -48,7 +48,7 @@ public class JwtService {
                 .setIssuer("coupon server")
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 8640 * 7))
                 .signWith(getKey())
                 .compact();
 

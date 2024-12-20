@@ -54,8 +54,6 @@ public class UserService {
             userDTO.setToken( jwtService.generateToken(correctUser));// Assuming Role is an Enum
             httpResponse.getDate();
             httpResponse.setData(userDTO);
-
-         //
             return httpResponse;
         } else {
             return httpResponse;
