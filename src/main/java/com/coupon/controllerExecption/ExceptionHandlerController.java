@@ -34,4 +34,5 @@ public class ExceptionHandlerController {
         // Return response with 500 Internal Server Error status and the error message
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }
