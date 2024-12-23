@@ -43,7 +43,10 @@ public class AuthenConfig {
                                 "/Business/public/**",
                                 "/package/public/**",
                                 "/Service/public/**",
-                                "/Category/public/**").permitAll()
+                                "/Category/public/**",
+                                "/reviews/public/**",
+                                "/business_images/**",
+                                "/images/**").permitAll()
                         .requestMatchers("/user/display").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -54,7 +57,7 @@ public class AuthenConfig {
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT"));
         configuration.setAllowedHeaders(Arrays.asList("authorization","content-type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**",configuration);

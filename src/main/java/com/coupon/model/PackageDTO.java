@@ -11,6 +11,7 @@ public class PackageDTO {
     private Date create_date;
     private String image;
     private String description;
+    private boolean deleted;
     private Integer business_id;
 
     public Integer getId() {
@@ -67,6 +68,14 @@ public class PackageDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Integer getBusiness_id() {
