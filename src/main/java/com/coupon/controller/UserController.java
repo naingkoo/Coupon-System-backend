@@ -32,7 +32,6 @@ public class UserController {
        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-
     @PostMapping("/loginUser")
     public HttpResponse<UserDTO> login(@RequestBody UserEntity user) {
         return userService.verify(user);
