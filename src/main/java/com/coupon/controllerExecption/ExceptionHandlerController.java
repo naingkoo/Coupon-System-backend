@@ -1,5 +1,6 @@
 package com.coupon.controllerExecption;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,6 +40,15 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorResponse> handleUnknownException(BadCredentialsException ex) {
         // Create a custom error response object
         ErrorResponse errorResponse = new ErrorResponse("The Username or Password is Incorrect. Try again..");
+        System.out.println("BadCredentialsException from metnhod :"+ex);
+        // Return response with 500 Internal Server Error status and the error message
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleUnknownException(DataIntegrityViolationException ex) {
+        // Create a custom error response object
+        ErrorResponse errorResponse = new ErrorResponse("duplicate email");
         System.out.println("BadCredentialsException from metnhod :"+ex);
         // Return response with 500 Internal Server Error status and the error message
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
