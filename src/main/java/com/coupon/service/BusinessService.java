@@ -6,6 +6,7 @@ import com.coupon.model.BusinessDTO;
 import com.coupon.reposistory.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class BusinessService {
 
     @Autowired
@@ -91,11 +93,11 @@ public class BusinessService {
         return dto;
     }
 
-    public List<BusinessDTO> showAllBusiness() {
-        List<BusinessEntity> business = Brepo.findAll();
+    public List<BusinessDTO> getActiveBusiness() {
+        List<BusinessEntity> business = Brepo.findAllActiveBusinesses();
 
         List<BusinessDTO> dtoList = new ArrayList<>();
-        for(BusinessEntity entity: business) {
+        for (BusinessEntity entity : business) {
             BusinessDTO dto = new BusinessDTO();
             dto.setId(entity.getId());
             dto.setName(entity.getName());
@@ -106,22 +108,15 @@ public class BusinessService {
             dto.setCreated_date(entity.getCreated_date());
             dto.setImage(entity.getImage());
 
-            if (dto.getImage() != null && !dto.getImage().isEmpty()) {
-                // If the image path doesn't already start with '/business_images/', add it
-                if (!dto.getImage().startsWith("/business_images/")) {
-                    dto.setImage("/business_images/" + dto.getImage());
-                }
-            }
-
             List<Integer> categoryIds = BCrepo.findByBusiness(entity).stream()
                     .map(businessCategory -> businessCategory.getCategory().getId())
                     .collect(Collectors.toList());
 
             List<String> categoryName = categoryIds.stream()
-                    .map(categoryId ->{
+                    .map(categoryId -> {
                         CategoryEntity category = Crepo.findById(categoryId).orElse(null);
-                        return category != null ? category.getName(): null;
-                            })
+                        return category != null ? category.getName() : null;
+                    })
                     .collect(Collectors.toList());
             dto.setCategoryName(categoryName);
 
@@ -131,9 +126,9 @@ public class BusinessService {
                     .collect(Collectors.toList());
 
             List<String> serviceName = serviceIds.stream()
-                    .map(serviceId ->{
+                    .map(serviceId -> {
                         ServiceEntity service = Srepo.findById(serviceId).orElse(null);
-                        return service != null ? service.getName(): null;
+                        return service != null ? service.getName() : null;
                     })
                     .collect(Collectors.toList());
             dto.setServiceName(serviceName);
@@ -146,32 +141,29 @@ public class BusinessService {
 
 
     public BusinessDTO updateBusinessById(Integer id, BusinessDTO dto) {
-
         // Fetch the existing BusinessEntity by ID
-        BusinessDTO updatedto = findById(id);
+        BusinessEntity business = Brepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Business not found with ID: " + id));
 
         // Update business details
-        updatedto.setName(dto.getName());
-        updatedto.setCountry(dto.getCountry());
-        updatedto.setCity(dto.getCity());
-        updatedto.setStreet(dto.getStreet());
-        updatedto.setAddress(dto.getAddress());
+        business.setName(dto.getName());
+        business.setCountry(dto.getCountry());
+        business.setCity(dto.getCity());
+        business.setStreet(dto.getStreet());
+        business.setAddress(dto.getAddress());
 
-        // Optionally update the created_date if needed (if it's not meant to be static)
-        // business.setCreated_date(new Date()); // Uncomment this if you want to update it on each edit
+        // Optionally update created_date if needed
+        // business.setCreated_date(new Date()); // Uncomment if you want to update it on each edit
 
-        BusinessEntity business = new BusinessEntity();
-        business.setName(updatedto.getName());
-        business.setCountry(updatedto.getCountry());
-        business.setCity(updatedto.getCity());
-        business.setStreet(updatedto.getStreet());
-        business.setAddress(updatedto.getAddress());
+        // Save the updated business entity
+        business = Brepo.save(business);
 
-        business = Brepo.save(business); // Save the updated business entity
 
+        System.out.println("updateCategoryId: " + dto.getCategoryId());
         // Update Business_CategoryEntity relations if category list exists
         if (dto.getCategoryId() != null && !dto.getCategoryId().isEmpty()) {
             // Remove existing categories to ensure only updated associations exist
+            System.out.println("BusinessId: "+ id);
             BCrepo.deleteByBusinessId(id); // Delete previous associations
 
             for (Integer categoryId : dto.getCategoryId()) {
@@ -186,6 +178,7 @@ public class BusinessService {
             }
         }
 
+        System.out.println("updateServiceId: " + dto.getServiceId());
         // Update Business_ServiceEntity relations if service list exists
         if (dto.getServiceId() != null && !dto.getServiceId().isEmpty()) {
             // Remove existing services to ensure only updated associations exist
@@ -203,8 +196,7 @@ public class BusinessService {
             }
         }
 
-        // Return the updated BusinessDTO
-        dto.setId(business.getId());
+        // Map the updated BusinessEntity back to BusinessDTO
         dto.setName(business.getName());
         dto.setCountry(business.getCountry());
         dto.setCity(business.getCity());
@@ -265,7 +257,9 @@ public class BusinessService {
     }
 
 
-
+    public void deleteBusinessById(Integer id) {
+        Brepo.deleteBusinessById(id);
+    }
 
 }
 

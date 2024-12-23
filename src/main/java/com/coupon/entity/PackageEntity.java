@@ -33,6 +33,9 @@ public class PackageEntity {
     @Column(name="description",nullable = false)
     private String description;
 
+    @Column(name="is_delete", columnDefinition ="boolean default false")
+    private boolean isDelete;
+
     @ManyToOne
     @JoinColumn(name = "business_id", nullable = true)
     private BusinessEntity business;
@@ -91,6 +94,14 @@ public class PackageEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
     }
 
     public BusinessEntity getBusiness() {

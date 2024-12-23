@@ -64,7 +64,7 @@ public class BusinessController {
 
     @GetMapping("public/list")
     public List<BusinessDTO> getAllBusiness() {
-        return Bservice.showAllBusiness();
+        return Bservice.getActiveBusiness();
     }
 
     @GetMapping("/getById/{id}")
@@ -86,10 +86,15 @@ public class BusinessController {
         return "hey this is test";
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/edit/{id}")
     public BusinessDTO updatebyId(@PathVariable("id")Integer id,@RequestBody BusinessDTO dto) {
 
         return Bservice.updateBusinessById(id,dto);
+    }
+
+    @PostMapping("/delete/{id}")
+    public void deleteBusiness(@PathVariable Integer id) {
+        Bservice.deleteBusinessById(id);
     }
 }
 

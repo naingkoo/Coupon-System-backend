@@ -35,6 +35,24 @@ public class PackageController {
         return "This is package";
     }
 
+    @GetMapping("/public/list")
+    public List<PackageDTO> getAll(){
+        return packageService.getAllpackage();
+    }
+
+    @GetMapping("/find/{id}")
+    public PackageDTO findById(@PathVariable("id") Integer id){
+        return packageService.findById(id);
+    }
+
+    @GetMapping("/findByBusinessId/{id}")
+    public List<PackageDTO> findByBusinessId(@PathVariable("id") Integer id) {
+
+        System.out.println(id);
+        // Fetch the list of packages based on the business ID from the service
+        return packageService.getByBusinessId(id);
+    }
+
     @PostMapping("/save")
     public ResponseEntity<PackageDTO> createPackage(
             @RequestPart PackageDTO packageDTO,
@@ -65,23 +83,41 @@ public class PackageController {
     }
 
 
-    @GetMapping("/find/{id}")
-    public PackageDTO findById(@PathVariable("id") Integer id){
-        return packageService.findById(id);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<PackageDTO> updatePackage(
+            @PathVariable("id") Integer id,
+            @RequestPart PackageDTO packageDTO,
+            @RequestPart MultipartFile image) {
+        try {
+            PackageDTO updatePackage=packageService.updateById(id,packageDTO);
+
+            if (!image.isEmpty()) {
+                String uploadDir = new File("src/main/resources/static/images").getAbsolutePath();
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                String fileName = image.getOriginalFilename();
+                String filePath = uploadDir + File.separator + fileName;
+                File file = new File(filePath);
+                image.transferTo(file);
+
+                updatePackage.setImage(fileName);
+            }
+
+            PackageDTO savedPackage = packageService.savePackage(updatePackage);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedPackage);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-
-    @GetMapping("/findByBusinessId/{id}")
-    public List<PackageDTO> findByBusinessId(@PathVariable("id") Integer id) {
-
-        System.out.println(id);
-        // Fetch the list of packages based on the business ID from the service
-        return packageService.getByBusinessId(id);
-    }
-
-
-    @GetMapping("/public/list")
-    public List<PackageDTO> getAll(){
-        return packageService.getAllpackage();
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> softDeletePackage(@PathVariable Integer id) {
+        packageService.softDeletePackage(id);
+        return ResponseEntity.ok("Package with ID " + id + " was successfully soft deleted.");
     }
 
 }

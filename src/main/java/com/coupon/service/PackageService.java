@@ -59,7 +59,7 @@ public class PackageService {
 
     public List<PackageDTO> getAllpackage() {
         // Fetch all package entities from the repository
-        List<PackageEntity> packageEntity = packageRepo.findAll();
+        List<PackageEntity> packageEntity = packageRepo.findAllActive();
 
         // Convert the list of PackageEntity to a list of PackageDTO
         List<PackageDTO> dtoList = packageEntity.stream().map(pkg -> {
@@ -121,6 +121,30 @@ public class PackageService {
 
         // Return the transformed list of DTOs
         return dtoList;
+    }
+
+    public PackageDTO updateById(Integer id,PackageDTO dto){
+        PackageDTO resDTO=findById(id);
+        resDTO.setName(dto.getName());
+        resDTO.setUnit_price(dto.getUnit_price());
+        resDTO.setQuantity(dto.getQuantity());
+        resDTO.setDescription(dto.getDescription());
+        resDTO.setCreate_date(dto.getCreate_date());
+        if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+            resDTO.setImage(dto.getImage());
+        }
+        PackageEntity reqDTO=mapper.map(resDTO,PackageEntity.class);
+        packageRepo.save(reqDTO);
+        resDTO=mapper.map(reqDTO,PackageDTO.class);
+        return resDTO;
+    }
+
+    public void softDeletePackage(Integer id) {
+        PackageEntity packageEntity = packageRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Package not found"));
+
+        packageEntity.setDelete(true);  // Assuming you have a 'deleted' flag
+        packageRepo.save(packageEntity);
     }
 
 

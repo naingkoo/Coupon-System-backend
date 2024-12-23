@@ -12,6 +12,7 @@ public class BusinessDTO {
     private String street;
     private String address;
     private String image;
+    private boolean status;
     private Integer user_id;
     private List<Integer> categoryId;
     private List<Integer> serviceId;
@@ -80,6 +81,14 @@ public class BusinessDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public Integer getUser_id() {

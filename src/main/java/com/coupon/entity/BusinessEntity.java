@@ -34,6 +34,9 @@ public class BusinessEntity {
     @Column(name= "images",nullable = false,columnDefinition = "LONGTEXT")
     private String image;
 
+    @Column(name="is_delete", columnDefinition ="boolean default false")
+    private boolean isDelete;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
@@ -93,6 +96,14 @@ public class BusinessEntity {
     }
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
     }
 
     public UserEntity getUser() {
