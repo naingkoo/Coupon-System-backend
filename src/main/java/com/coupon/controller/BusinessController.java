@@ -1,11 +1,14 @@
 package com.coupon.controller;
 
+import com.coupon.entity.BusinessEntity;
 import com.coupon.model.BusinessDTO;
+import com.coupon.model.PackageDTO;
 import com.coupon.service.BusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,9 +95,21 @@ public class BusinessController {
         return Bservice.updateBusinessById(id,dto);
     }
 
+
     @PostMapping("/delete/{id}")
     public void deleteBusiness(@PathVariable Integer id) {
         Bservice.deleteBusinessById(id);
     }
+
+
+    @GetMapping("/{categoryName}")
+    public ResponseEntity<List<BusinessEntity>> getBusinessByCatergoryName(@PathVariable("categoryName") String catergoryName) {
+        List<BusinessEntity> businesses = Bservice.getBusinessByCategoryName(catergoryName);
+        if(businesses.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(businesses, HttpStatus.OK);
+    }
+
 }
 

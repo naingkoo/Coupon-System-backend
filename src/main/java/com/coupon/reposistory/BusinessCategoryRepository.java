@@ -20,5 +20,7 @@ public interface BusinessCategoryRepository extends JpaRepository<BusinessCatego
     @Query("SELECT bc.category.id FROM BusinessCategoryEntity bc WHERE bc.business.id = :businessId")
     List<Integer> findCategoryIdsByBusinessId(@Param("businessId") Integer businessId);
 
+    @Query("SELECT bc.business FROM BusinessCategoryEntity bc JOIN bc.category c WHERE c.name = :categoryName")
+    List<BusinessEntity> findBusinessesByCategoryName(@Param("categoryName") String categoryName);
 
 }
