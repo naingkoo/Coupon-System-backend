@@ -40,12 +40,14 @@ public class AuthenConfig {
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/user/loginUser", "/user/addUser",
+                                "/user/public/**",
                                 "/Business/public/**",
                                 "/package/public/**",
                                 "/Service/public/**",
                                 "/Category/public/**",
                                 "/business_images/**",
                                 "/reviwes/public/**",
+                                "/cart/**",
                                 "/images/**").permitAll()
                         .requestMatchers("/user/display").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -57,7 +59,7 @@ public class AuthenConfig {
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("authorization","content-type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**",configuration);

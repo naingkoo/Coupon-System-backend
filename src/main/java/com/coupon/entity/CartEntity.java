@@ -3,23 +3,26 @@ package com.coupon.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="Cart")
+@Table(name = "cart")
 public class CartEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "total_items")
-    private Integer totalItems;
+    @ManyToOne
+    @JoinColumn(name = "package_id", nullable = false)
+    private PackageEntity packageEntity;
 
-    @Column(name = "total_price")
-    private Double totalPrice;
+    @Column(name = "unit_quantity")
+    private Integer unit_quantity;
+
+    @Column(name = "unit_price")
+    private Double unit_price;
 
     public Integer getId() {
         return id;
@@ -27,6 +30,10 @@ public class CartEntity {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public UserEntity getCart() {
+        return user;
     }
 
     public UserEntity getUser() {
@@ -37,19 +44,27 @@ public class CartEntity {
         this.user = user;
     }
 
-    public Integer getTotalItems() {
-        return totalItems;
+    public PackageEntity getPackageEntity() {
+        return packageEntity;
     }
 
-    public void setTotalItems(Integer totalItems) {
-        this.totalItems = totalItems;
+    public void setPackageEntity(PackageEntity packageEntity) {
+        this.packageEntity = packageEntity;
     }
 
-    public Double getTotalPrice() {
-        return totalPrice;
+    public Integer getUnit_quantity() {
+        return unit_quantity;
     }
 
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setUnit_quantity(Integer unit_quantity) {
+        this.unit_quantity = unit_quantity;
+    }
+
+    public Double getUnit_price() {
+        return unit_price;
+    }
+
+    public void setUnit_price(Double unit_price) {
+        this.unit_price = unit_price;
     }
 }

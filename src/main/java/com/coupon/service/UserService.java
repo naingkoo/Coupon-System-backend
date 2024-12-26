@@ -2,7 +2,9 @@ package com.coupon.service;
 
 import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
+import com.coupon.entity.ReviewEntity;
 import com.coupon.entity.UserEntity;
+import com.coupon.model.ReviewDTO;
 import com.coupon.model.UserDTO;
 import com.coupon.reposistory.UserRepository;
 import com.coupon.responObject.HttpResponse;
@@ -13,6 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -58,6 +63,30 @@ public class UserService {
         } else {
             return httpResponse;
         }
+    }
+
+    public List<UserDTO> getAllUser() {
+        // Fetch all ReviewEntities from the database
+        List<UserEntity> users = userRepo.findAll();
+
+        // Create a list to store the mapped ReviewDTOs
+        List<UserDTO> dtoList = new ArrayList<>();
+
+        // Loop through each ReviewEntity and map it to a ReviewDTO
+        for (UserEntity entity : users) {
+            UserDTO dto = new UserDTO();
+            dto.setId(entity.getId()); // Mapping ID
+            dto.setName(entity.getName()); // Mapping Rating
+            dto.setEmail(entity.getEmail()); // Mapping Message
+            dto.setPhone(entity.getPhone()); // Mapping Review Date
+            dto.setRegister_date(entity.getRegisterDate());
+            dto.setRole(entity.getRole());
+
+            dtoList.add(dto);
+        }
+
+        // Return the list of ReviewDTOs
+        return dtoList;
     }
 
 }

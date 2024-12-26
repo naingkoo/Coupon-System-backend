@@ -1,6 +1,7 @@
 package com.coupon.model;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class UserDTO {
 
     private String role;
 
-    private Date register_date;
+    private LocalDate register_date;
 
     private String token;
 
@@ -27,7 +28,7 @@ public class UserDTO {
 
     }
 
-    public UserDTO(String name, String email, String password, String phone, String role, Date register_date, String token) {
+    public UserDTO(String name, String email, String password, String phone, String role, LocalDate register_date, String token) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -85,11 +86,11 @@ public class UserDTO {
         this.role = role;
     }
 
-    public Date getRegister_date() {
+    public LocalDate getRegister_date() {
         return register_date;
     }
 
-    public void setRegister_date(Date register_date) {
+    public void setRegister_date(LocalDate register_date) {
         this.register_date = register_date;
     }
 

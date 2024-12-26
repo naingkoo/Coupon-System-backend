@@ -2,6 +2,7 @@ package com.coupon.controller;
 
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.UserEntity;
+import com.coupon.model.BusinessDTO;
 import com.coupon.model.UserDTO;
 import com.coupon.responObject.HttpResponse;
 import com.coupon.service.UserService;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:4200")
@@ -37,9 +40,8 @@ public class UserController {
         return userService.verify(user);
     }
 
-
-    @GetMapping("/display")
-    public String display() {
-        return "Hello this is display.";
+    @GetMapping("public/list")
+    public List<UserDTO> getAllUsers() {
+        return userService.getAllUser();
     }
 }

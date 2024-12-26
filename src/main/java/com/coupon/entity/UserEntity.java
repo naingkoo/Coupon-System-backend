@@ -1,9 +1,9 @@
 package com.coupon.entity;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 
 @Component
