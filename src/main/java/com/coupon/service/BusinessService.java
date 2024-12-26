@@ -59,7 +59,7 @@ public class BusinessService {
                 businessCategory.setBusiness(business);
                 businessCategory.setCategory(category);
 
-                 businessCategory = BCrepo.save(businessCategory);
+                businessCategory = BCrepo.save(businessCategory);
                 System.out.println("Csave: "+businessCategory.getCategory());
 
             }
@@ -180,90 +180,89 @@ public class BusinessService {
 
         System.out.println("updateServiceId: " + dto.getServiceId());
         // Update Business_ServiceEntity relations if service list exists
-        if (dto.getServiceId() != null && !dto.getServiceId().isEmpty()) {
-            // Remove existing services to ensure only updated associations exist
-            BSrepo.deleteByBusinessId(id); // Delete previous associations
+                if (dto.getServiceId() != null && !dto.getServiceId().isEmpty()) {
+                    // Remove existing services to ensure only updated associations exist
+                    BSrepo.deleteByBusinessId(id); // Delete previous associations
 
-            for (Integer serviceId : dto.getServiceId()) {
-                ServiceEntity service = Srepo.findById(serviceId)
-                        .orElseThrow(() -> new IllegalArgumentException("Service not found with ID: " + serviceId));
+                    for (Integer serviceId : dto.getServiceId()) {
+                        ServiceEntity service = Srepo.findById(serviceId)
+                                .orElseThrow(() -> new IllegalArgumentException("Service not found with ID: " + serviceId));
 
-                BusinessServiceEntity businessService = new BusinessServiceEntity();
-                businessService.setBusiness(business);
-                businessService.setService(service);
+                        BusinessServiceEntity businessService = new BusinessServiceEntity();
+                        businessService.setBusiness(business);
+                        businessService.setService(service);
 
-                BSrepo.save(businessService); // Save the new associations
+                        BSrepo.save(businessService); // Save the new associations
+                    }
+                }
+
+                // Map the updated BusinessEntity back to BusinessDTO
+                dto.setName(business.getName());
+                dto.setCountry(business.getCountry());
+                dto.setCity(business.getCity());
+                dto.setStreet(business.getStreet());
+                dto.setAddress(business.getAddress());
+                dto.setCreated_date(business.getCreated_date());
+
+                return dto;
             }
-        }
 
-        // Map the updated BusinessEntity back to BusinessDTO
-        dto.setName(business.getName());
-        dto.setCountry(business.getCountry());
-        dto.setCity(business.getCity());
-        dto.setStreet(business.getStreet());
-        dto.setAddress(business.getAddress());
-        dto.setCreated_date(business.getCreated_date());
+            public BusinessDTO findById(Integer id) {
+                // Fetch the BusinessEntity by ID from the repository
+                BusinessEntity business = Brepo.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Business not found with ID: " + id));
 
-        return dto;
-    }
+                // Map the BusinessEntity to BusinessDTO
+                BusinessDTO businessDTO = new BusinessDTO();
+                businessDTO.setId(business.getId());
+                businessDTO.setName(business.getName());
+                businessDTO.setCountry(business.getCountry());
+                businessDTO.setCity(business.getCity());
+                businessDTO.setStreet(business.getStreet());
+                businessDTO.setAddress(business.getAddress());
+                businessDTO.setCreated_date(business.getCreated_date());
+                businessDTO.setImage(business.getImage());
 
-    public BusinessDTO findById(Integer id) {
-        // Fetch the BusinessEntity by ID from the repository
-        BusinessEntity business = Brepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Business not found with ID: " + id));
+                if (businessDTO.getImage() != null && !businessDTO.getImage().isEmpty()) {
+                    // If the image path doesn't already start with '/business_images/', add it
+                    if (!businessDTO.getImage().startsWith("/business_images/")) {
+                        businessDTO.setImage("/business_images/" + businessDTO.getImage());
+                    }
+                }
 
-        // Map the BusinessEntity to BusinessDTO
-        BusinessDTO businessDTO = new BusinessDTO();
-        businessDTO.setId(business.getId());
-        businessDTO.setName(business.getName());
-        businessDTO.setCountry(business.getCountry());
-        businessDTO.setCity(business.getCity());
-        businessDTO.setStreet(business.getStreet());
-        businessDTO.setAddress(business.getAddress());
-        businessDTO.setCreated_date(business.getCreated_date());
-        businessDTO.setImage(business.getImage());
+                // Set associated categories and services
+                List<Integer> categoryIds = BCrepo.findCategoryIdsByBusinessId(id);
+                businessDTO.setCategoryId(categoryIds);
 
-        if (businessDTO.getImage() != null && !businessDTO.getImage().isEmpty()) {
-            // If the image path doesn't already start with '/business_images/', add it
-            if (!businessDTO.getImage().startsWith("/business_images/")) {
-                businessDTO.setImage("/business_images/" + businessDTO.getImage());
+                List<String> categoryName = categoryIds.stream()
+                        .map(categoryId ->{
+                            CategoryEntity category = Crepo.findById(categoryId).orElse(null);
+                            return category != null ? category.getName(): null;
+                        })
+                        .collect(Collectors.toList());
+                businessDTO.setCategoryName(categoryName);
+
+                List<Integer> serviceIds = BSrepo.findServiceIdsByBusinessId(id);
+                businessDTO.setServiceId(serviceIds);
+
+                List<String> serviceName = serviceIds.stream()
+                        .map(serviceId ->{
+                            ServiceEntity service = Srepo.findById(serviceId).orElse(null);
+                            return service != null ? service.getName(): null;
+                        })
+                        .collect(Collectors.toList());
+                businessDTO.setServiceName(serviceName);
+
+                return businessDTO;
             }
+
+
+            public void deleteBusinessById(Integer id) {
+                Brepo.deleteBusinessById(id);
+            }
+
+            public List<BusinessEntity> getBusinessByCategoryName(String categoryName) {
+                return BCrepo.findBusinessesByCategoryName(categoryName);
+            }
+
         }
-
-        // Set associated categories and services
-        List<Integer> categoryIds = BCrepo.findCategoryIdsByBusinessId(id);
-        businessDTO.setCategoryId(categoryIds);
-
-        List<String> categoryName = categoryIds.stream()
-                .map(categoryId ->{
-                    CategoryEntity category = Crepo.findById(categoryId).orElse(null);
-                    return category != null ? category.getName(): null;
-                })
-                .collect(Collectors.toList());
-        businessDTO.setCategoryName(categoryName);
-
-        List<Integer> serviceIds = BSrepo.findServiceIdsByBusinessId(id);
-        businessDTO.setServiceId(serviceIds);
-
-        List<String> serviceName = serviceIds.stream()
-                .map(serviceId ->{
-                    ServiceEntity service = Srepo.findById(serviceId).orElse(null);
-                    return service != null ? service.getName(): null;
-                })
-                .collect(Collectors.toList());
-        businessDTO.setServiceName(serviceName);
-
-        return businessDTO;
-    }
-
-
-    public void deleteBusinessById(Integer id) {
-        Brepo.deleteBusinessById(id);
-    }
-
-}
-
-
-
-
-

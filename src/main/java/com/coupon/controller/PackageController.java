@@ -114,6 +114,8 @@ public class PackageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> softDeletePackage(@PathVariable Integer id) {
         packageService.softDeletePackage(id);
