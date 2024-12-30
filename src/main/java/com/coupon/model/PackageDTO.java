@@ -9,6 +9,7 @@ public class PackageDTO {
     private Double unit_price;
     private Integer quantity;
     private Date create_date;
+    private Date expired_date;
     private String image;
     private String description;
     private boolean deleted;
@@ -52,6 +53,14 @@ public class PackageDTO {
 
     public void setCreate_date(Date create_date) {
         this.create_date = create_date;
+    }
+
+    public Date getExpired_date() {
+        return expired_date;
+    }
+
+    public void setExpired_date(Date expired_date) {
+        this.expired_date = expired_date;
     }
 
     public String getImage() {

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -87,6 +88,24 @@ public class UserService {
 
         // Return the list of ReviewDTOs
         return dtoList;
+    }
+
+    public UserDTO getUserById(Integer userId) {
+        Optional<UserEntity> userOptional = userRepo.findById(userId);
+        if (userOptional.isPresent()) {
+            UserEntity userEntity = userOptional.get();
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(userEntity.getId());
+            userDTO.setName(userEntity.getName());
+            userDTO.setEmail(userEntity.getEmail());
+            userDTO.setPassword(userEntity.getPassword()); // Be cautious about exposing passwords
+            userDTO.setPhone(userEntity.getPhone());
+            userDTO.setRole(userEntity.getRole());
+            userDTO.setRegister_date(userEntity.getRegisterDate());
+            return userDTO;
+        } else {
+            throw new RuntimeException("User  not found with id: " + userId);
+        }
     }
 
 }

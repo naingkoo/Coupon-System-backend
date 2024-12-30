@@ -30,6 +30,7 @@ public class PackageService {
             packageEntity.setUnit_price(dto.getUnit_price());
             packageEntity.setQuantity(dto.getQuantity());
             packageEntity.setCreate_date(dto.getCreate_date());
+            packageEntity.setExpired_date(dto.getExpired_date());
             packageEntity.setImage(dto.getImage());
             packageEntity.setDescription(dto.getDescription());
             packageEntity.setBusiness(Brepo.findById(dto.getBusiness_id()).orElseThrow());
@@ -130,6 +131,7 @@ public class PackageService {
         resDTO.setQuantity(dto.getQuantity());
         resDTO.setDescription(dto.getDescription());
         resDTO.setCreate_date(dto.getCreate_date());
+        resDTO.setExpired_date(dto.getExpired_date());
         if (dto.getImage() != null && !dto.getImage().isEmpty()) {
             resDTO.setImage(dto.getImage());
         }

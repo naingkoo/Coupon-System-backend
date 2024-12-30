@@ -47,7 +47,6 @@ public class AuthenConfig {
                                 "/Category/public/**",
                                 "/business_images/**",
                                 "/reviwes/public/**",
-                                "/cart/**",
                                 "/images/**").permitAll()
                         .requestMatchers("/user/display").hasRole("ADMIN")
                         .anyRequest().authenticated()

@@ -42,7 +42,7 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         // Add roles to the claims map (you can name this whatever you want, "roles" in this case)
         claims.put("roles", user.getRole());
-
+        claims.put("id",user.getId());
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuer("coupon server")

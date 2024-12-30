@@ -26,6 +26,8 @@ public class PackageEntity {
     @Column(name="create_date", nullable = false, updatable = false)
     private Date create_date;
 
+    @Column(name="expired_date", nullable = false, updatable = false)
+    private Date expired_date;
 
     @Column(name= "images",nullable = false,columnDefinition = "LONGTEXT")
     private String image;
@@ -78,6 +80,14 @@ public class PackageEntity {
 
     public void setCreate_date(Date create_date) {
         this.create_date = create_date;
+    }
+
+    public Date getExpired_date() {
+        return expired_date;
+    }
+
+    public void setExpired_date(Date expired_date) {
+        this.expired_date = expired_date;
     }
 
     public String getImage() {

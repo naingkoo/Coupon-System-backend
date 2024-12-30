@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:4200")
@@ -43,5 +44,11 @@ public class UserController {
     @GetMapping("public/list")
     public List<UserDTO> getAllUsers() {
         return userService.getAllUser();
+    }
+
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
+        UserDTO userDTO = userService.getUserById(id);
+        return ResponseEntity.ok(userDTO);
     }
 }
