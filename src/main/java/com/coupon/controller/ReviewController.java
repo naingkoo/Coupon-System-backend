@@ -1,7 +1,7 @@
 package com.coupon.controller;
 
-import com.coupon.entity.ReviewEntity;
 import com.coupon.model.ReviewDTO;
+import com.coupon.service.BusinessService;
 import com.coupon.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,5 +32,10 @@ public class ReviewController {
     @GetMapping("/public/list")
     public List<ReviewDTO> getAllReviews() {
         return reviewService.showAllReviews();
+    }
+
+    @GetMapping("/business/{businessId}")
+    public List<ReviewDTO> showAllReviewsByBusinessId(@PathVariable("businessId") Integer businessId) {
+        return reviewService.showAllReviewsByBusinessId(businessId);
     }
 }

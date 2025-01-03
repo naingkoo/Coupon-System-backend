@@ -2,8 +2,6 @@ package com.coupon.model;
 
 import java.util.Date;
 
-
-
 public class ReviewDTO {
 
     private Integer id;
@@ -12,6 +10,10 @@ public class ReviewDTO {
     private Date review_date;
     private Integer userId;  // Replace UserEntity with userId
     private Integer businessId; // Replace BusinessEntity with businessId
+    private String user_name;
+    private String user_photo;
+
+
 
     public Integer getId() {
         return id;
@@ -59,6 +61,22 @@ public class ReviewDTO {
 
     public void setBusinessId(Integer businessId) {
         this.businessId = businessId;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String getUser_photo() {
+        return user_photo;
+    }
+
+    public void setUser_photo(String user_photo) {
+        this.user_photo = user_photo;
     }
 }
 

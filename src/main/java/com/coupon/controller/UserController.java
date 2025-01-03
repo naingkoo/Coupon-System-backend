@@ -2,7 +2,6 @@ package com.coupon.controller;
 
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.UserEntity;
-import com.coupon.model.BusinessDTO;
 import com.coupon.model.UserDTO;
 import com.coupon.model.UserPhotoDTO;
 import com.coupon.responObject.HttpResponse;
@@ -12,13 +11,14 @@ import com.coupon.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:4200")
@@ -94,5 +94,48 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
+    // Endpoint to update user details
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> updateUserDetails(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        UserDTO updatedUser = userService.updateUserDetails(id, userDTO);
+        if (updatedUser != null) {
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
+    // UserController.java
+//    @PutMapping("/{userId}/change-password")
+//    public ResponseEntity<String> changePassword(
+//            @PathVariable Integer userId,
+//            @RequestBody PasswordChangeRequest passwordChangeRequest) {
+//
+//        boolean isPasswordChanged = userService.changePassword(
+//                userId,
+//                passwordChangeRequest.getCurrentPassword(),
+//                passwordChangeRequest.getNewPassword()
+//        );
+//
+//        if (isPasswordChanged) {
+//            return ResponseEntity.ok("Password changed successfully.");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid current password or other error.");
+//        }
+//    }
+
+
+
+    @PutMapping("/{userId}/change-password")
+    public ResponseEntity<String> changePassword(@PathVariable Integer userId,
+                                                 @RequestBody ChangePasswordRequest.PasswordChangeRequest passwordChangeRequest) {
+        // Logic for changing the password
+        boolean success = userService.changePassword(userId, passwordChangeRequest.getCurrentPassword(),
+                passwordChangeRequest.getNewPassword());
+        if (success) {
+            return ResponseEntity.ok("Password changed successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Error changing password");
+        }
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 @Entity
@@ -39,6 +40,9 @@ public class UserEntity {
     protected void onCreate() {
         this.registerDate = LocalDate.now(); // Automatically set the current date
     }
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<UserPhotoEntity> userPhotos;  // Assuming the user can have multiple photos
 
     public Integer getId() {
         return id;
@@ -94,5 +98,13 @@ public class UserEntity {
 
     public void setRegisterDate(LocalDate registerDate) {
         this.registerDate = registerDate;
+    }
+
+    public List<UserPhotoEntity> getUserPhotos() {
+        return userPhotos;
+    }
+
+    public void setUserPhotos(List<UserPhotoEntity> userPhotos) {
+        this.userPhotos = userPhotos;
     }
 }

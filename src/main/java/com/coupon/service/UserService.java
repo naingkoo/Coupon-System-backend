@@ -11,6 +11,7 @@ import com.coupon.reposistory.UserPhotoRepository;
 import com.coupon.reposistory.UserRepository;
 import com.coupon.responObject.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,8 +26,9 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    private final PasswordEncoder encoder;
 
+    @Autowired
+    private final PasswordEncoder encoder;
 
     @Autowired
    private UserRepository userRepo;
@@ -129,4 +131,51 @@ public class UserService {
         }
     }
 
+    public UserDTO updateUserDetails(Integer id, UserDTO userDTO) {
+        // Check if user exists
+        UserEntity user = userRepo.findById(id).orElse(null);
+        if (user == null) {
+            return null; // User not found
+        }
+
+        // Update user details
+        user.setName(userDTO.getName());
+        user.setPhone(userDTO.getPhone());
+        user.setEmail(userDTO.getEmail());
+
+        // Save updated user to the database
+        UserEntity updatedUser = userRepo.save(user);
+
+        // Create a new UserDTO and set values using setters
+        UserDTO updatedUserDTO = new UserDTO();
+        updatedUserDTO.setId(updatedUser.getId());
+        updatedUserDTO.setName(updatedUser.getName());
+        updatedUserDTO.setPhone(updatedUser.getPhone());
+        updatedUserDTO.setEmail(updatedUser.getEmail());
+
+        return updatedUserDTO;
+    }
+
+    // UserService.java
+    public boolean changePassword(Integer userId, String currentPassword, String newPassword) {
+        // Find user by ID
+        UserEntity user = userRepo.findById(userId).orElse(null);
+        if (user == null) {
+            return false;  // User not found
+        }
+
+        // Check if current password matches the user's current password
+        if (!encoder.matches(currentPassword, user.getPassword())) {
+            return false;  // Current password is incorrect
+        }
+
+        // Encrypt the new password
+        String encryptedPassword = encoder.encode(newPassword);
+
+        // Update the user's password
+        user.setPassword(encryptedPassword);
+        userRepo.save(user);
+
+        return true;  // Password changed successfully
+    }
 }

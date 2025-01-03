@@ -18,6 +18,8 @@ public class UserPhotoEntity {
     @JoinColumn(name = "user_id",nullable = false)
     private UserEntity user;
 
+    private String photoUrl;
+
     public Integer getId() {
         return id;
     }
@@ -40,5 +42,13 @@ public class UserPhotoEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

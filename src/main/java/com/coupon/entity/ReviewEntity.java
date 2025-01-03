@@ -12,7 +12,6 @@ public class ReviewEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
     @Column(name = "rating")
     private Integer rating;
 
@@ -78,4 +77,5 @@ public class ReviewEntity {
     public void setBusinessEntity(BusinessEntity businessEntity) {
         this.businessEntity = businessEntity;
     }
+
 }

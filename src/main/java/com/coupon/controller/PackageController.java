@@ -47,7 +47,6 @@ public class PackageController {
 
     @GetMapping("/findByBusinessId/{id}")
     public List<PackageDTO> findByBusinessId(@PathVariable("id") Integer id) {
-
         System.out.println(id);
         // Fetch the list of packages based on the business ID from the service
         return packageService.getByBusinessId(id);

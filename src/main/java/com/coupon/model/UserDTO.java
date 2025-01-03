@@ -30,7 +30,8 @@ public class UserDTO {
 
     }
 
-    public UserDTO(String name, String email, String password, String phone, String role, LocalDate register_date, String token) {
+    public UserDTO(Integer id,String name, String email, String password, String phone, String role, LocalDate register_date, String token) {
+       this.id=id;
         this.name = name;
         this.email = email;
         this.password = password;
