@@ -15,5 +15,8 @@ public class StaticResourceConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/business_images/**")
                 .addResourceLocations("file:src/main/resources/static/business_images/");
+
+        registry.addResourceHandler("/users_images/**")
+                .addResourceLocations("file:src/main/resources/static/users_images/");
     }
 }

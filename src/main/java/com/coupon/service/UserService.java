@@ -4,8 +4,10 @@ import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.ReviewEntity;
 import com.coupon.entity.UserEntity;
+import com.coupon.entity.UserPhotoEntity;
 import com.coupon.model.ReviewDTO;
 import com.coupon.model.UserDTO;
+import com.coupon.reposistory.UserPhotoRepository;
 import com.coupon.reposistory.UserRepository;
 import com.coupon.responObject.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class UserService {
 
     @Autowired
    private UserRepository userRepo;
+
+    @Autowired
+    private UserPhotoRepository userPhotoRepo;
 
     @Autowired
     private AuthenticationManager authManager;
@@ -94,6 +99,11 @@ public class UserService {
         Optional<UserEntity> userOptional = userRepo.findById(userId);
         if (userOptional.isPresent()) {
             UserEntity userEntity = userOptional.get();
+
+            // Fetch user photo by user ID
+            Optional<UserPhotoEntity> userPhotoOptional = userPhotoRepo.findByUserId(userId);
+
+            // Map UserEntity to UserDTO
             UserDTO userDTO = new UserDTO();
             userDTO.setId(userEntity.getId());
             userDTO.setName(userEntity.getName());
@@ -102,9 +112,20 @@ public class UserService {
             userDTO.setPhone(userEntity.getPhone());
             userDTO.setRole(userEntity.getRole());
             userDTO.setRegister_date(userEntity.getRegisterDate());
+
+            // Log if photo is found
+            if (userPhotoOptional.isPresent()) {
+                String photoName = userPhotoOptional.get().getName();
+                userDTO.setPhoto(photoName); // Assuming 'getName()' returns the photo file name
+                System.out.println("User Photo: " + photoName); // Log the photo name
+            } else {
+                userDTO.setPhoto(null); // No photo available
+                System.out.println("No photo found for user ID: " + userId); // Log if no photo is found
+            }
+
             return userDTO;
         } else {
-            throw new RuntimeException("User  not found with id: " + userId);
+            throw new RuntimeException("User not found with id: " + userId);
         }
     }
 

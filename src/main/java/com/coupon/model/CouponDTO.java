@@ -9,7 +9,7 @@ public class CouponDTO {
 
     private Date expired_date;
 
-    public  String code;
+    public  Boolean confirm;
 
     private Boolean status;
 
@@ -35,12 +35,12 @@ public class CouponDTO {
         this.expired_date = expired_date;
     }
 
-    public String getCode() {
-        return code;
+    public Boolean getConfirm() {
+        return confirm;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setConfirm(Boolean confirm) {
+        this.confirm = confirm;
     }
 
     public Boolean getStatus() {

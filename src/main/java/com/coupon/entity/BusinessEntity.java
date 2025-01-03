@@ -19,14 +19,17 @@ public class BusinessEntity {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date created_date;
 
-    @Column(name = "country")
-    private String country;
+    @Column(name = "phone")
+    private String phone;
 
-    @Column(name = "city")
-    private String city;
+    @Column(name = "email")
+    private String email;
 
-    @Column(name = "street")
-    private String street;
+    @Column(name = "latitude")
+    private String latitude;
+
+    @Column(name = "longitude")
+    private String longitude;
 
     @Column(name = "address")
     private String address;
@@ -41,17 +44,10 @@ public class BusinessEntity {
     @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -59,6 +55,7 @@ public class BusinessEntity {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -66,36 +63,57 @@ public class BusinessEntity {
     public Date getCreated_date() {
         return created_date;
     }
+
     public void setCreated_date(Date created_date) {
         this.created_date = created_date;
     }
 
-    public String getCountry() {
-        return country;
-    }
-    public void setCountry(String country) {
-        this.country = country;
+    public String getPhone() {
+        return phone;
     }
 
-    public String getCity() {
-        return city;
-    }
-    public void setCity(String city) {
-        this.city = city;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getStreet() {
-        return street;
+    public String getEmail() {
+        return email;
     }
-    public void setStreet(String street) {
-        this.street = street;
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getAddress() {
         return address;
     }
+
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public boolean isDelete() {
@@ -109,6 +127,7 @@ public class BusinessEntity {
     public UserEntity getUser() {
         return user;
     }
+
     public void setUser(UserEntity user) {
         this.user = user;
     }

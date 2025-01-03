@@ -22,6 +22,8 @@ public class UserDTO {
 
     private LocalDate register_date;
 
+    private String photo;
+
     private String token;
 
     public UserDTO() {
@@ -92,6 +94,14 @@ public class UserDTO {
 
     public void setRegister_date(LocalDate register_date) {
         this.register_date = register_date;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getToken() {

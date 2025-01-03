@@ -17,8 +17,8 @@ public class CouponEntity {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date expired_date;
 
-    @Column(name="code")
-    public  String code;
+    @Column(name="confirm",nullable = false)
+    public  Boolean confirm = true;
 
     @Column(name="used_status",nullable = false)
     private Boolean status = true;
@@ -50,12 +50,12 @@ public class CouponEntity {
         this.expired_date = expired_date;
     }
 
-    public String getCode() {
-        return code;
+    public Boolean getConfirm() {
+        return confirm;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setConfirm(Boolean confirm) {
+        this.confirm = confirm;
     }
 
     public Boolean getStatus() {

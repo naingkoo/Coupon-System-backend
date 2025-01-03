@@ -7,9 +7,10 @@ public class BusinessDTO {
     private Integer id;
     private String name;
     private Date created_date;
-    private String country;
-    private String city;
-    private String street;
+    private String phone;
+    private String email;
+    private String latitude;
+    private String longitude;
     private String address;
     private String image;
     private boolean status;
@@ -18,14 +19,6 @@ public class BusinessDTO {
     private List<Integer> serviceId;
     private List<String> categoryName;
     private List<String> serviceName;
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 
     public Integer getId() {
         return id;
@@ -51,28 +44,36 @@ public class BusinessDTO {
         this.created_date = created_date;
     }
 
-    public String getCountry() {
-        return country;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getCity() {
-        return city;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getStreet() {
-        return street;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getAddress() {
@@ -81,6 +82,14 @@ public class BusinessDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public boolean isStatus() {

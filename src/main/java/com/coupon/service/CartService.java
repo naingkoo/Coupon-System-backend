@@ -109,6 +109,7 @@ public class CartService {
         packageDTO.setImage(imagePath);
 
         packageDTO.setDescription(cartEntity.getPackageEntity().getDescription());
+        packageDTO.setExpired_date(cartEntity.getPackageEntity().getExpired_date());
         packageDTO.setDeleted(cartEntity.getPackageEntity().isDelete());
         packageDTO.setBusiness_id(cartEntity.getPackageEntity().getBusiness() != null ? cartEntity.getPackageEntity().getBusiness().getId() : null);
 

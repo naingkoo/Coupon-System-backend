@@ -39,9 +39,10 @@ public class BusinessService {
 
         BusinessEntity business = new BusinessEntity();
         business.setName(dto.getName());
-        business.setCountry(dto.getCountry());
-        business.setCity(dto.getCity());
-        business.setStreet(dto.getStreet());
+        business.setPhone(dto.getPhone());
+        business.setEmail(dto.getEmail());
+        business.setLatitude(dto.getLatitude());
+        business.setLongitude(dto.getLongitude());
         business.setAddress(dto.getAddress());
         business.setCreated_date(new Date());
         business.setImage(dto.getImage());
@@ -83,9 +84,10 @@ public class BusinessService {
 
         dto.setId(business.getId());
         dto.setName(business.getName());
-        dto.setCountry(business.getCountry());
-        dto.setCity(business.getCity());
-        dto.setStreet(business.getStreet());
+        dto.setPhone(business.getPhone());
+        dto.setEmail(business.getEmail());
+        dto.setLatitude(business.getLatitude());
+        dto.setLongitude(business.getLongitude());
         dto.setAddress(business.getAddress());
         dto.setCreated_date(business.getCreated_date());
         dto.setImage(business.getImage());//***//
@@ -101,9 +103,10 @@ public class BusinessService {
             BusinessDTO dto = new BusinessDTO();
             dto.setId(entity.getId());
             dto.setName(entity.getName());
-            dto.setCountry(entity.getCountry());
-            dto.setCity(entity.getCity());
-            dto.setStreet(entity.getStreet());
+            dto.setPhone(entity.getPhone());
+            dto.setEmail(entity.getEmail());
+            dto.setLatitude(entity.getLatitude());
+            dto.setLongitude(entity.getLongitude());
             dto.setAddress(entity.getAddress());
             dto.setCreated_date(entity.getCreated_date());
             dto.setImage(entity.getImage());
@@ -147,9 +150,10 @@ public class BusinessService {
 
         // Update business details
         business.setName(dto.getName());
-        business.setCountry(dto.getCountry());
-        business.setCity(dto.getCity());
-        business.setStreet(dto.getStreet());
+        business.setPhone(dto.getPhone());
+        business.setEmail(dto.getEmail());
+        business.setLatitude(dto.getLatitude());
+        business.setLongitude(dto.getLongitude());
         business.setAddress(dto.getAddress());
 
         // Optionally update created_date if needed
@@ -198,9 +202,10 @@ public class BusinessService {
 
                 // Map the updated BusinessEntity back to BusinessDTO
                 dto.setName(business.getName());
-                dto.setCountry(business.getCountry());
-                dto.setCity(business.getCity());
-                dto.setStreet(business.getStreet());
+                dto.setPhone(business.getPhone());
+                dto.setEmail(business.getEmail());
+                dto.setLatitude(business.getLatitude());
+                dto.setLongitude(business.getLongitude());
                 dto.setAddress(business.getAddress());
                 dto.setCreated_date(business.getCreated_date());
 
@@ -216,9 +221,10 @@ public class BusinessService {
                 BusinessDTO businessDTO = new BusinessDTO();
                 businessDTO.setId(business.getId());
                 businessDTO.setName(business.getName());
-                businessDTO.setCountry(business.getCountry());
-                businessDTO.setCity(business.getCity());
-                businessDTO.setStreet(business.getStreet());
+                businessDTO.setPhone(business.getPhone());
+                businessDTO.setEmail(business.getEmail());
+                businessDTO.setLatitude(business.getLatitude());
+                businessDTO.setLongitude(business.getLongitude());
                 businessDTO.setAddress(business.getAddress());
                 businessDTO.setCreated_date(business.getCreated_date());
                 businessDTO.setImage(business.getImage());

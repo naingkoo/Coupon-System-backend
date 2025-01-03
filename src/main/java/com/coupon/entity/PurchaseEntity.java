@@ -18,6 +18,12 @@ public class PurchaseEntity {
     @Column(name="total_quantity")
     private Integer total_quantity;
 
+    @Column(name="payment_type")
+    private String payment_type;
+
+    @Column(name="transaction_id")
+    private String transaction_id;
+
     @Column(name="purchase_date")
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date purchase_date;
@@ -48,6 +54,22 @@ public class PurchaseEntity {
 
     public void setTotal_quantity(Integer total_quantity) {
         this.total_quantity = total_quantity;
+    }
+
+    public String getPayment_type() {
+        return payment_type;
+    }
+
+    public void setPayment_type(String payment_type) {
+        this.payment_type = payment_type;
+    }
+
+    public String getTransaction_id() {
+        return transaction_id;
+    }
+
+    public void setTransaction_id(String transaction_id) {
+        this.transaction_id = transaction_id;
     }
 
     public Date getPurchase_date() {
