@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +12,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -27,6 +28,8 @@ public class AuthenConfig {
     @Autowired
     MyuserDetailService myuserDetailService;
     @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
     AuthExceptionHandler authExceptionHandler;
     @Autowired
     JwtFilter jwtFilter;
@@ -37,9 +40,15 @@ public class AuthenConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(handle -> handle.authenticationEntryPoint(authExceptionHandler))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> {userInfo.userService(OAuth2UserService());
+                            System.out.println("OAuth2 login flow triggered");})
+                        .successHandler( customSuccessHandler())
+
+                )
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/user/loginUser", "/user/addUser",
+                        .requestMatchers("/user/loginUser", "/user/addUser","user/oauth2/token",
                                 "/user/public/**",
                                 "/Business/public/**",
                                 "/package/public/**",
@@ -76,6 +85,16 @@ public class AuthenConfig {
 //        return provider;
 //
 //    }
+@Bean
+public CustomSuccessHandler customSuccessHandler() {
+    return new CustomSuccessHandler();
+}
+
+
+    @Bean
+    public OAuth2UserService OAuth2UserService() {
+        return customOAuth2UserService;
+    }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(12);

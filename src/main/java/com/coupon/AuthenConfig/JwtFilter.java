@@ -53,7 +53,9 @@ public class JwtFilter extends OncePerRequestFilter {
             setErrorResponse(response, 498, "Token has expired.");
             return; // Stop further processing
         } catch (Exception e) {
+            System.out.println("from jwtfilter :"+e);
             setErrorResponse(response, 498, e.getMessage());
+
             return;
         }
 

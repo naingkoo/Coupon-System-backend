@@ -1,5 +1,6 @@
 package com.coupon.controller;
 
+import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.UserEntity;
 import com.coupon.model.UserDTO;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,8 @@ import java.util.List;
 //@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
 public class UserController {
-
+@Autowired
+private JwtService jwtService;
     @Autowired
     private UserService userService;
 

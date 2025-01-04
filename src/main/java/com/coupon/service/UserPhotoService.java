@@ -25,18 +25,14 @@ public class UserPhotoService {
         UserEntity user = userRepository.findById(userPhotoDTO.getUser_id())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userPhotoDTO.getUser_id()));
 
-<<<<<<< Updated upstream
         // Create and populate UserPhotoEntity
         UserPhotoEntity userPhotoEntity = new UserPhotoEntity();
         userPhotoEntity.setName(userPhotoDTO.getName());
         userPhotoEntity.setUser(user);
 
         // Save the entity and retrieve the saved entity
-=======
         // Check if the user already has a photo
         UserPhotoEntity existingUserPhoto = userPhotoRepository.findByUserId(user.getId()).orElse(null);
-
-        UserPhotoEntity userPhotoEntity;
 
         if (existingUserPhoto != null) {
             // If the user already has a photo, update the existing one
@@ -50,7 +46,6 @@ public class UserPhotoService {
         }
 
         // Save the entity (either update the existing one or insert a new one)
->>>>>>> Stashed changes
         UserPhotoEntity savedEntity = userPhotoRepository.save(userPhotoEntity);
 
         // Map back to DTO

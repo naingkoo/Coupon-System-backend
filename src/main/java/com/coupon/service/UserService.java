@@ -1,8 +1,6 @@
 package com.coupon.service;
 
 import com.coupon.AuthenConfig.JwtService;
-import com.coupon.AuthenConfig.MyuserDetailService;
-import com.coupon.entity.ReviewEntity;
 import com.coupon.entity.UserEntity;
 import com.coupon.entity.UserPhotoEntity;
 import com.coupon.model.ReviewDTO;
@@ -26,8 +24,6 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-
-    @Autowired
     private final PasswordEncoder encoder;
 
     @Autowired
@@ -177,5 +173,9 @@ public class UserService {
         userRepo.save(user);
 
         return true;  // Password changed successfully
+    }
+    public UserEntity findByEmail(String email) {
+        Optional<UserEntity> user =this.userRepo.findByEmail(email);
+        return user.orElse(null);
     }
 }
