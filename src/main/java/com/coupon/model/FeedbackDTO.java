@@ -2,15 +2,14 @@ package com.coupon.model;
 
 import java.util.Date;
 
-public class ReviewDTO {
+public class FeedbackDTO {
 
     private Integer id;
-    private Integer rating;
-    private String message;
-    private Date review_date;
-    private Integer userId;  // Replace UserEntity with userId
-    private Integer businessId; // Replace BusinessEntity with businessId
+    private String  message;
+    private Date feedback_date;
+    private Integer userId;
     private String user_name;
+    private String user_email;
     private String user_photo;
 
     public Integer getId() {
@@ -21,12 +20,12 @@ public class ReviewDTO {
         this.id = id;
     }
 
-    public Integer getRating() {
-        return rating;
+    public String getUser_email() {
+        return user_email;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public void setUser_email(String user_email) {
+        this.user_email = user_email;
     }
 
     public String getMessage() {
@@ -37,12 +36,12 @@ public class ReviewDTO {
         this.message = message;
     }
 
-    public Date getReview_date() {
-        return review_date;
+    public Date getFeedback_date() {
+        return feedback_date;
     }
 
-    public void setReview_date(Date review_date) {
-        this.review_date = review_date;
+    public void setFeedback_date(Date feedback_date) {
+        this.feedback_date = feedback_date;
     }
 
     public Integer getUserId() {
@@ -51,14 +50,6 @@ public class ReviewDTO {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
-    public Integer getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Integer businessId) {
-        this.businessId = businessId;
     }
 
     public String getUser_name() {
@@ -77,4 +68,3 @@ public class ReviewDTO {
         this.user_photo = user_photo;
     }
 }
-

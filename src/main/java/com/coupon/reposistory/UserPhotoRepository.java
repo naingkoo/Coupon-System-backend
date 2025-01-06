@@ -14,6 +14,8 @@ public interface UserPhotoRepository extends JpaRepository<UserPhotoEntity, Inte
 
     Optional<UserPhotoEntity> findByUserId(Integer userId);
 
+
     @Query("SELECT up FROM UserPhotoEntity up WHERE up.user.id = :userId ORDER BY up.id ASC")
     List<UserPhotoEntity> findPhotosByUserId(@Param("userId") Integer userId);
+
 }

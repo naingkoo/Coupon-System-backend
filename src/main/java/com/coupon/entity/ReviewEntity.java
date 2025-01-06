@@ -15,7 +15,7 @@ public class ReviewEntity {
     @Column(name = "rating")
     private Integer rating;
 
-    @Column(name = "message")
+    @Column(name = "message", length = 500)
     private String message;
 
     @Column(name = "review_date")
@@ -28,7 +28,6 @@ public class ReviewEntity {
     @ManyToOne
     @JoinColumn(name = "business_id",nullable = false)
     private BusinessEntity businessEntity;
-
 
     public Integer getId() {
         return id;

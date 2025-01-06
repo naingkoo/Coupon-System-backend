@@ -16,12 +16,7 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
 
     List<ReviewEntity> findByid(Integer id);
 
-   List<ReviewEntity> findByBusinessEntity(BusinessEntity businessEntity);
-
-//    @Query("SELECT r FROM ReviewEntity r WHERE r.business.id = :businessId")
-//    List<ReviewEntity> findByBusinessId(@Param("businessId") Integer businessId);
-
-//    List<ReviewEntity> findByBusinessId(Integer businessId);
+//   List<ReviewEntity> findByBusinessEntity(BusinessEntity businessEntity);
 
     // Method to find reviews by businessId
     List<ReviewEntity> findByBusinessEntityId(Integer businessId);

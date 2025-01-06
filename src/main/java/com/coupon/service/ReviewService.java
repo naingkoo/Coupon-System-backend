@@ -1,7 +1,6 @@
 package com.coupon.service;
 
 import com.coupon.entity.*;
-import com.coupon.model.PackageDTO;
 import com.coupon.model.ReviewDTO;
 import com.coupon.reposistory.BusinessRepository;
 import com.coupon.reposistory.ReviewRepository;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -82,9 +80,15 @@ public class ReviewService {
             dto.setRating(entity.getRating()); // Mapping Rating
             dto.setMessage(entity.getMessage()); // Mapping Message
             dto.setReview_date(entity.getReview_date()); // Mapping Review Date
-            dto.setUserId(entity.getUser().getId()); // Mapping User ID
-            dto.setUser_name(entity.getUser().getName());
-            dto.setBusinessId(entity.getBusinessEntity().getId()); // Mapping Business ID
+            dto.setBusinessId(entity.getBusinessEntity().getId());
+
+            UserEntity user = entity.getUser();
+            dto.setUserId(user.getId());
+            dto.setUser_name(user.getName());
+
+            // Get the first photo for the user
+            Optional<UserPhotoEntity> userPhoto = userPhotoRepository.findPhotosByUserId(user.getId()).stream().findFirst();
+            dto.setUser_photo(userPhoto.map(UserPhotoEntity::getName).orElse(null));
 
             // Add the mapped DTO to the list
             dtoList.add(dto);
@@ -95,9 +99,14 @@ public class ReviewService {
     }
 
     // Method to fetch reviews by businessId
-    public List<ReviewDTO> showAllReviewsByBusinessId(Integer businessId) {
+    public List<ReviewDTO> getReviewByBusinessId(Integer businessId) {
         // Fetch reviews based on businessId from the repository
         List<ReviewEntity> reviews = reviewRepository.findByBusinessEntityId(businessId);
+
+        // If there are no reviews, return an empty list
+        if (reviews.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         // Map each ReviewEntity to ReviewDTO
         List<ReviewDTO> dtoList = new ArrayList<>();
@@ -107,9 +116,18 @@ public class ReviewService {
             dto.setRating(entity.getRating());
             dto.setMessage(entity.getMessage());
             dto.setReview_date(entity.getReview_date());
-            dto.setUserId(entity.getUser().getId());
-            dto.setUser_name(entity.getUser().getName());
             dto.setBusinessId(entity.getBusinessEntity().getId());
+
+
+            UserEntity user = entity.getUser();
+            dto.setUserId(user.getId());
+            dto.setUser_name(user.getName());
+
+            // Get the first photo for the user
+            Optional<UserPhotoEntity> userPhoto = userPhotoRepository.findPhotosByUserId(user.getId()).stream().findFirst();
+            dto.setUser_photo(userPhoto.map(UserPhotoEntity::getName).orElse(null));
+
+
             dtoList.add(dto);
         }
         return dtoList;
