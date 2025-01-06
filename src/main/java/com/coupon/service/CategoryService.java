@@ -31,7 +31,6 @@ public class CategoryService {
     public List<CategoryDTO> showAllCategory() {
 
         List<CategoryEntity> category = Crepo.findAll();
-
         List<CategoryDTO> dtoList = new ArrayList<>();
         for(CategoryEntity entity: category) {
             CategoryDTO dto = new CategoryDTO();

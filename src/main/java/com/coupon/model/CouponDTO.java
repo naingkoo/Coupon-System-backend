@@ -6,18 +6,16 @@ import java.util.Date;
 public class CouponDTO {
 
     private Integer id;
-
     private Date expired_date;
 
     public  Boolean confirm;
 
     private Boolean status;
-
-    public  Boolean transfer_status;
-
+    private   Boolean transfer_status;
     private Integer purchase_id;
-
     private Integer package_id;
+    private String packageName;
+    private String image;
 
     public Integer getId() {
         return id;
@@ -73,5 +71,21 @@ public class CouponDTO {
 
     public void setPackage_id(Integer package_id) {
         this.package_id = package_id;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

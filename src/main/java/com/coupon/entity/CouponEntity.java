@@ -27,11 +27,11 @@ public class CouponEntity {
     public  Boolean transfer_status = true;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id",nullable = false)
+    @JoinColumn(name = "purchase_id",nullable = true)
     private PurchaseEntity purchase;
 
     @ManyToOne
-    @JoinColumn(name = "package_id",nullable = false)
+    @JoinColumn(name = "package_id",nullable = true)
     private PackageEntity packageEntity;
 
     public Integer getId() {

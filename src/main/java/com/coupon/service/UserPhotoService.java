@@ -34,6 +34,7 @@ public class UserPhotoService {
         // Check if the user already has a photo
         UserPhotoEntity existingUserPhoto = userPhotoRepository.findByUserId(user.getId()).orElse(null);
 
+
         if (existingUserPhoto != null) {
             // If the user already has a photo, update the existing one
             userPhotoEntity = existingUserPhoto;

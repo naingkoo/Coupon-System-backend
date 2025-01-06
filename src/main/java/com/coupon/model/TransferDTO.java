@@ -10,9 +10,13 @@ public class TransferDTO {
 
     private Boolean status;
 
-    private Integer user_id;
+    private Integer sender_id;
 
     private Integer coupon_id;
+
+    private Integer receiver_id;
+
+    private String receiverEmail;
 
     public Integer getId() {
         return id;
@@ -38,12 +42,12 @@ public class TransferDTO {
         this.status = status;
     }
 
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getSender_id() {
+        return sender_id;
     }
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setSender_id(Integer sender_id) {
+        this.sender_id = sender_id;
     }
 
     public Integer getCoupon_id() {
@@ -52,5 +56,21 @@ public class TransferDTO {
 
     public void setCoupon_id(Integer coupon_id) {
         this.coupon_id = coupon_id;
+    }
+
+    public Integer getReceiver_id() {
+        return receiver_id;
+    }
+
+    public void setReceiver_id(Integer receiver_id) {
+        this.receiver_id = receiver_id;
+    }
+
+    public String getReceiverEmail() {
+        return receiverEmail;
+    }
+
+    public void setReceiverEmail(String receiverEmail) {
+        this.receiverEmail = receiverEmail;
     }
 }

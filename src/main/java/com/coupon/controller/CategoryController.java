@@ -18,7 +18,6 @@ public class CategoryController {
 
     @PostMapping("/create")
     public CategoryDTO saveCategory(@RequestBody CategoryDTO dto){
-        System.out.println("errorrrrrrrrrrrrrrr"+dto.getName());
         return Cservice.saveCategory(dto);
 
     }

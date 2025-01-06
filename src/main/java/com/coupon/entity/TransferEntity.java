@@ -19,8 +19,12 @@ public class TransferEntity {
     @Column(name="status", nullable = false)
     private Boolean status = true;
 
+    @Column(name="receiver_id", nullable = false)
+    private Integer receiver_id;
+
+
     @ManyToOne
-    @JoinColumn(name = "receiver_id",nullable = false)
+    @JoinColumn(name = "sender_id",nullable = false)
     private UserEntity user;
 
     @OneToOne
@@ -51,12 +55,12 @@ public class TransferEntity {
         this.status = status;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public Integer getReceiver_id() {
+        return receiver_id;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setReceiver_id(Integer receiver_id) {
+        this.receiver_id = receiver_id;
     }
 
     public CouponEntity getCoupon() {
@@ -65,5 +69,13 @@ public class TransferEntity {
 
     public void setCoupon(CouponEntity coupon) {
         this.coupon = coupon;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 }
