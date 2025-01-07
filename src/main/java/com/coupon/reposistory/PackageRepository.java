@@ -26,4 +26,6 @@ public interface PackageRepository extends JpaRepository<PackageEntity,Integer>{
 
     @Query("SELECT p FROM PackageEntity p WHERE p.isDelete = false")
     List<PackageEntity> findAllActive();
+
+    long countByIsDeleteFalse();
 }

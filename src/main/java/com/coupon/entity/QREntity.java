@@ -3,18 +3,18 @@ package com.coupon.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="QR")
+@Table(name = "QR")
 public class QREntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "code")
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "coupon_id", nullable = true)
+    @OneToOne
+    @JoinColumn(name = "coupon_id", nullable = false, unique = true)
     private CouponEntity coupon;
 
     public Integer getId() {

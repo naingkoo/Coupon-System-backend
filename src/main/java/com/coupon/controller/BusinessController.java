@@ -72,6 +72,11 @@ public class BusinessController {
         return Bservice.getActiveBusiness();
     }
 
+    @GetMapping("/countALlBusiness")
+    public long countALlUser(){
+        return Bservice.countAll();
+    }
+
     @GetMapping("/getById/{id}")
     public ResponseEntity<BusinessDTO> getBusinessById(@PathVariable("id") Integer id) {
         try {

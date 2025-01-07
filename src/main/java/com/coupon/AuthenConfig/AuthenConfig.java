@@ -52,12 +52,12 @@ public class AuthenConfig {
                                 "/user/public/**",
                                 "/Business/public/**",
                                 "/package/public/**",
-                                "/purchases/**",
                                 "/Service/public/**",
                                 "/Category/public/**",
                                 "/business_images/**",
                                 "/users_images/**",
                                 "/reviwes/public/**",
+                                "/payment_method/public/**",
                                 "/images/**").permitAll()
                         .requestMatchers("/user/display").hasRole("ADMIN")
                         .anyRequest().authenticated()

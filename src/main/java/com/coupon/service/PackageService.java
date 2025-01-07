@@ -82,6 +82,10 @@ public class PackageService {
         return dtoList;
     }
 
+    public long countAll(){
+        return packageRepo.countByIsDeleteFalse();
+    }
+
     public List<PackageDTO> getByBusinessId(Integer id) {
         // Check if the id is null and handle appropriately
         if (id == null) {

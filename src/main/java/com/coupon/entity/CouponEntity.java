@@ -1,38 +1,40 @@
 package com.coupon.entity;
 
-
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Entity
-@Table(name="Coupon")
+@Table(name = "Coupon")
 public class CouponEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name="expired_date")
+    @Column(name = "expired_date")
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date expired_date;
 
-    @Column(name="confirm",nullable = false)
-    public  Boolean confirm = true;
+    @Column(name = "confirm", nullable = false)
+    private Boolean confirm = true;
 
-    @Column(name="used_status",nullable = false)
+    @Column(name = "used_status", nullable = false)
     private Boolean status = true;
 
-    @Column(name="transfer_status",nullable = false)
-    public  Boolean transfer_status = true;
+    @Column(name = "transfer_status", nullable = false)
+    private Boolean transfer_status = true;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id",nullable = true)
+    @JoinColumn(name = "purchase_id", nullable = false)
     private PurchaseEntity purchase;
 
     @ManyToOne
-    @JoinColumn(name = "package_id",nullable = true)
+    @JoinColumn(name = "package_id", nullable = false)
     private PackageEntity packageEntity;
+
+    @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private QREntity qr;
 
     public Integer getId() {
         return id;
@@ -88,5 +90,16 @@ public class CouponEntity {
 
     public void setPackageEntity(PackageEntity packageEntity) {
         this.packageEntity = packageEntity;
+    }
+
+    public QREntity getQr() {
+        return qr;
+    }
+
+    public void setQr(QREntity qr) {
+        this.qr = qr;
+        if (qr != null) {
+            qr.setCoupon(this);
+        }
     }
 }
