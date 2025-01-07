@@ -142,6 +142,9 @@ public class BusinessService {
         return dtoList;
     }
 
+    public long countAll(){
+        return Brepo.countByIsDeleteFalse();
+    }
 
     public BusinessDTO updateBusinessById(Integer id, BusinessDTO dto) {
         // Fetch the existing BusinessEntity by ID

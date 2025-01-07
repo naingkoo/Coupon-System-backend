@@ -3,7 +3,9 @@ package com.coupon.controller;
 import com.coupon.entity.BusinessEntity;
 import com.coupon.model.BusinessDTO;
 import com.coupon.model.PackageDTO;
+import com.coupon.model.ReviewDTO;
 import com.coupon.service.BusinessService;
+import com.coupon.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,6 +70,11 @@ public class BusinessController {
     @GetMapping("public/list")
     public List<BusinessDTO> getAllBusiness() {
         return Bservice.getActiveBusiness();
+    }
+
+    @GetMapping("/countALlBusiness")
+    public long countALlUser(){
+        return Bservice.countAll();
     }
 
     @GetMapping("/getById/{id}")

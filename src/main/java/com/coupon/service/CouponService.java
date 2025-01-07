@@ -1,37 +1,63 @@
 package com.coupon.service;
 
-import com.coupon.entity.CategoryEntity;
 import com.coupon.entity.CouponEntity;
-import com.coupon.model.CategoryDTO;
 import com.coupon.model.CouponDTO;
+import com.coupon.entity.QREntity;
+
 import com.coupon.reposistory.CouponRepository;
+import com.coupon.reposistory.QRRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.security.SecureRandom;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CouponService {
 
     @Autowired
-    private CouponRepository couponRepo;
+    private CouponRepository couponRepository;
 
-//    public CouponDTO saveCoupon(CouponDTO dto){
-//        CouponEntity entity = new CouponEntity();
-//        entity.setCode(dto.getCode());
-//        entity.setExpired_date(dto.getExpired_date());
-//
-//        entity = couponRepo.save(entity);
-//
-//
-//        System.out.println("Coupon Code :  "+entity.getCode());
-//        dto.setId(entity.getId());
-//        dto.setCode(entity.getCode());
-//        dto.setExpired_date(entity.getExpired_date());
-//
-//        return dto;
-//    }
+    @Autowired
+    private QRRepository qrRepository;
+
+    @Transactional
+    public void confirmPurchaseAndGenerateQR(Integer purchaseId) {
+        // Retrieve all coupons by purchase ID
+        List<CouponEntity> coupons = couponRepository.findByPurchaseId(purchaseId);
+
+        if (coupons.isEmpty()) {
+            throw new IllegalArgumentException("No coupons found for the given purchase ID.");
+        }
+
+        // Update confirm status for all coupons
+        coupons.forEach(coupon -> coupon.setConfirm(false));
+        couponRepository.saveAll(coupons);
+
+        // Generate QR codes for each coupon and save to QR table
+        List<QREntity> qrEntities = coupons.stream().map(coupon -> {
+            QREntity qr = new QREntity();
+            qr.setCode(generateRandomCode(50)); // Generate random 50-character code
+            qr.setCoupon(coupon);
+            return qr;
+        }).collect(Collectors.toList());
+
+        qrRepository.saveAll(qrEntities);
+    }
+
+    private String generateRandomCode(int length) {
+        final String CHAR_POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:'\",.<>?/~";
+        StringBuilder code = new StringBuilder(length);
+        SecureRandom random = new SecureRandom();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CHAR_POOL.length());
+            code.append(CHAR_POOL.charAt(index));
+        }
+        return code.toString();
+    }
 
     public List<CouponDTO> showCouponbyUserId(Integer userId) {
 
@@ -56,5 +82,10 @@ public class CouponService {
         return dtoList;
     }
 
-
 }
+
+
+
+
+
+

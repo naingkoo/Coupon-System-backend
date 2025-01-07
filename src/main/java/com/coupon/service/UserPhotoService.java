@@ -47,6 +47,7 @@ public class UserPhotoService {
         }
 
         // Save the entity (either update the existing one or insert a new one)
+
         UserPhotoEntity savedEntity = userPhotoRepository.save(userPhotoEntity);
 
         // Map back to DTO

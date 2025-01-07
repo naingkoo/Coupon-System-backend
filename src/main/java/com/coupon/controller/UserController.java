@@ -65,7 +65,7 @@ private JwtService jwtService;
                 image.transferTo(file);
 
                 UserPhotoDTO userPhotoDTO = new UserPhotoDTO();
-                userPhotoDTO.setName("/users_images/" + fileName);
+                userPhotoDTO.setName("http://localhost:8080/users_images/" + fileName);
                 userPhotoDTO.setUser_id(userId);
 
                 UserPhotoDTO savedUserPhoto = userPhotoService.saveUserPhoto(userPhotoDTO);
@@ -87,6 +87,11 @@ private JwtService jwtService;
     @GetMapping("public/list")
     public List<UserDTO> getAllUsers() {
         return userService.getAllUser();
+    }
+
+    @GetMapping("/countALlUser")
+    public long countALlUser(){
+        return userService.countAll();
     }
 
     @GetMapping("/public/getById/{id}")

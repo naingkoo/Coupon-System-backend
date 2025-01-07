@@ -32,6 +32,9 @@ public class UserEntity {
     @Column(length = 20)
     private String role;
 
+    @Column(name="is_delete", columnDefinition = "boolean default false")
+    private boolean isdelete;
+
     @Column(name = "register_date")
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDate registerDate;
@@ -90,6 +93,14 @@ public class UserEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isIsdelete() {
+        return isdelete;
+    }
+
+    public void setIsdelete(boolean isdelete) {
+        this.isdelete = isdelete;
     }
 
     public LocalDate getRegisterDate() {

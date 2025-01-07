@@ -40,6 +40,11 @@ public class PackageController {
         return packageService.getAllpackage();
     }
 
+    @GetMapping("/countALlPackages")
+    public long countALlUser(){
+        return packageService.countAll();
+    }
+
     @GetMapping("/find/{id}")
     public PackageDTO findById(@PathVariable("id") Integer id){
         return packageService.findById(id);

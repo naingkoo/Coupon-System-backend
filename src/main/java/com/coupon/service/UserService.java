@@ -70,28 +70,41 @@ public class UserService {
     }
 
     public List<UserDTO> getAllUser() {
-        // Fetch all ReviewEntities from the database
+        // Fetch all UserEntities from the database
         List<UserEntity> users = userRepo.findAll();
 
-        // Create a list to store the mapped ReviewDTOs
+        // Create a list to store the mapped UserDTOs
         List<UserDTO> dtoList = new ArrayList<>();
 
-        // Loop through each ReviewEntity and map it to a ReviewDTO
+        // Loop through each UserEntity and map it to a UserDTO
         for (UserEntity entity : users) {
             UserDTO dto = new UserDTO();
-            dto.setId(entity.getId()); // Mapping ID
-            dto.setName(entity.getName()); // Mapping Rating
-            dto.setEmail(entity.getEmail()); // Mapping Message
-            dto.setPhone(entity.getPhone()); // Mapping Review Date
+            dto.setId(entity.getId());
+            dto.setName(entity.getName());
+            dto.setEmail(entity.getEmail());
+            dto.setPhone(entity.getPhone());
             dto.setRegister_date(entity.getRegisterDate());
             dto.setRole(entity.getRole());
 
+            // Fetch the user photo by user ID
+            Optional<UserPhotoEntity> userPhotoOptional = userPhotoRepo.findByUserId(entity.getId());
+            if (userPhotoOptional.isPresent()) {
+                String photoName = userPhotoOptional.get().getName();
+                dto.setPhoto(photoName); // Assuming 'getName()' returns the photo file name
+            } else {
+                dto.setPhoto(null); // No photo available
+            }
+            // Add the UserDTO to the list
             dtoList.add(dto);
         }
-
-        // Return the list of ReviewDTOs
+        // Return the list of UserDTOs
         return dtoList;
     }
+
+    public long countAll(){
+        return userRepo.countByIsdeleteFalse();
+    }
+
 
     public UserDTO getUserById(Integer userId) {
         Optional<UserEntity> userOptional = userRepo.findById(userId);

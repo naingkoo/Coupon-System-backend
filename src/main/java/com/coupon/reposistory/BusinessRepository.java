@@ -20,4 +20,6 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
 
     @Query("SELECT b FROM BusinessEntity b WHERE b.isDelete = false")
     List<BusinessEntity> findAllActiveBusinesses();
+
+    long countByIsDeleteFalse();
 }

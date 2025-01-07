@@ -7,15 +7,14 @@ public class CouponDTO {
 
     private Integer id;
     private Date expired_date;
-
     public  Boolean confirm;
-
     private Boolean status;
-    private   Boolean transfer_status;
+    private Boolean transfer_status;
     private Integer purchase_id;
     private Integer package_id;
     private String packageName;
     private String image;
+    private String QR;
 
     public Integer getId() {
         return id;
@@ -87,5 +86,13 @@ public class CouponDTO {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getQR() {
+        return QR;
+    }
+
+    public void setQR(String QR) {
+        this.QR = QR;
     }
 }

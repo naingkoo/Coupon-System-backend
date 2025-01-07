@@ -35,7 +35,14 @@ public class ReviewController {
     }
 
     @GetMapping("/business/{businessId}")
-    public List<ReviewDTO> showAllReviewsByBusinessId(@PathVariable("businessId") Integer businessId) {
-        return reviewService.showAllReviewsByBusinessId(businessId);
+    public ResponseEntity<List<ReviewDTO>> getshowAllReviewsByBusinessId(@PathVariable Integer businessId) {
+        List<ReviewDTO> reviews = reviewService.getReviewByBusinessId(businessId);
+
+        // Check if the reviews are empty
+        if (reviews.isEmpty()) {
+            return ResponseEntity.noContent().build(); // No reviews found
+        }
+
+        return ResponseEntity.ok(reviews); // Return the reviews
     }
 }
