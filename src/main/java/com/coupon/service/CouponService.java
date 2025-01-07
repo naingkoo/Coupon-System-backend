@@ -33,12 +33,13 @@ public class CouponService {
 //        return dto;
 //    }
 
-    public List<CouponDTO> showAllCoupon() {
+    public List<CouponDTO> showCouponbyUserId(Integer userId) {
 
-        List<CouponEntity> coupon = couponRepo.findAll();
+        List<CouponEntity> coupon = couponRepo.findCouponsByUserId(userId);
 
         List<CouponDTO> dtoList = new ArrayList<>();
         for(CouponEntity entity: coupon) {
+
             if (entity.getTransfer_status() == true && entity.getConfirm() == false) {                CouponDTO dto = new CouponDTO();
                 dto.setId(entity.getId());
                 dto.setExpired_date(entity.getExpired_date());
@@ -46,6 +47,7 @@ public class CouponService {
                     dto.setPackageName(entity.getPackageEntity().getName());
                     dto.setImage(entity.getPackageEntity().getImage());
                 }
+
 
                 System.out.println("packageName: " + dto.getPackageName());
                 dtoList.add(dto);

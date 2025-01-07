@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Integer> {
     List<PurchaseEntity> findAll();
+
+
 }

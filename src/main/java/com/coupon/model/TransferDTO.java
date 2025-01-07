@@ -5,18 +5,17 @@ import java.util.Date;
 public class TransferDTO {
 
     private Integer id;
-
     private Date transfer_date;
-
     private Boolean status;
-
     private Integer sender_id;
-
     private Integer coupon_id;
-
     private Integer receiver_id;
-
     private String receiverEmail;
+    private String receiverName;
+    private String senderName;
+    private String PackageName;
+    private String image;
+    private Date expired_date;
 
     public Integer getId() {
         return id;
@@ -72,5 +71,45 @@ public class TransferDTO {
 
     public void setReceiverEmail(String receiverEmail) {
         this.receiverEmail = receiverEmail;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public String getPackageName() {
+        return PackageName;
+    }
+
+    public void setPackageName(String packageName) {
+        PackageName = packageName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Date getExpired_date() {
+        return expired_date;
+    }
+
+    public void setExpired_date(Date expired_date) {
+        this.expired_date = expired_date;
     }
 }

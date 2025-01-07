@@ -4,6 +4,7 @@ import com.coupon.model.CategoryDTO;
 import com.coupon.model.CouponDTO;
 import com.coupon.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,14 @@ public class CouponController {
 //
 //    }
 
-    @GetMapping("/list")
-    public List<CouponDTO> shwoAllCoupon() {
-        return copuonService.showAllCoupon();
+    @GetMapping("/list/{userId}")
+    public ResponseEntity<List<CouponDTO>> shwoAllCoupon(@PathVariable Integer userId) {
+        System.out.println("userId" + userId);
+        List<CouponDTO> coupons = copuonService.showCouponbyUserId(userId);
+
+        if(coupons.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(coupons);
     }
 }
