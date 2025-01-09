@@ -72,6 +72,11 @@ public class BusinessController {
         return Bservice.getActiveBusiness();
     }
 
+    @GetMapping("public/listByUserId/{userId}")
+    public List<BusinessDTO> getAllBusinessByUserId(@PathVariable("userId") Integer userId) {
+        return Bservice.getActiveBusinessByUserId(userId);
+    }
+
     @GetMapping("/countALlBusiness")
     public long countALlUser(){
         return Bservice.countAll();

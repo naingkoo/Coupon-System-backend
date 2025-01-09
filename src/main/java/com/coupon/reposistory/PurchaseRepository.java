@@ -10,7 +10,9 @@ import java.util.List;
 
 @Repository
 public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Integer> {
-    List<PurchaseEntity> findAll();
 
+    @Query("SELECT p FROM PurchaseEntity p WHERE p.confirm = true")
+    List<PurchaseEntity> findConfirmedPurchases();
 
+    List<PurchaseEntity> findByUserId(Integer user_id);
 }

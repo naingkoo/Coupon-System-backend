@@ -1,5 +1,6 @@
 package com.coupon.controller;
 
+import com.coupon.entity.PackageEntity;
 import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.BusinessRepository;
 import com.coupon.reposistory.PackageRepository;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/package")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 public class PackageController {
 
     @Autowired
@@ -36,25 +37,44 @@ public class PackageController {
     }
 
     @GetMapping("/public/list")
-    public List<PackageDTO> getAll(){
-        return packageService.getAllpackage();
-    }
-
-    @GetMapping("/countALlPackages")
-    public long countALlUser(){
-        return packageService.countAll();
+    public ResponseEntity<List<PackageDTO>> getAll() {
+        List<PackageDTO> packageList = packageService.getAllpackage();
+        if (packageList.isEmpty()) {
+            throw new RuntimeException("No packages found");
+        }
+        return ResponseEntity.ok(packageList);
     }
 
     @GetMapping("/find/{id}")
-    public PackageDTO findById(@PathVariable("id") Integer id){
-        return packageService.findById(id);
+    public ResponseEntity<PackageDTO> findById(@PathVariable("id") Integer id) {
+        PackageEntity packageEntity = packageRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Package with ID " + id + " not found"));
+
+        // Map PackageEntity to PackageDTO
+        PackageDTO dto = mapper.map(packageEntity, PackageDTO.class);
+
+        // Manually set the businessId in the DTO (assuming business is not null)
+        if (packageEntity.getBusiness() != null) {
+            dto.setBusiness_id(packageEntity.getBusiness().getId());
+        }
+
+        return ResponseEntity.ok(dto);
     }
+
 
     @GetMapping("/findByBusinessId/{id}")
     public List<PackageDTO> findByBusinessId(@PathVariable("id") Integer id) {
         System.out.println(id);
         // Fetch the list of packages based on the business ID from the service
         return packageService.getByBusinessId(id);
+    }
+
+    @GetMapping("/findByBusinessName/{businessName}")
+    public List<PackageDTO> findByBusinessName(@PathVariable("businessName") String businessName) {
+
+        System.out.println(businessName);
+        // Fetch the list of packages based on the business ID from the service
+        return packageService.getPackagesByBusinessName(businessName);
     }
 
     @PostMapping("/save")
@@ -86,45 +106,47 @@ public class PackageController {
         }
     }
 
-
     @PutMapping("/update/{id}")
     public ResponseEntity<PackageDTO> updatePackage(
             @PathVariable("id") Integer id,
-            @RequestPart PackageDTO packageDTO,
-            @RequestPart MultipartFile image) {
+            @RequestPart("packageDTO") PackageDTO packageDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
-            PackageDTO updatePackage=packageService.updateById(id,packageDTO);
-
-            if (!image.isEmpty()) {
+            if (image != null && !image.isEmpty()) {
                 String uploadDir = new File("src/main/resources/static/images").getAbsolutePath();
                 File directory = new File(uploadDir);
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
-
                 String fileName = image.getOriginalFilename();
                 String filePath = uploadDir + File.separator + fileName;
                 File file = new File(filePath);
                 image.transferTo(file);
 
-                updatePackage.setImage(fileName);
+                packageDTO.setImage("/images/"+fileName);
             }
 
-            PackageDTO savedPackage = packageService.savePackage(updatePackage);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedPackage);
-
-        } catch (IOException e) {
+            PackageDTO updatedPackage = packageService.updateById(id, packageDTO);
+            return ResponseEntity.ok(updatedPackage);
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> softDeletePackage(@PathVariable Integer id) {
+        if (!packageRepo.existsById(id)) {
+            throw new RuntimeException("Package with ID " + id + " not found");
+        }
+
         packageService.softDeletePackage(id);
         return ResponseEntity.ok("Package with ID " + id + " was successfully soft deleted.");
     }
 
-}
+    @GetMapping("/countALlPackages")
+    public long countALlUser(){
+        return packageService.countAll();
+    }
 
+}

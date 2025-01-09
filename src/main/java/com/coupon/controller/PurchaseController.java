@@ -35,5 +35,15 @@ public class PurchaseController {
     public List<PurchaseDTO> getAllPurchases() {
         return purchaseService.getAllPurchasesWithUserDetails();
     }
+
+    @GetMapping("/public/list/{user_id}")
+    public ResponseEntity<List<PurchaseDTO>> getPurchasesByUserId(@PathVariable Integer user_id) {
+        List<PurchaseDTO> purchases = purchaseService.getPurchasesByUserId(user_id);
+
+        if(purchases.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(purchases);
+    }
 }
 

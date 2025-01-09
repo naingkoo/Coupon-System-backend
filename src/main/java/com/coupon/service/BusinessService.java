@@ -142,6 +142,53 @@ public class BusinessService {
         return dtoList;
     }
 
+    public List<BusinessDTO> getActiveBusinessByUserId(Integer userId) {
+        List<BusinessEntity> business = Brepo.findAllActiveBusinessesByUserId(userId);
+
+        List<BusinessDTO> dtoList = new ArrayList<>();
+        for (BusinessEntity entity : business) {
+            BusinessDTO dto = new BusinessDTO();
+            dto.setId(entity.getId());
+            dto.setName(entity.getName());
+            dto.setPhone(entity.getPhone());
+            dto.setEmail(entity.getEmail());
+            dto.setLatitude(entity.getLatitude());
+            dto.setLongitude(entity.getLongitude());
+            dto.setAddress(entity.getAddress());
+            dto.setCreated_date(entity.getCreated_date());
+            dto.setImage(entity.getImage());
+
+            List<Integer> categoryIds = BCrepo.findByBusiness(entity).stream()
+                    .map(businessCategory -> businessCategory.getCategory().getId())
+                    .collect(Collectors.toList());
+
+            List<String> categoryName = categoryIds.stream()
+                    .map(categoryId -> {
+                        CategoryEntity category = Crepo.findById(categoryId).orElse(null);
+                        return category != null ? category.getName() : null;
+                    })
+                    .collect(Collectors.toList());
+            dto.setCategoryName(categoryName);
+
+
+            List<Integer> serviceIds = BSrepo.findByBusiness(entity).stream()
+                    .map(businessService -> businessService.getService().getId())
+                    .collect(Collectors.toList());
+
+            List<String> serviceName = serviceIds.stream()
+                    .map(serviceId -> {
+                        ServiceEntity service = Srepo.findById(serviceId).orElse(null);
+                        return service != null ? service.getName() : null;
+                    })
+                    .collect(Collectors.toList());
+            dto.setServiceName(serviceName);
+
+
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
     public long countAll(){
         return Brepo.countByIsDeleteFalse();
     }

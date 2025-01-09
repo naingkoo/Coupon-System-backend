@@ -83,7 +83,7 @@ public class PurchaseService {
 
     public List<PurchaseDTO> getAllPurchasesWithUserDetails() {
         List<PurchaseDTO> purchaseDTOs = new ArrayList<>();
-        List<PurchaseEntity> purchases = purchaseRepository.findAll();
+        List<PurchaseEntity> purchases = purchaseRepository.findConfirmedPurchases();
 
         for (PurchaseEntity purchase : purchases) {
             PurchaseDTO dto = new PurchaseDTO();
@@ -101,6 +101,25 @@ public class PurchaseService {
             // Get the first photo for the user
             Optional<UserPhotoEntity> userPhoto = userPhotoRepository.findPhotosByUserId(user.getId()).stream().findFirst();
             dto.setUser_photo(userPhoto.map(UserPhotoEntity::getName).orElse(null));
+
+            purchaseDTOs.add(dto);
+        }
+
+        return purchaseDTOs;
+    }
+
+    public List<PurchaseDTO> getPurchasesByUserId(Integer user_id) {
+        List<PurchaseDTO> purchaseDTOs = new ArrayList<>();
+        List<PurchaseEntity> purchases = purchaseRepository.findByUserId(user_id);
+
+        for (PurchaseEntity purchase : purchases) {
+            PurchaseDTO dto = new PurchaseDTO();
+            dto.setId(purchase.getId());
+            dto.setTotal_amount(purchase.getTotal_amount());
+            dto.setTotal_quantity(purchase.getTotal_quantity());
+            dto.setPayment_type(purchase.getPayment_type());
+            dto.setTransaction_id(purchase.getTransaction_id());
+            dto.setPurchase_date(purchase.getPurchase_date());
 
             purchaseDTOs.add(dto);
         }

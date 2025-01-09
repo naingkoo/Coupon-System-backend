@@ -46,7 +46,7 @@ public class TransferService {
                 .orElseThrow(() ->  new RuntimeException("Receiver user not found with email: " + receiverEmail));
         Integer receiverId = receiver.getId();
 
-        if (couponEntity.getStatus() == false) {
+        if (couponEntity.getUsed_status() == false) {
             throw new IllegalStateException("Coupon is already transferred.");
         }
 
@@ -117,6 +117,7 @@ public class TransferService {
                 transferDTO.setPackageName(transferEntity.getCoupon().getPackageEntity().getName());
                 transferDTO.setExpired_date(transferEntity.getCoupon().getPackageEntity().getExpired_date());
                 transferDTO.setImage(transferEntity.getCoupon().getPackageEntity().getImage());
+                transferDTO.setCoupon_id(transferEntity.getCoupon().getId());
             }
 
             UserEntity sender = transferEntity.getUser();

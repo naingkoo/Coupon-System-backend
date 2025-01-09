@@ -27,7 +27,7 @@ public class TransferController {
         }
     }
 
-    @GetMapping("/transferlist/{sender_id}")
+    @GetMapping("/public/transferlist/{sender_id}")
     public ResponseEntity<List<TransferDTO>> showTransferCouponList(@PathVariable("sender_id") Integer sender_id) {
         try {
             List<TransferDTO> transferDTOList = transferService.showTransferCouponList(sender_id);
@@ -38,7 +38,7 @@ public class TransferController {
         }
     }
 
-    @GetMapping("/receivelist/{receiver_id}")
+    @GetMapping("/public/receivelist/{receiver_id}")
     public ResponseEntity<List<TransferDTO>> showCouponByReceiverId(@PathVariable("receiver_id") Integer receiver_id) {
         try {
             List<TransferDTO> transferDTOList = transferService.showCouponByReceiverId(receiver_id);

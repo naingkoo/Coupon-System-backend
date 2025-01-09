@@ -3,6 +3,7 @@ package com.coupon.controller;
 import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.UserEntity;
+import com.coupon.model.PasswordRequest;
 import com.coupon.model.UserDTO;
 import com.coupon.model.UserPhotoDTO;
 import com.coupon.responObject.HttpResponse;
@@ -12,8 +13,6 @@ import com.coupon.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +24,10 @@ import java.util.List;
 //@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
 public class UserController {
-@Autowired
-private JwtService jwtService;
+
+    @Autowired
+    private JwtService jwtService;
+
     @Autowired
     private UserService userService;
 
@@ -36,15 +37,15 @@ private JwtService jwtService;
     @Autowired
     private MyuserDetailService myuserDetailService;
 
-	@GetMapping("/index")
-	public String index() {
-		return "Hello this is index.";
-	}
+    @GetMapping("/index")
+    public String index() {
+        return "Hello this is index.";
+    }
 
     @PostMapping("/addUser")
     public ResponseEntity<UserEntity> addUser(@RequestBody UserEntity user) {
-       user= userService.addUser(user);
-       return new ResponseEntity<>(user, HttpStatus.CREATED);
+        user = userService.addUser(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/uploadPhoto")
@@ -90,7 +91,7 @@ private JwtService jwtService;
     }
 
     @GetMapping("/countALlUser")
-    public long countALlUser(){
+    public long countALlUser() {
         return userService.countAll();
     }
 
@@ -112,30 +113,9 @@ private JwtService jwtService;
         }
     }
 
-    // UserController.java
-//    @PutMapping("/{userId}/change-password")
-//    public ResponseEntity<String> changePassword(
-//            @PathVariable Integer userId,
-//            @RequestBody PasswordChangeRequest passwordChangeRequest) {
-//
-//        boolean isPasswordChanged = userService.changePassword(
-//                userId,
-//                passwordChangeRequest.getCurrentPassword(),
-//                passwordChangeRequest.getNewPassword()
-//        );
-//
-//        if (isPasswordChanged) {
-//            return ResponseEntity.ok("Password changed successfully.");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid current password or other error.");
-//        }
-//    }
-
-
-
-    @PutMapping("/{userId}/change-password")
+    @PutMapping("/change-password/{userId}")
     public ResponseEntity<String> changePassword(@PathVariable Integer userId,
-                                                 @RequestBody ChangePasswordRequest.PasswordChangeRequest passwordChangeRequest) {
+                                                 @RequestBody PasswordRequest passwordChangeRequest) {
         // Logic for changing the password
         boolean success = userService.changePassword(userId, passwordChangeRequest.getCurrentPassword(),
                 passwordChangeRequest.getNewPassword());
@@ -145,4 +125,5 @@ private JwtService jwtService;
             return ResponseEntity.badRequest().body("Error changing password");
         }
     }
+
 }

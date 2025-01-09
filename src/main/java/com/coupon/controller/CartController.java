@@ -43,20 +43,21 @@ public class CartController {
     }
 
     @PutMapping("/increase/{cartId}")
-    public ResponseEntity<CartEntity> increaseQuantity(@PathVariable Integer cartId) {
-        CartEntity updatedCart = cartService.increaseQuantity(cartId);
-        if (updatedCart != null) {
-            return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<Void> increaseQuantity(@PathVariable Integer cartId) {
+        boolean success = cartService.increaseQuantity(cartId);
+        if (success) {
+            return ResponseEntity.ok().build(); // Return 200 OK with no body
         }
         return ResponseEntity.notFound().build(); // Return 404 if not found
     }
 
     @PutMapping("/decrease/{cartId}")
-    public ResponseEntity<CartEntity> decreaseQuantity(@PathVariable Integer cartId) {
-        CartEntity updatedCart = cartService.decreaseQuantity(cartId);
-        if (updatedCart != null) {
-            return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<Void> decreaseQuantity(@PathVariable Integer cartId) {
+        boolean success = cartService.decreaseQuantity(cartId);
+        if (success) {
+            return ResponseEntity.ok().build(); // Return 200 OK with no body
         }
         return ResponseEntity.notFound().build(); // Return 404 if not found
     }
+
 }

@@ -16,10 +16,12 @@ import java.util.Optional;
 public interface PackageRepository extends JpaRepository<PackageEntity,Integer>{
 
     // Custom JPQL query to fetch packages by businessId
-    @Query("SELECT p FROM PackageEntity p WHERE p.business.id = :business_id")
+    @Query("SELECT p FROM PackageEntity p WHERE p.business.id = :business_id AND p.isDelete = false")
     List<PackageEntity> findByBusinessId(Integer business_id);
 
-    @Transactional
+    @Query("SELECT p FROM PackageEntity p WHERE p.business.name = :businessName AND p.isDelete = false")
+    List<PackageEntity> findByBusinessName(String businessName);
+
     @Modifying
     @Query("UPDATE PackageEntity p SET p.isDelete = true WHERE p.id = :id")
     void softDeleted(@Param("id")Integer id);

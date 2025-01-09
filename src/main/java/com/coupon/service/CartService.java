@@ -129,40 +129,41 @@ public class CartService {
     }
 
     public CartEntity updateCartItem(Integer cartId, Integer newQuantity) {
-        Optional<CartEntity> optionalCart = cartRepository.findById(cartId);
-        if (optionalCart.isPresent()) {
-            CartEntity cartEntity = optionalCart.get();
-            double packageUnitPrice = getPackageUnitPrice(cartEntity.getPackageEntity().getId()   ); // Retrieve package unit price
-            double newUnitPrice = packageUnitPrice * newQuantity; // Calculate new unit price based on quantity
-            cartEntity.setUnit_quantity(newQuantity); // Update the unit quantity
-            cartEntity.setUnit_price(newUnitPrice); // Update the unit price
-            return cartRepository.save(cartEntity);
+        return cartRepository.findById(cartId).map(cartEntity -> {
+            double packageUnitPrice = getPackageUnitPrice(cartEntity.getPackageEntity().getId()); // Get package unit price
+            double newUnitPrice = packageUnitPrice * newQuantity; // Calculate new unit price
+            cartEntity.setUnit_quantity(newQuantity); // Update unit quantity
+            cartEntity.setUnit_price(newUnitPrice); // Update unit price
+            return cartRepository.save(cartEntity); // Save updated cart
+        }).orElse(null); // Return null if cartId not found
+    }
+
+    public boolean increaseQuantity(Integer cartId) {
+        int currentQuantity = getCurrentQuantity(cartId);
+        if (currentQuantity >= 0) {
+            return updateCartItem(cartId, currentQuantity + 1) != null;
         }
-        return null; // or throw an exception
+        return false; // Return false if cart item does not exist
     }
 
-    public CartEntity increaseQuantity(Integer cartId) {
-        return updateCartItem(cartId, getCurrentQuantity(cartId) + 1); // Increase quantity by 1
-    }
-
-    public CartEntity decreaseQuantity(Integer cartId) {
+    public boolean decreaseQuantity(Integer cartId) {
         int currentQuantity = getCurrentQuantity(cartId);
         if (currentQuantity > 1) {
-            return updateCartItem(cartId, currentQuantity - 1); // Decrease quantity by 1
+            return updateCartItem(cartId, currentQuantity - 1) != null;
         }
-        return null; // or throw an exception if you want to handle it differently
+        return false;
     }
 
     private int getCurrentQuantity(Integer cartId) {
         return cartRepository.findById(cartId)
                 .map(CartEntity::getUnit_quantity)
-                .orElse(0);
+                .orElse(0); // Default to 0 if cartId not found
     }
 
     private double getPackageUnitPrice(Integer packageId) {
-        // Assuming you have a packageRepository to fetch package details
         return packageRepository.findById(packageId)
-                .map(PackageEntity::getUnit_price) // Get the unit price from the package entity
-                .orElse(0.0); // Return 0.0 if not found
+                .map(PackageEntity::getUnit_price)
+                .orElse(0.0);
     }
+
 }

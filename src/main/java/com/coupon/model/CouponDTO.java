@@ -8,11 +8,13 @@ public class CouponDTO {
     private Integer id;
     private Date expired_date;
     public  Boolean confirm;
-    private Boolean status;
+    private Boolean used_status;
     private Boolean transfer_status;
     private Integer purchase_id;
     private Integer package_id;
     private String packageName;
+    private Date purchase_date;
+    private Double unit_price;
     private String image;
     private String QR;
 
@@ -40,12 +42,12 @@ public class CouponDTO {
         this.confirm = confirm;
     }
 
-    public Boolean getStatus() {
-        return status;
+    public Boolean getUsed_status() {
+        return used_status;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setUsed_status(Boolean used_status) {
+        this.used_status = used_status;
     }
 
     public Boolean getTransfer_status() {
@@ -78,6 +80,22 @@ public class CouponDTO {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public Date getPurchase_date() {
+        return purchase_date;
+    }
+
+    public void setPurchase_date(Date purchase_date) {
+        this.purchase_date = purchase_date;
+    }
+
+    public Double getUnit_price() {
+        return unit_price;
+    }
+
+    public void setUnit_price(Double unit_price) {
+        this.unit_price = unit_price;
     }
 
     public String getImage() {

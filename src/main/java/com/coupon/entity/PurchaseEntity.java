@@ -28,6 +28,9 @@ public class PurchaseEntity {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date purchase_date;
 
+    @Column(name = "confirm", nullable = false)
+    private Boolean confirm = true;
+
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private UserEntity user;
@@ -78,6 +81,14 @@ public class PurchaseEntity {
 
     public void setPurchase_date(Date purchase_date) {
         this.purchase_date = purchase_date;
+    }
+
+    public Boolean getConfirm() {
+        return confirm;
+    }
+
+    public void setConfirm(Boolean confirm) {
+        this.confirm = confirm;
     }
 
     public UserEntity getUser() {

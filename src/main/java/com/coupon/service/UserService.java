@@ -27,7 +27,7 @@ public class UserService {
     private final PasswordEncoder encoder;
 
     @Autowired
-   private UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Autowired
     private UserPhotoRepository userPhotoRepo;
@@ -180,13 +180,14 @@ public class UserService {
 
         // Encrypt the new password
         String encryptedPassword = encoder.encode(newPassword);
-
         // Update the user's password
         user.setPassword(encryptedPassword);
         userRepo.save(user);
 
         return true;  // Password changed successfully
     }
+
+
     public UserEntity findByEmail(String email) {
         Optional<UserEntity> user =this.userRepo.findByEmail(email);
         return user.orElse(null);

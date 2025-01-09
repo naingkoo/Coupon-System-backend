@@ -20,7 +20,7 @@ public class CouponEntity {
     private Boolean confirm = true;
 
     @Column(name = "used_status", nullable = false)
-    private Boolean status = true;
+    private Boolean used_status = true;
 
     @Column(name = "transfer_status", nullable = false)
     private Boolean transfer_status = true;
@@ -60,12 +60,12 @@ public class CouponEntity {
         this.confirm = confirm;
     }
 
-    public Boolean getStatus() {
-        return status;
+    public Boolean getUsed_status() {
+        return used_status;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setUsed_status(Boolean used_status) {
+        this.used_status = used_status;
     }
 
     public Boolean getTransfer_status() {

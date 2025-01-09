@@ -21,5 +21,8 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
     @Query("SELECT b FROM BusinessEntity b WHERE b.isDelete = false")
     List<BusinessEntity> findAllActiveBusinesses();
 
+    @Query("SELECT b FROM BusinessEntity b WHERE b.user.id = :userId AND b.isDelete = false")
+    List<BusinessEntity> findAllActiveBusinessesByUserId(@Param("userId") Integer userId);
+
     long countByIsDeleteFalse();
 }

@@ -1,5 +1,6 @@
 package com.coupon.service;
 
+import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.PackageEntity;
 import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.BusinessRepository;
@@ -7,6 +8,8 @@ import com.coupon.reposistory.PackageRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,20 +131,52 @@ public class PackageService {
         return dtoList;
     }
 
-    public PackageDTO updateById(Integer id,PackageDTO dto){
-        PackageDTO resDTO=findById(id);
+    public List<PackageDTO> getPackagesByBusinessName(String businessName) {
+        // Fetch packages by business name
+        List<PackageEntity> packageEntities = packageRepo.findByBusinessName(businessName);
+
+        // Convert package entities to DTOs
+        List<PackageDTO> packageDTOs = new ArrayList<>();
+        for (PackageEntity packageEntity : packageEntities) {
+            PackageDTO dto = new PackageDTO();
+            dto.setId(packageEntity.getId());
+            dto.setName(packageEntity.getName());
+            dto.setUnit_price(packageEntity.getUnit_price());
+            dto.setQuantity(packageEntity.getQuantity());
+            dto.setImage(packageEntity.getImage());
+            dto.setDescription(packageEntity.getDescription());
+            dto.setDeleted(packageEntity.isDelete());
+            dto.setBusiness_id(packageEntity.getBusiness() != null ? packageEntity.getBusiness().getId() : null);
+
+            packageDTOs.add(dto);
+        }
+
+        return packageDTOs;
+    }
+
+    public PackageDTO updateById(Integer id, PackageDTO dto) {
+        PackageDTO resDTO = findById(id);
+
+        BusinessEntity currentBusiness = Brepo.findById(dto.getBusiness_id())
+                .orElseThrow(() -> new RuntimeException("Business with ID " + dto.getBusiness_id() + " not found"));
+
         resDTO.setName(dto.getName());
         resDTO.setUnit_price(dto.getUnit_price());
         resDTO.setQuantity(dto.getQuantity());
         resDTO.setDescription(dto.getDescription());
         resDTO.setCreate_date(dto.getCreate_date());
-        resDTO.setExpired_date(dto.getExpired_date());
+
         if (dto.getImage() != null && !dto.getImage().isEmpty()) {
             resDTO.setImage(dto.getImage());
         }
-        PackageEntity reqDTO=mapper.map(resDTO,PackageEntity.class);
+
+        PackageEntity reqDTO = mapper.map(resDTO, PackageEntity.class);
+        reqDTO.setBusiness(currentBusiness);
+
         packageRepo.save(reqDTO);
-        resDTO=mapper.map(reqDTO,PackageDTO.class);
+
+        resDTO = mapper.map(reqDTO, PackageDTO.class);
+
         return resDTO;
     }
 
@@ -149,10 +184,8 @@ public class PackageService {
         PackageEntity packageEntity = packageRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Package not found"));
 
-        packageEntity.setDelete(true);  // Assuming you have a 'deleted' flag
+        packageEntity.setDelete(true);
         packageRepo.save(packageEntity);
     }
-
-
 }
 
