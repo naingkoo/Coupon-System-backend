@@ -13,6 +13,9 @@ public class CategoryEntity {
     @Column(name="name")
     private String name;
 
+    @Column(name="is_delete", columnDefinition ="boolean default false")
+    private boolean isDelete;
+
     public Integer getId() {
         return id;
     }
@@ -28,4 +31,13 @@ public class CategoryEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
 }

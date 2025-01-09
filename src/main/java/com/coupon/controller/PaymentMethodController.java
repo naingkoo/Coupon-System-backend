@@ -60,4 +60,52 @@ public class PaymentMethodController {
     public List<PaymentMethodDTO> getAllPaymentMethods() {
         return paymentMethodService.getAllPaymentMethods();
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deletePaymentMethod(@PathVariable Integer id) {
+        try {
+            paymentMethodRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<PaymentMethodDTO> updatePaymentMethod(
+            @PathVariable Integer id,
+            @RequestPart PaymentMethodDTO paymentMethodDTO,
+            @RequestPart MultipartFile image) {
+        try {
+            if (!image.isEmpty()) {
+                String uploadDir = new File("src/main/resources/static/QR_images").getAbsolutePath();
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                String fileName = image.getOriginalFilename();
+                String filePath = uploadDir + File.separator + fileName;
+                File file = new File(filePath);
+                image.transferTo(file);
+
+                paymentMethodDTO.setImage("/QR_images/" + fileName);
+            }
+
+            PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Payment Method not found"));
+
+            paymentMethodEntity.setPaymentType(paymentMethodDTO.getPaymentType());
+            paymentMethodEntity.setImage(paymentMethodDTO.getImage());
+
+            paymentMethodRepository.save(paymentMethodEntity);
+
+            return ResponseEntity.ok(paymentMethodDTO);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

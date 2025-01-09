@@ -6,6 +6,7 @@ import com.coupon.model.PackageDTO;
 import com.coupon.model.ReviewDTO;
 import com.coupon.service.BusinessService;
 import com.coupon.service.ReviewService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -102,10 +103,38 @@ public class BusinessController {
     }
 
     @PutMapping("/edit/{id}")
-    public BusinessDTO updatebyId(@PathVariable("id")Integer id,@RequestBody BusinessDTO dto) {
+    public ResponseEntity<BusinessDTO> updateBusiness(
+            @PathVariable Integer id,
+            @RequestPart("dto") String businessJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        try {
+            // Convert JSON string to BusinessDTO
+            ObjectMapper objectMapper = new ObjectMapper();
+            BusinessDTO businessDTO = objectMapper.readValue(businessJson, BusinessDTO.class);
 
-        return Bservice.updateBusinessById(id,dto);
+            if (image != null && !image.isEmpty()) {
+                String uploadDir = new File("src/main/resources/static/business_images").getAbsolutePath();
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                String fileName = image.getOriginalFilename();
+                String filePath = uploadDir + File.separator + fileName;
+                image.transferTo(new File(filePath));
+
+                businessDTO.setImage("/business_images/" + fileName);
+            }
+
+            // Update business
+            BusinessDTO updatedBusiness = Bservice.updateBusinessById(id, businessDTO);
+
+            return new ResponseEntity<>(updatedBusiness, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
 
     @PostMapping("/delete/{id}")

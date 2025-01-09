@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -52,4 +53,31 @@ public class PaymentMethodService {
             return paymentMethodDTO;
         }).collect(Collectors.toList());
     }
+
+    public PaymentMethodDTO updatePaymentMethod(Integer id, PaymentMethodDTO dto) {
+        Optional<PaymentMethodEntity> existingPaymentMethod = paymentMethodRepository.findById(id);
+        if (existingPaymentMethod.isPresent()) {
+            PaymentMethodEntity paymentMethodEntity = existingPaymentMethod.get();
+            paymentMethodEntity.setPaymentType(dto.getPaymentType());
+            paymentMethodEntity.setImage(dto.getImage());
+            PaymentMethodEntity updatedEntity = paymentMethodRepository.save(paymentMethodEntity);
+
+            return convertEntityToDTO(updatedEntity);
+        } else {
+            throw new RuntimeException("Payment method not found with id: " + id);
+        }
+    }
+
+    public void deletePaymentMethod(Integer id) {
+        paymentMethodRepository.deleteById(id);
+    }
+
+    private PaymentMethodDTO convertEntityToDTO(PaymentMethodEntity entity) {
+        PaymentMethodDTO dto = new PaymentMethodDTO();
+        dto.setId(entity.getId());
+        dto.setPaymentType(entity.getPaymentType());
+        dto.setImage(entity.getImage());
+        return dto;
+    }
+
 }

@@ -205,6 +205,7 @@ public class BusinessService {
         business.setLatitude(dto.getLatitude());
         business.setLongitude(dto.getLongitude());
         business.setAddress(dto.getAddress());
+        business.setImage(dto.getImage());
 
         // Optionally update created_date if needed
         // business.setCreated_date(new Date()); // Uncomment if you want to update it on each edit
@@ -258,6 +259,7 @@ public class BusinessService {
                 dto.setLongitude(business.getLongitude());
                 dto.setAddress(business.getAddress());
                 dto.setCreated_date(business.getCreated_date());
+                dto.setImage(business.getImage());
 
                 return dto;
             }

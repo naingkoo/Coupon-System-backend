@@ -6,6 +6,8 @@ public class ServiceDTO {
 
     private String name;
 
+    private boolean isDelete;
+
     public Integer getId() {
         return id;
     }
@@ -20,5 +22,13 @@ public class ServiceDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
     }
 }

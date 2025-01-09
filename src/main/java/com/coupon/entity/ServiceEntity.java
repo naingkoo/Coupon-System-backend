@@ -14,6 +14,9 @@ public class ServiceEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name="is_delete", columnDefinition ="boolean default false")
+    private boolean isDelete;
+
     public Integer getId() {
         return id;
     }
@@ -28,5 +31,13 @@ public class ServiceEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
     }
 }
