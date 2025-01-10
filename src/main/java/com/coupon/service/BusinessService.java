@@ -142,52 +142,57 @@ public class BusinessService {
         return dtoList;
     }
 
-    public List<BusinessDTO> getActiveBusinessByUserId(Integer userId) {
-        List<BusinessEntity> business = Brepo.findAllActiveBusinessesByUserId(userId);
+    public BusinessDTO findByUserId(Integer userId) {
+        // Fetch the BusinessEntity by userId from the repository
+        BusinessEntity business = Brepo.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Business not found with user ID: " + userId));
 
-        List<BusinessDTO> dtoList = new ArrayList<>();
-        for (BusinessEntity entity : business) {
-            BusinessDTO dto = new BusinessDTO();
-            dto.setId(entity.getId());
-            dto.setName(entity.getName());
-            dto.setPhone(entity.getPhone());
-            dto.setEmail(entity.getEmail());
-            dto.setLatitude(entity.getLatitude());
-            dto.setLongitude(entity.getLongitude());
-            dto.setAddress(entity.getAddress());
-            dto.setCreated_date(entity.getCreated_date());
-            dto.setImage(entity.getImage());
+        // Map the BusinessEntity to BusinessDTO
+        BusinessDTO businessDTO = new BusinessDTO();
+        businessDTO.setId(business.getId());
+        businessDTO.setName(business.getName());
+        businessDTO.setPhone(business.getPhone());
+        businessDTO.setEmail(business.getEmail());
+        businessDTO.setLatitude(business.getLatitude());
+        businessDTO.setLongitude(business.getLongitude());
+        businessDTO.setAddress(business.getAddress());
+        businessDTO.setCreated_date(business.getCreated_date());
+        businessDTO.setImage(business.getImage());
 
-            List<Integer> categoryIds = BCrepo.findByBusiness(entity).stream()
-                    .map(businessCategory -> businessCategory.getCategory().getId())
-                    .collect(Collectors.toList());
-
-            List<String> categoryName = categoryIds.stream()
-                    .map(categoryId -> {
-                        CategoryEntity category = Crepo.findById(categoryId).orElse(null);
-                        return category != null ? category.getName() : null;
-                    })
-                    .collect(Collectors.toList());
-            dto.setCategoryName(categoryName);
-
-
-            List<Integer> serviceIds = BSrepo.findByBusiness(entity).stream()
-                    .map(businessService -> businessService.getService().getId())
-                    .collect(Collectors.toList());
-
-            List<String> serviceName = serviceIds.stream()
-                    .map(serviceId -> {
-                        ServiceEntity service = Srepo.findById(serviceId).orElse(null);
-                        return service != null ? service.getName() : null;
-                    })
-                    .collect(Collectors.toList());
-            dto.setServiceName(serviceName);
-
-
-            dtoList.add(dto);
+        // Prefix the image path if necessary
+        if (businessDTO.getImage() != null && !businessDTO.getImage().isEmpty()) {
+            if (!businessDTO.getImage().startsWith("/business_images/")) {
+                businessDTO.setImage("/business_images/" + businessDTO.getImage());
+            }
         }
-        return dtoList;
+
+        // Fetch associated category IDs
+        List<Integer> categoryIds = BCrepo.findCategoryIdsByBusinessId(business.getId());
+        businessDTO.setCategoryId(categoryIds);
+
+        // Fetch associated category names
+        List<String> categoryNames = categoryIds.stream()
+                .map(categoryId -> Crepo.findById(categoryId)
+                        .map(CategoryEntity::getName)
+                        .orElse("Unknown Category"))
+                .collect(Collectors.toList());
+        businessDTO.setCategoryName(categoryNames);
+
+        // Fetch associated service IDs
+        List<Integer> serviceIds = BSrepo.findServiceIdsByBusinessId(business.getId());
+        businessDTO.setServiceId(serviceIds);
+
+        // Fetch associated service names
+        List<String> serviceNames = serviceIds.stream()
+                .map(serviceId -> Srepo.findById(serviceId)
+                        .map(ServiceEntity::getName)
+                        .orElse("Unknown Service"))
+                .collect(Collectors.toList());
+        businessDTO.setServiceName(serviceNames);
+
+        return businessDTO;
     }
+
 
     public long countAll(){
         return Brepo.countByIsDeleteFalse();

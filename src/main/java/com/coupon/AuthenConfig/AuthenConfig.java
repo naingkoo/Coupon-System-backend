@@ -57,6 +57,7 @@ public class AuthenConfig {
                                 "/business_images/**",
                                 "/users_images/**",
                                 "/reviwes/public/**",
+                                "/QR_images/**",
                                 "/payment_method/public/**",
                                 "/images/**").permitAll()
                         .requestMatchers("/user/display").hasRole("ADMIN")

@@ -15,6 +15,8 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
 
     Optional<BusinessEntity> findById(Integer id);
 
+    Optional<BusinessEntity> findByUserId(Integer userId);
+
     @Query("UPDATE BusinessEntity b SET b.isDelete = false WHERE b.id = :id")
     void deleteBusinessById(@Param("id") Integer id);
 

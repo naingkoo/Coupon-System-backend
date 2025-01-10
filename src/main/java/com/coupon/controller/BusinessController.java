@@ -73,9 +73,18 @@ public class BusinessController {
         return Bservice.getActiveBusiness();
     }
 
-    @GetMapping("public/listByUserId/{userId}")
-    public List<BusinessDTO> getAllBusinessByUserId(@PathVariable("userId") Integer userId) {
-        return Bservice.getActiveBusinessByUserId(userId);
+    @GetMapping("/getByUserId/{userId}")
+    public ResponseEntity<BusinessDTO> getBusinessByUserId(@PathVariable("userId") Integer userId) {
+        try {
+            // Fetch the business by ID using the service layer
+            BusinessDTO businessDTO = Bservice.findByUserId(userId);
+
+            // Return the business details if found
+            return ResponseEntity.ok(businessDTO);
+        } catch (IllegalArgumentException e) {
+            // Handle error if business not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @GetMapping("/countALlBusiness")

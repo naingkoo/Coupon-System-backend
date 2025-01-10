@@ -126,4 +126,15 @@ public class UserController {
         }
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestParam("userId") Integer userId,
+            @RequestParam("newPassword") String newPassword) {
+        boolean success = userService.resetPassword(userId, newPassword);
+        if (success) {
+            return ResponseEntity.ok("Password reset successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to reset password.");
+        }
+    }
 }

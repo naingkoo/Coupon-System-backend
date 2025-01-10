@@ -187,6 +187,27 @@ public class UserService {
         return true;  // Password changed successfully
     }
 
+    public boolean resetPassword(Integer userId, String newPassword) {
+        // Find user by ID
+        Optional<UserEntity> userOptional = userRepo.findById(userId);
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+
+            // Encrypt the new password
+            String encryptedPassword = encoder.encode(newPassword);
+
+            // Update the user's password
+            user.setPassword(encryptedPassword);
+
+            // Save the updated user
+            userRepo.save(user);
+
+            return true; // Password changed successfully
+        } else {
+            return false; // User not found
+        }
+    }
+
 
     public UserEntity findByEmail(String email) {
         Optional<UserEntity> user =this.userRepo.findByEmail(email);
