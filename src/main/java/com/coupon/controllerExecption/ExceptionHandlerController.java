@@ -4,6 +4,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -54,4 +56,20 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUnknownException(UsernameNotFoundException ex) {
+        // Create a custom error response object
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        System.out.println("UsernameNotFoundException from metnhod :"+ex);
+        // Return response with 500 Internal Server Error status and the error message
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleUNoResourceFoundException(HttpRequestMethodNotSupportedException ex) {
+        // Create a custom error response object
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        System.out.println("HttpRequestMethodNotSupportedException from metnhod :"+ex);
+        // Return response with 500 Internal Server Error status and the error message
+        return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+    }
 }

@@ -48,7 +48,7 @@ public class AuthenConfig {
                 )
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/user/loginUser", "/user/addUser","user/oauth2/token",
+                        .requestMatchers("/user/loginUser", "/user/addUser","user/otp/**",
                                 "/user/public/**",
                                 "/Business/public/**",
                                 "/package/public/**",

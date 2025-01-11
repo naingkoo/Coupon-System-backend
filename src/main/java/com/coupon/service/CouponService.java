@@ -61,7 +61,7 @@ public class CouponService {
 
     public List<CouponDTO> showCouponbyUserId(Integer userId) {
 
-        List<CouponEntity> coupon = couponRepo.findCouponsByUserId(userId);
+        List<CouponEntity> coupon = couponRepository.findCouponsByUserId(userId);
 
         List<CouponDTO> dtoList = new ArrayList<>();
         for(CouponEntity entity: coupon) {

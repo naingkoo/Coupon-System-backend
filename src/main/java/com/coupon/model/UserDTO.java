@@ -26,6 +26,8 @@ public class UserDTO {
 
     private String token;
 
+    private Integer otp;
+
     public UserDTO() {
 
     }
@@ -112,5 +114,13 @@ public class UserDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Integer getOtp() {
+        return otp;
+    }
+
+    public void setOtp(Integer otp) {
+        this.otp = otp;
     }
 }

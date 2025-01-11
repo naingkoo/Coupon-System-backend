@@ -118,4 +118,5 @@ public class UserEntity {
     public void setUserPhotos(List<UserPhotoEntity> userPhotos) {
         this.userPhotos = userPhotos;
     }
+
 }
