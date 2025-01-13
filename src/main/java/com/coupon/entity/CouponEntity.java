@@ -16,8 +16,9 @@ public class CouponEntity {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date expired_date;
 
+    @Enumerated(EnumType.STRING) // Store as a string in the database
     @Column(name = "confirm", nullable = false)
-    private Boolean confirm = true;
+    private ConfirmStatus confirm = ConfirmStatus.PENDING;
 
     @Column(name = "used_status", nullable = false)
     private Boolean used_status = true;
@@ -52,11 +53,11 @@ public class CouponEntity {
         this.expired_date = expired_date;
     }
 
-    public Boolean getConfirm() {
+    public ConfirmStatus getConfirm() {
         return confirm;
     }
 
-    public void setConfirm(Boolean confirm) {
+    public void setConfirm(ConfirmStatus confirm) {
         this.confirm = confirm;
     }
 

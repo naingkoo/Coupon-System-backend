@@ -6,13 +6,10 @@ import com.coupon.model.PurchaseDTO;
 import com.coupon.reposistory.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PurchaseService {
@@ -31,6 +28,13 @@ public class PurchaseService {
 
     @Autowired
     private UserPhotoRepository userPhotoRepository;
+
+    @Autowired
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public PurchaseService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @Transactional
     public void savePurchaseAndCoupons(PurchaseDTO purchaseDTO, List<PackageDTO> selectedPackages) {
@@ -79,11 +83,14 @@ public class PurchaseService {
                 cartRepository.deleteByUserIdAndPackageId(purchaseDTO.getUser_id(), packageDTO.getId());
             }
         }
+        messagingTemplate.convertAndSend("/topic/purchases","One new payment request! Check this out.");
     }
+
+
 
     public List<PurchaseDTO> getAllPurchasesWithUserDetails() {
         List<PurchaseDTO> purchaseDTOs = new ArrayList<>();
-        List<PurchaseEntity> purchases = purchaseRepository.findConfirmedPurchases();
+        List<PurchaseEntity> purchases = purchaseRepository.findAll();
 
         for (PurchaseEntity purchase : purchases) {
             PurchaseDTO dto = new PurchaseDTO();
@@ -93,6 +100,7 @@ public class PurchaseService {
             dto.setPayment_type(purchase.getPayment_type());
             dto.setTransaction_id(purchase.getTransaction_id());
             dto.setPurchase_date(purchase.getPurchase_date());
+            dto.setConfirm(purchase.getConfirm());
 
             UserEntity user = purchase.getUser();
             dto.setUser_id(user.getId());

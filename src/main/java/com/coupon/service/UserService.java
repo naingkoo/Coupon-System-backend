@@ -211,6 +211,17 @@ public class UserService {
 
     public UserEntity findByEmail(String email) {
         Optional<UserEntity> user =this.userRepo.findByEmail(email);
-        return user.orElse(null);
+        return user.orElseThrow(()->new UsernameNotFoundException("email not found"));
+    }
+
+    public boolean updatePassword(String email, String newPassword) {
+        // Encrypt the new password
+        String encodedPassword = encoder.encode(newPassword);
+
+        // Perform the update on the password field only
+        int rowsAffected = userRepo.updatePasswordByEmail(email, encodedPassword);
+
+        // Return true if at least one row was updated, false otherwise
+        return rowsAffected > 0;
     }
 }

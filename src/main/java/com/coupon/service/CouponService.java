@@ -1,11 +1,10 @@
 package com.coupon.service;
 
-import com.coupon.entity.CouponEntity;
-import com.coupon.entity.PurchaseEntity;
+import com.coupon.entity.*;
 import com.coupon.model.CouponDTO;
-import com.coupon.entity.QREntity;
 
 import com.coupon.reposistory.CouponRepository;
+import com.coupon.reposistory.PackageRepository;
 import com.coupon.reposistory.PurchaseRepository;
 import com.coupon.reposistory.QRRepository;
 import jakarta.servlet.ServletOutputStream;
@@ -19,6 +18,7 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -43,7 +43,17 @@ public class CouponService {
     private PurchaseRepository purchaseRepository;
 
     @Autowired
+    private PackageRepository packageRepository;
+
+    @Autowired
     private QRRepository qrRepository;
+
+    @Autowired
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public CouponService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @Transactional
     public void confirmPurchaseAndGenerateQR(Integer purchaseId) {
@@ -53,6 +63,7 @@ public class CouponService {
                 .orElseThrow(() -> new IllegalArgumentException("No purchase found for the given ID."));
         purchase.setConfirm(false);
         purchaseRepository.save(purchase);
+
         // Retrieve all coupons by purchase ID
         List<CouponEntity> coupons = couponRepository.findByPurchaseId(purchaseId);
 
@@ -61,7 +72,7 @@ public class CouponService {
         }
 
         // Update confirm status for all coupons
-        coupons.forEach(coupon -> coupon.setConfirm(false));
+        coupons.forEach(coupon -> coupon.setConfirm(ConfirmStatus.CONFIRM));
         couponRepository.saveAll(coupons);
 
         // Generate QR codes for each coupon and save to QR table
@@ -73,6 +84,17 @@ public class CouponService {
         }).collect(Collectors.toList());
 
         qrRepository.saveAll(qrEntities);
+
+        // Retrieve the user associated with the purchase
+        UserEntity user = purchase.getUser(); // Assuming the PurchaseEntity has a `getUser()` method to get the user
+
+        if (user == null) {
+            throw new IllegalArgumentException("No user found for the given purchase.");
+        }
+
+        // Send a notification to the specific user who made the purchase
+        messagingTemplate.convertAndSend("/queue/"+user.getId().toString(), "Your coupon is ready to use.");
+        System.out.print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + user.getId());
     }
 
     private String generateRandomCode(int length) {
@@ -97,7 +119,7 @@ public class CouponService {
                 CouponDTO dto = new CouponDTO();
                 dto.setId(entity.getId());
                 dto.setExpired_date(entity.getExpired_date());
-                dto.setConfirm(entity.getConfirm());
+                dto.setConfirm(entity.getConfirm().name());
                 if (entity.getPackageEntity() != null) {
                     dto.setPackageName(entity.getPackageEntity().getName());
                     dto.setImage(entity.getPackageEntity().getImage());
@@ -111,6 +133,35 @@ public class CouponService {
         return dtoList;
     }
 
+    public void declinePurchaseAndRestoreQuantity(Integer purchaseId) {
+
+        // Update confirm status for the purchase entity
+        PurchaseEntity purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new IllegalArgumentException("No purchase found for the given ID."));
+        purchase.setConfirm(false);
+        purchaseRepository.save(purchase);
+
+        // Retrieve all coupons associated with the purchase
+        List<CouponEntity> coupons = couponRepository.findByPurchaseId(purchaseId);
+
+        if (coupons.isEmpty()) {
+            throw new IllegalArgumentException("No coupons found for the given purchase ID.");
+        }
+
+        // Restore coupon quantities in their respective packages
+        coupons.forEach(coupon -> {
+            PackageEntity packageEntity = coupon.getPackageEntity();
+            if (packageEntity != null) {
+                packageEntity.setQuantity(packageEntity.getQuantity() + 1);
+                packageRepository.save(packageEntity); // Update package in the database
+            }
+        });
+
+        // Update confirm status for all coupons to "DECLINE"
+        coupons.forEach(coupon -> coupon.setConfirm(ConfirmStatus.DECLINED));
+        couponRepository.saveAll(coupons);
+    }
+
     public List<CouponDTO> showCouponbyPurchaseId(Integer purchase_id) {
 
         List<CouponEntity> coupon = couponRepository.findByPurchaseId(purchase_id);
@@ -121,6 +172,7 @@ public class CouponService {
             CouponDTO dto = new CouponDTO();
             dto.setId(entity.getId());
             dto.setExpired_date(entity.getExpired_date());
+            dto.setConfirm(entity.getConfirm().name());
             if (entity.getPackageEntity() != null) {
                 dto.setPackageName(entity.getPackageEntity().getName());
                 dto.setUnit_price(entity.getPackageEntity().getUnit_price());
@@ -143,7 +195,7 @@ public class CouponService {
             CouponDTO dto = new CouponDTO();
             dto.setId(coupon.getId());
             dto.setExpired_date(coupon.getExpired_date());
-            dto.setConfirm(coupon.getConfirm());
+            dto.setConfirm(coupon.getConfirm().name());
             dto.setUsed_status(coupon.getUsed_status());
             dto.setTransfer_status(coupon.getTransfer_status());
             dto.setUnit_price(coupon.getPackageEntity().getUnit_price());

@@ -31,12 +31,30 @@ public class CouponController {
     private QRService qrService;
 
     @PostMapping("/accept/{purchaseId}")
-    public ResponseEntity<String> confirmPurchase(@PathVariable Integer purchaseId) {
+    public ResponseEntity<Map<String, String>> confirmPurchase(@PathVariable Integer purchaseId) {
         try {
             couponService.confirmPurchaseAndGenerateQR(purchaseId);
-            return ResponseEntity.ok("Purchase confirmed and QR codes generated successfully.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Purchase confirmed and QR codes generated successfully.");
+            return ResponseEntity.ok(response); // Return as a JSON object
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Error accepting purchase!");
+            return ResponseEntity.badRequest().body(response); // Return as a JSON object
+        }
+    }
+
+    @PostMapping("/decline/{purchaseId}")
+    public ResponseEntity<Map<String, String>> declinePurchase(@PathVariable Integer purchaseId) {
+        try {
+            couponService.declinePurchaseAndRestoreQuantity(purchaseId);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Purchase declined and coupon quantities restored successfully.");
+            return ResponseEntity.ok(response); // Return as a JSON object
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Error declining purchase!");
+            return ResponseEntity.badRequest().body(response); // Return as a JSON object
         }
     }
 

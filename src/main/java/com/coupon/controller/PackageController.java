@@ -148,5 +148,4 @@ public class PackageController {
     public long countALlUser(){
         return packageService.countAll();
     }
-
 }

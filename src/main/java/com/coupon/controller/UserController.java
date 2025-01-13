@@ -1,35 +1,39 @@
 package com.coupon.controller;
-
 import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
+import com.coupon.entity.ForgetPassword;
 import com.coupon.entity.UserEntity;
-import com.coupon.model.PasswordRequest;
 import com.coupon.model.UserDTO;
 import com.coupon.model.UserPhotoDTO;
 import com.coupon.responObject.HttpResponse;
+import com.coupon.service.ForgetPasswordService;
 import com.coupon.service.UserPhotoService;
 import com.coupon.service.UserService;
-
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import com.coupon.model.PasswordRequest;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
 public class UserController {
-
-    @Autowired
-    private JwtService jwtService;
-
+@Autowired
+private JwtService jwtService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ForgetPasswordService forgetPasswordService;
 
     @Autowired
     private UserPhotoService userPhotoService;
@@ -37,15 +41,10 @@ public class UserController {
     @Autowired
     private MyuserDetailService myuserDetailService;
 
-    @GetMapping("/index")
-    public String index() {
-        return "Hello this is index.";
-    }
-
     @PostMapping("/addUser")
     public ResponseEntity<UserEntity> addUser(@RequestBody UserEntity user) {
-        user = userService.addUser(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+       user= userService.addUser(user);
+       return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/uploadPhoto")
@@ -91,7 +90,7 @@ public class UserController {
     }
 
     @GetMapping("/countALlUser")
-    public long countALlUser() {
+    public long countALlUser(){
         return userService.countAll();
     }
 
@@ -137,4 +136,42 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to reset password.");
         }
     }
+
+    @GetMapping("otp/getOTP/{email}")
+    public ResponseEntity<Map<String,Long>> getOtp(@PathVariable String email) throws MessagingException {
+       ForgetPassword forgetPassword= forgetPasswordService.sendOTP(email);
+        long currentTime = System.currentTimeMillis();
+        long expirationTime = forgetPassword.getExpired_date().getTime();
+        long remainingTime = Math.max((expirationTime - currentTime) / 1000, 0);
+        return ResponseEntity.ok(Collections.singletonMap("time",remainingTime));
+    }
+
+    @PostMapping("otp/verify")
+    public ResponseEntity<Map<String,String>> verifyOTP(@RequestBody UserDTO user){
+
+        if(forgetPasswordService.VerifyOTP(user.getOtp(),user.getEmail())){
+            UserEntity userEntity=userService.findByEmail(user.getEmail());
+            user.setEmail(user.getEmail());
+            String token =jwtService.generateToken(userEntity);
+            return ResponseEntity.ok(Collections.singletonMap("token",token));
+        }
+
+        return ResponseEntity.badRequest().body(Collections.singletonMap("message","failed to verify"));
+    }
+
+
+    @PutMapping("otp/forgetpassowrd")
+    public ResponseEntity<Map<String,String>> changePassowrd(@RequestBody UserDTO userDTO){
+       UserDetails userDetails= User.builder()
+               .username(userDTO.getEmail())
+               .password("")
+               .roles("")
+               .build();
+        jwtService.validateToken(userDTO.getToken(),userDetails);
+       if( userService.updatePassword(userDTO.getEmail(),userDTO.getPassword())) {
+           return ResponseEntity.ok(Collections.singletonMap("message", "Succfully changed password "));
+       }
+        return ResponseEntity.badRequest().body(Collections.singletonMap("message", "failed changed password "));
+    }
+
 }

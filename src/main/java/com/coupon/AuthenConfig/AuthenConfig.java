@@ -48,7 +48,7 @@ public class AuthenConfig {
                 )
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/user/loginUser", "/user/addUser","user/oauth2/token",
+                        .requestMatchers("/user/loginUser", "/user/addUser","user/otp/**",
                                 "/user/public/**",
                                 "/Business/public/**",
                                 "/package/public/**",
@@ -58,6 +58,7 @@ public class AuthenConfig {
                                 "/users_images/**",
                                 "/reviwes/public/**",
                                 "/QR_images/**",
+                                "/ws/**",
                                 "/payment_method/public/**",
                                 "/images/**").permitAll()
                         .requestMatchers("/user/display").hasRole("ADMIN")

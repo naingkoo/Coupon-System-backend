@@ -7,7 +7,7 @@ public class CouponDTO {
 
     private Integer id;
     private Date expired_date;
-    public  Boolean confirm;
+    public  String confirm;
     private Boolean used_status;
     private Boolean transfer_status;
     private Integer purchase_id;
@@ -34,11 +34,11 @@ public class CouponDTO {
         this.expired_date = expired_date;
     }
 
-    public Boolean getConfirm() {
+    public String getConfirm() {
         return confirm;
     }
 
-    public void setConfirm(Boolean confirm) {
+    public void setConfirm(String confirm) {
         this.confirm = confirm;
     }
 

@@ -21,7 +21,7 @@ public class PurchaseEntity {
     @Column(name="payment_type")
     private String payment_type;
 
-    @Column(name="transaction_id")
+    @Column(name = "transaction_id", unique = true)
     private String transaction_id;
 
     @Column(name="purchase_date")
