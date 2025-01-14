@@ -11,6 +11,7 @@ import com.coupon.reposistory.PackageRepository;
 import com.coupon.reposistory.TransferRepository;
 import com.coupon.reposistory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,35 +34,50 @@ public class TransferService {
     @Autowired
     private PackageRepository packageRepo;
 
+    @Autowired
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public TransferService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
+
+
     @Transactional
     public TransferDTO transferCoupon(Integer sender_id, String receiverEmail, Integer coupon_id) {
 
+        // Fetch the coupon
         CouponEntity couponEntity = couponRepo.findById(coupon_id)
-                .orElseThrow(() ->  new RuntimeException("Coupon not found with id: " + coupon_id));
+                .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + coupon_id));
 
+        // Fetch the sender
         UserEntity sender = userRepo.findById(sender_id)
                 .orElseThrow(() -> new RuntimeException("Sender user not found with ID: " + sender_id));
 
+        // Fetch the receiver
         UserEntity receiver = userRepo.findByEmail(receiverEmail)
-                .orElseThrow(() ->  new RuntimeException("Receiver user not found with email: " + receiverEmail));
-        Integer receiverId = receiver.getId();
+                .orElseThrow(() -> new RuntimeException("Receiver user not found with email: " + receiverEmail));
 
-        if (couponEntity.getUsed_status() == false) {
-            throw new IllegalStateException("Coupon is already transferred.");
+        // Validate coupon status
+        if (!couponEntity.getUsed_status()) {
+            throw new IllegalStateException("Coupon is already transferred or used.");
         }
 
+        // Update coupon transfer status
         couponEntity.setTransfer_status(false);
         couponRepo.save(couponEntity);
 
+        // Create a new transfer record
         TransferEntity transferEntity = new TransferEntity();
         transferEntity.setUser(sender);
         transferEntity.setCoupon(couponEntity);
-        transferEntity.setReceiver_id(receiverId);
+        transferEntity.setReceiver_id(receiver.getId());
         transferEntity.setTransfer_date(new Date());
         transferEntity.setStatus(true);
 
+        // Save transfer entity
         transferEntity = transferRepo.save(transferEntity);
 
+        // Prepare TransferDTO
         TransferDTO transferDTO = new TransferDTO();
         transferDTO.setId(transferEntity.getId());
         transferDTO.setTransfer_date(transferEntity.getTransfer_date());
@@ -70,8 +86,21 @@ public class TransferService {
         transferDTO.setCoupon_id(transferEntity.getCoupon().getId());
         transferDTO.setReceiver_id(transferEntity.getReceiver_id());
 
+        // Send a notification to the receiver
+        String receiverIdString = receiver.getId().toString();
+        String senderName = sender.getName();
+
+
+        messagingTemplate.convertAndSend(
+                "/queue/" + receiverIdString,
+                "You have received a new coupon from " + senderName
+        );;
+
+        System.out.println("Transfer completed successfully for receiver ID: " + receiverIdString);
+
         return transferDTO;
     }
+
 
     public List<TransferDTO> showTransferCouponList(Integer sender_id) {
 

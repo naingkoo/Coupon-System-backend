@@ -119,6 +119,11 @@ public class CouponController {
             throw new IllegalArgumentException("Invalid file type: " + fileType);
         }
     }
+
+    @GetMapping("/countALlCoupons")
+    public long countALlCoupons(){
+        return couponService.countConfirmedCoupons();
+    }
 }
 
 

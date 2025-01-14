@@ -1,5 +1,6 @@
 package com.coupon.reposistory;
 
+import com.coupon.entity.ConfirmStatus;
 import com.coupon.entity.CouponEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +22,7 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
     @Query("SELECT c FROM CouponEntity c JOIN c.purchase p JOIN p.user u WHERE u.id = :userId")
     List<CouponEntity> findbyUserId(@Param("userId") Integer userId);
+
+    long countByConfirm(ConfirmStatus confirm);
 
 }

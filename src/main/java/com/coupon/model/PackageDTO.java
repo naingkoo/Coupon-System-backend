@@ -15,6 +15,7 @@ public class PackageDTO {
     private boolean deleted;
     private Integer business_id;
     private Integer selected_quantity;
+    private String businessName;
 
     public Integer getId() {
         return id;
@@ -102,5 +103,13 @@ public class PackageDTO {
 
     public void setSelected_quantity(Integer selected_quantity) {
         this.selected_quantity = selected_quantity;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
     }
 }

@@ -224,4 +224,8 @@ public class UserService {
         // Return true if at least one row was updated, false otherwise
         return rowsAffected > 0;
     }
+
+    public List<String> getEmailSuggestions(String query) {
+        return userRepo.findEmailsByQuery("%" + query.toLowerCase() + "%");
+    }
 }

@@ -64,7 +64,6 @@ public class PackageService {
     public List<PackageDTO> getAllpackage() {
         // Fetch all package entities from the repository
         List<PackageEntity> packageEntity = packageRepo.findAllActive();
-
         // Convert the list of PackageEntity to a list of PackageDTO
         List<PackageDTO> dtoList = packageEntity.stream().map(pkg -> {
             // Map the entity to DTO

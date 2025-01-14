@@ -94,6 +94,7 @@ private JwtService jwtService;
         return userService.countAll();
     }
 
+
     @GetMapping("/public/getById/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
         UserDTO userDTO = userService.getUserById(id);
@@ -172,6 +173,11 @@ private JwtService jwtService;
            return ResponseEntity.ok(Collections.singletonMap("message", "Succfully changed password "));
        }
         return ResponseEntity.badRequest().body(Collections.singletonMap("message", "failed changed password "));
+    }
+
+    @GetMapping("/emails")
+    public List<String> getEmailSuggestions(@RequestParam("query") String query) {
+        return userService.getEmailSuggestions(query);
     }
 
 }

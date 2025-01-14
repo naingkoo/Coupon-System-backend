@@ -94,7 +94,6 @@ public class CouponService {
 
         // Send a notification to the specific user who made the purchase
         messagingTemplate.convertAndSend("/queue/"+user.getId().toString(), "Your coupon is ready to use.");
-        System.out.print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + user.getId());
     }
 
     private String generateRandomCode(int length) {
@@ -157,9 +156,14 @@ public class CouponService {
             }
         });
 
+        UserEntity user = purchase.getUser();
+
         // Update confirm status for all coupons to "DECLINE"
         coupons.forEach(coupon -> coupon.setConfirm(ConfirmStatus.DECLINED));
         couponRepository.saveAll(coupons);
+
+        messagingTemplate.convertAndSend("/queue/"+user.getId().toString(), "Your payment is declined!");
+        System.out.print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + user.getId());
     }
 
     public List<CouponDTO> showCouponbyPurchaseId(Integer purchase_id) {
@@ -299,6 +303,9 @@ public class CouponService {
         }
     }
 
+    public long countConfirmedCoupons() {
+        return couponRepository.countByConfirm(ConfirmStatus.CONFIRM);
+    }
 }
 
 

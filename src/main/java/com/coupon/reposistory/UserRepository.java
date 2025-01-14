@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -24,4 +25,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Transactional
     @Query("UPDATE UserEntity u SET u.password = :password WHERE u.email = :email")
     int updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
+
+    @Query("SELECT u.email FROM UserEntity u WHERE LOWER(u.email) LIKE :query")
+    List<String> findEmailsByQuery(String query);
 }
