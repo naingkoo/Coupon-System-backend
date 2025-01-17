@@ -45,6 +45,7 @@ public class PurchaseService {
         purchaseEntity.setPayment_type(purchaseDTO.getPayment_type());
         purchaseEntity.setTransaction_id(purchaseDTO.getTransaction_id());
         purchaseEntity.setPurchase_date(new Date());
+        purchaseEntity.setConfirm(ConfirmStatus.PENDING);
 
         UserEntity user = new UserEntity(); // Assuming UserEntity is fetched by ID
         user.setId(purchaseDTO.getUser_id());
@@ -100,7 +101,7 @@ public class PurchaseService {
             dto.setPayment_type(purchase.getPayment_type());
             dto.setTransaction_id(purchase.getTransaction_id());
             dto.setPurchase_date(purchase.getPurchase_date());
-            dto.setConfirm(purchase.getConfirm());
+            dto.setConfirm(purchase.getConfirm().name());
 
             UserEntity user = purchase.getUser();
             dto.setUser_id(user.getId());
@@ -112,7 +113,6 @@ public class PurchaseService {
 
             purchaseDTOs.add(dto);
         }
-
         return purchaseDTOs;
     }
 
@@ -128,6 +128,7 @@ public class PurchaseService {
             dto.setPayment_type(purchase.getPayment_type());
             dto.setTransaction_id(purchase.getTransaction_id());
             dto.setPurchase_date(purchase.getPurchase_date());
+            dto.setConfirm(purchase.getConfirm().name());
 
             purchaseDTOs.add(dto);
         }

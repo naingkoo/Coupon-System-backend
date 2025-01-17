@@ -16,7 +16,7 @@ public class PurchaseDTO {
 
     private Date purchase_date;
 
-    private Boolean confirm;
+    public  String confirm;
 
     private Integer user_id;
 
@@ -72,11 +72,11 @@ public class PurchaseDTO {
         this.purchase_date = purchase_date;
     }
 
-    public Boolean getConfirm() {
+    public String getConfirm() {
         return confirm;
     }
 
-    public void setConfirm(Boolean confirm) {
+    public void setConfirm(String confirm) {
         this.confirm = confirm;
     }
 

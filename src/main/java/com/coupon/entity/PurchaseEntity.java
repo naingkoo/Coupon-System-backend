@@ -28,8 +28,9 @@ public class PurchaseEntity {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date purchase_date;
 
+    @Enumerated(EnumType.STRING) // Store as a string in the database
     @Column(name = "confirm", nullable = false)
-    private Boolean confirm = true;
+    private ConfirmStatus confirm = ConfirmStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
@@ -83,11 +84,11 @@ public class PurchaseEntity {
         this.purchase_date = purchase_date;
     }
 
-    public Boolean getConfirm() {
+    public ConfirmStatus getConfirm() {
         return confirm;
     }
 
-    public void setConfirm(Boolean confirm) {
+    public void setConfirm(ConfirmStatus confirm) {
         this.confirm = confirm;
     }
 

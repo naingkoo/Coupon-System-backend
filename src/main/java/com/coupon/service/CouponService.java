@@ -61,7 +61,7 @@ public class CouponService {
         // Update confirm status for the purchase entity
         PurchaseEntity purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("No purchase found for the given ID."));
-        purchase.setConfirm(false);
+        purchase.setConfirm(ConfirmStatus.CONFIRM);
         purchaseRepository.save(purchase);
 
         // Retrieve all coupons by purchase ID
@@ -137,7 +137,7 @@ public class CouponService {
         // Update confirm status for the purchase entity
         PurchaseEntity purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("No purchase found for the given ID."));
-        purchase.setConfirm(false);
+        purchase.setConfirm(ConfirmStatus.DECLINED);
         purchaseRepository.save(purchase);
 
         // Retrieve all coupons associated with the purchase
