@@ -148,4 +148,10 @@ public class PackageController {
     public long countALlUser(){
         return packageService.countAll();
     }
+
+
+    @GetMapping("/countPackagesByBusinessId/{businessId}")
+    public long countPackagesByBusinessId(@PathVariable Long businessId) {
+        return packageService.countByBusinessId(businessId);
+    }
 }

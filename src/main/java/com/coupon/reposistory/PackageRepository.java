@@ -30,4 +30,6 @@ public interface PackageRepository extends JpaRepository<PackageEntity,Integer>{
     List<PackageEntity> findAllActive();
 
     long countByIsDeleteFalse();
+
+    long countPackageByBusinessId(Long businessId);
 }

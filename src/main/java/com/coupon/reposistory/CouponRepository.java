@@ -23,6 +23,9 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     @Query("SELECT c FROM CouponEntity c JOIN c.purchase p JOIN p.user u WHERE u.id = :userId")
     List<CouponEntity> findbyUserId(@Param("userId") Integer userId);
 
-    long countByConfirm(ConfirmStatus confirm);
+    Integer countByConfirm(ConfirmStatus confirm);
+
+    @Query("SELECT COUNT(c) FROM CouponEntity c WHERE c.packageEntity.business.id = :businessId")
+    Integer countByConfirmAndBusinessId( @Param("businessId") Integer businessId);
 
 }

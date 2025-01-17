@@ -132,5 +132,11 @@ public class ReviewService {
         }
         return dtoList;
     }
+
+
+    public Integer countReviewsByBusinessId(Integer businessId) {
+        return reviewRepository.countReviewsByBusinessId(businessId);
+    }
+
 }
 

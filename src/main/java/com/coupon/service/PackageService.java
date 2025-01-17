@@ -186,5 +186,9 @@ public class PackageService {
         packageEntity.setDelete(true);
         packageRepo.save(packageEntity);
     }
+
+    public long countByBusinessId(Long businessId) {
+        return packageRepo.countPackageByBusinessId(businessId);
+    }
 }
 

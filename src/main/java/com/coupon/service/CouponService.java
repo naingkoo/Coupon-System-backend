@@ -306,6 +306,10 @@ public class CouponService {
     public long countConfirmedCoupons() {
         return couponRepository.countByConfirm(ConfirmStatus.CONFIRM);
     }
+
+    public Integer countCouponsByConfirmAndBusinessId(Integer businessId) {
+        return couponRepository.countByConfirmAndBusinessId(businessId);
+    }
 }
 
 
