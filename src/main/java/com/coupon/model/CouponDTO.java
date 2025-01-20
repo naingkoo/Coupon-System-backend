@@ -17,6 +17,7 @@ public class CouponDTO {
     private Double unit_price;
     private String image;
     private String QR;
+    private String description;
 
     public Integer getId() {
         return id;
@@ -112,5 +113,13 @@ public class CouponDTO {
 
     public void setQR(String QR) {
         this.QR = QR;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

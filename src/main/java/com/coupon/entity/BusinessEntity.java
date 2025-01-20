@@ -40,7 +40,7 @@ public class BusinessEntity {
     @Column(name="is_delete", columnDefinition ="boolean default false")
     private boolean isDelete;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
 

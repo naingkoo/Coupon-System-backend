@@ -1,12 +1,15 @@
 package com.coupon.controller;
 
+import com.coupon.entity.CouponEntity;
 import com.coupon.model.CategoryDTO;
 import com.coupon.model.CouponDTO;
+import com.coupon.model.CouponDTO1;
 import com.coupon.model.QRDTO;
 import com.coupon.service.CouponService;
 import com.coupon.service.QRService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -124,6 +129,26 @@ public class CouponController {
     public long countALlCoupons(){
         return couponService.countConfirmedCoupons();
     }
+
+    @PostMapping("/searchCoupon")
+    public ResponseEntity<CouponDTO> useCoupon(@RequestBody HashMap<String,String> coupon) throws IOException {
+        Integer bussinessID= Integer.valueOf(coupon.get("businessId"));
+        String couponcode=coupon.get("couponCode");
+
+        return ResponseEntity.ok(couponService.searchCoupon(bussinessID,couponcode));
+    }
+
+    @PutMapping("comfrimedTouse")
+    public ResponseEntity<Map<String,String>> useCoupon(@RequestParam("couponId") Integer couponId) throws IOException {
+        System.out.println("dhgalksdjglkajsdlk" + couponId);
+        if(couponService.useCoupon(couponId)){
+
+        return ResponseEntity.ok(Collections.singletonMap("message","your coupon is sussfully used"));
+    }
+
+        return ResponseEntity.badRequest().body(Collections.singletonMap("message","failed to use"));
+    }
+
 }
 
 

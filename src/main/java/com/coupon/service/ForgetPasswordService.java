@@ -59,14 +59,13 @@ public class ForgetPasswordService {
         forgetPassword.setOtp(generateOTP());
         forgetPassword.setExpired_date(new Date(System.currentTimeMillis() + 1000 * 300));
         forgetPassword.setUser(userEntity);
-        forgetPasswordRepository.save(forgetPassword);
         String messageBody = String.format(
                 "<html>" +
                         "<body>" +
                         "<p>Dear %s,</p>" +
                         "<p>We have received a request to reset your password. Your One-Time Password (OTP) for resetting your password is:</p>" +
                         "<h2 style='color: #2E86C1;'>%s</h2>" +
-                        "<p>Please note that this OTP will expire in 5 minutes. If you did not request a password reset, please ignore this message.</p>" +
+                        "<p>Please note that this OTP will expire in %s . If you did not request a password reset, please ignore this message.</p>" +
                         "<p>To reset your password, click the button below:</p>" +
                         "<a href='' style='text-decoration: none;'>" +
                         "<button style='background-color: #2E86C1; color: white; padding: 10px 20px; border: none; border-radius: 5px;'>Reset Password</button>" +
@@ -77,11 +76,13 @@ public class ForgetPasswordService {
                 userEntity.getName(),
                 forgetPassword.getOtp(),
                 userEntity.getEmail(),
-                forgetPassword.getOtp()
+                forgetPassword.getOtp(),
+                forgetPassword.getExpired_date().getTime()
         );
 
         MessageObject message = new MessageObject(userEntity.getEmail(), "Forget Password OTP From Coupon", messageBody);
         emailService.sendMail(message);
+        forgetPasswordRepository.save(forgetPassword);
         return forgetPassword;
     }
 

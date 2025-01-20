@@ -24,6 +24,7 @@ public class CouponSaleSystemApplication {
 		return userDTO;
 	}
 
+
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();

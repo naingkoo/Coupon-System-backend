@@ -1,5 +1,6 @@
 package com.coupon.controllerExecption;
 
+import com.coupon.responObject.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,5 +72,14 @@ public class ExceptionHandlerController {
         System.out.println("HttpRequestMethodNotSupportedException from metnhod :"+ex);
         // Return response with 500 Internal Server Error status and the error message
         return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> resourceNotFoundExHandler(ResourceNotFoundException ex) {
+        // Create a custom error response object
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        System.out.println("resourceNotFoundExHandler from metnhod :"+ex);
+        // Return response with 500 Internal Server Error status and the error message
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

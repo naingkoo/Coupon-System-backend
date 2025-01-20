@@ -1,40 +1,23 @@
-package com.coupon.entity;
+package com.coupon.model;
 
+import com.coupon.entity.ConfirmStatus;
+import com.coupon.entity.PackageEntity;
+import com.coupon.entity.PurchaseEntity;
+import com.coupon.entity.QREntity;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
-@Entity
-@Table(name = "Coupon")
-public class CouponEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CouponDTO1 {
     private Integer id;
 
-    @Column(name = "expired_date")
-    @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date expired_date;
-
-    @Enumerated(EnumType.STRING) // Store as a string in the database
-    @Column(name = "confirm", nullable = false)
-    private ConfirmStatus confirm = ConfirmStatus.PENDING;
-
-    @Column(name = "used_status", nullable = false)
+    private ConfirmStatus confirm ;
     private Boolean used_status = true;
-
-    @Column(name = "transfer_status", nullable = false)
     private Boolean transfer_status = true;
-
-    @ManyToOne
-    @JoinColumn(name = "purchase_id", nullable = false)
-    private PurchaseEntity purchase;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "package_id", nullable = false)
-    private PackageEntity packageEntity;
-
-    @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PurchaseDTO purchase;
+    private PackageDTO packageDTO;
     private QREntity qr;
 
     public Integer getId() {
@@ -77,20 +60,20 @@ public class CouponEntity {
         this.transfer_status = transfer_status;
     }
 
-    public PurchaseEntity getPurchase() {
+    public PurchaseDTO getPurchase() {
         return purchase;
     }
 
-    public void setPurchase(PurchaseEntity purchase) {
+    public void setPurchase(PurchaseDTO purchase) {
         this.purchase = purchase;
     }
 
-    public PackageEntity getPackageEntity() {
-        return packageEntity;
+    public PackageDTO getPackageDTO() {
+        return packageDTO;
     }
 
-    public void setPackageEntity(PackageEntity packageEntity) {
-        this.packageEntity = packageEntity;
+    public void setPackageDTO(PackageDTO packageDTO) {
+        this.packageDTO = packageDTO;
     }
 
     public QREntity getQr() {
@@ -99,8 +82,5 @@ public class CouponEntity {
 
     public void setQr(QREntity qr) {
         this.qr = qr;
-        if (qr != null) {
-            qr.setCoupon(this);
-        }
     }
 }

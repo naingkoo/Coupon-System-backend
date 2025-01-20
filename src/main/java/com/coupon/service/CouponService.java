@@ -7,6 +7,7 @@ import com.coupon.reposistory.CouponRepository;
 import com.coupon.reposistory.PackageRepository;
 import com.coupon.reposistory.PurchaseRepository;
 import com.coupon.reposistory.QRRepository;
+import com.coupon.responObject.ResourceNotFoundException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -20,16 +21,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.*;
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
 @Service
 public class CouponService {
 
@@ -306,6 +305,38 @@ public class CouponService {
     public long countConfirmedCoupons() {
         return couponRepository.countByConfirm(ConfirmStatus.CONFIRM);
     }
+
+    public CouponDTO searchCoupon(Integer bussinessID, String couponcode) throws ResourceNotFoundException, IOException {
+        CouponEntity couponEntity=couponRepository.searchCoupon(bussinessID,couponcode).orElseThrow(()->new ResourceNotFoundException("CouponCode not found"));
+        couponEntity.getPackageEntity().setBusiness(null);
+
+        if(!couponEntity.getUsed_status() || couponEntity.getExpired_date().before(new Date(System.currentTimeMillis()))){
+            throw new ResourceNotFoundException("your coupon been used or expired");
+
+        }else {
+            CouponDTO couponDTO = new CouponDTO();
+            couponDTO.setId(couponEntity.getId());
+            couponDTO.setExpired_date(couponEntity.getExpired_date());
+            couponDTO.setImage(couponEntity.getPackageEntity().getImage());
+            couponDTO.setPackageName(couponEntity.getPackageEntity().getName());
+            couponDTO.setDescription(couponEntity.getPackageEntity().getDescription());
+            couponDTO.setUnit_price(couponEntity.getPackageEntity().getUnit_price());
+            couponDTO.setPurchase_date(couponEntity.getPurchase().getPurchase_date());
+            couponDTO.setUsed_status(couponEntity.getUsed_status());
+            String ownner=couponEntity.getPurchase().getUser().getId().toString();
+            messagingTemplate.convertAndSend("/queue/"+ownner,couponDTO);
+       //     messagingTemplate.convertAndSendToUser(ownner,"/usecoupon","your coupon is ready to use");
+            System.out.println("searchCoupon method  send message to :   "+ownner );
+            return couponDTO;
+        }
+    }
+    public boolean useCoupon(Integer id){
+        if(couponRepository.useCoupon(id)!=0){
+            return true;
+        }
+        return false;
+    }
+
 }
 
 
