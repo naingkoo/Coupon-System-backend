@@ -26,7 +26,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
 @Service
@@ -60,7 +60,7 @@ public class CouponService {
         // Update confirm status for the purchase entity
         PurchaseEntity purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("No purchase found for the given ID."));
-        purchase.setConfirm(false);
+        purchase.setConfirm(ConfirmStatus.CONFIRM);
         purchaseRepository.save(purchase);
 
         // Retrieve all coupons by purchase ID
@@ -136,7 +136,7 @@ public class CouponService {
         // Update confirm status for the purchase entity
         PurchaseEntity purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("No purchase found for the given ID."));
-        purchase.setConfirm(false);
+        purchase.setConfirm(ConfirmStatus.DECLINED);
         purchaseRepository.save(purchase);
 
         // Retrieve all coupons associated with the purchase
@@ -304,6 +304,10 @@ public class CouponService {
 
     public long countConfirmedCoupons() {
         return couponRepository.countByConfirm(ConfirmStatus.CONFIRM);
+    }
+
+    public Integer countCouponsByConfirmAndBusinessId(Integer businessId) {
+        return couponRepository.countByConfirmAndBusinessId(businessId);
     }
 
     public CouponDTO searchCoupon(Integer bussinessID, String couponcode) throws ResourceNotFoundException, IOException {

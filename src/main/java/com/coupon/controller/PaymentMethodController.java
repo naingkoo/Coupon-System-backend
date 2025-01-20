@@ -44,7 +44,7 @@ public class PaymentMethodController {
                 File file = new File(filePath);
                 image.transferTo(file);
 
-                paymentMethodDTO.setImage("/QR_images/" + fileName);  // Ensure the image path is prefixed with `/images/`
+                paymentMethodDTO.setImage("QR_images/" + fileName);  // Ensure the image path is prefixed with `/images/`
             }
 
             PaymentMethodDTO savedPaymentMethod = paymentMethodService.savePaymentMethod(paymentMethodDTO);
@@ -90,7 +90,7 @@ public class PaymentMethodController {
                 File file = new File(filePath);
                 image.transferTo(file);
 
-                paymentMethodDTO.setImage("/QR_images/" + fileName);
+                paymentMethodDTO.setImage("QR_images/" + fileName);
             }
 
             PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id)

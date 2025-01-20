@@ -20,4 +20,9 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
 
     // Method to find reviews by businessId
     List<ReviewEntity> findByBusinessEntityId(Integer businessId);
+
+
+    @Query("SELECT COUNT(r) FROM ReviewEntity r WHERE r.businessEntity.id = :businessId")
+    Integer countReviewsByBusinessId(@Param("businessId") Integer businessId);
+
 }

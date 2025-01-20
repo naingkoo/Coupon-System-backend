@@ -73,7 +73,7 @@ public class PackageService {
             if (dto.getImage() != null && !dto.getImage().isEmpty()) {
                 // If the image path doesn't already start with '/images/', add it
                 if (!dto.getImage().startsWith("/images/")) {
-                    dto.setImage("/images/" + dto.getImage());
+                    dto.setImage(dto.getImage());
                 }
             }
 
@@ -115,7 +115,7 @@ public class PackageService {
                     // Ensure the image path is valid and starts with '/images/'
                     if (dto.getImage() != null && !dto.getImage().isEmpty()) {
                         if (!dto.getImage().startsWith("/images/")) {
-                            dto.setImage("/images/" + dto.getImage());
+                            dto.setImage(dto.getImage());
                         }
                     }
 
@@ -185,6 +185,10 @@ public class PackageService {
 
         packageEntity.setDelete(true);
         packageRepo.save(packageEntity);
+    }
+
+    public long countByBusinessId(Long businessId) {
+        return packageRepo.countPackageByBusinessId(businessId);
     }
 }
 

@@ -94,7 +94,7 @@ public class PackageController {
                 File file = new File(filePath);
                 image.transferTo(file);
 
-                packageDTO.setImage("/images/" + fileName);  // Ensure the image path is prefixed with `/images/`
+                packageDTO.setImage("images/" + fileName);  // Ensure the image path is prefixed with `/images/`
             }
 
             PackageDTO savedPackage = packageService.savePackage(packageDTO);
@@ -123,7 +123,7 @@ public class PackageController {
                 File file = new File(filePath);
                 image.transferTo(file);
 
-                packageDTO.setImage("/images/"+fileName);
+                packageDTO.setImage("images/"+fileName);
             }
 
             PackageDTO updatedPackage = packageService.updateById(id, packageDTO);
@@ -147,5 +147,11 @@ public class PackageController {
     @GetMapping("/countALlPackages")
     public long countALlUser(){
         return packageService.countAll();
+    }
+
+
+    @GetMapping("/countPackagesByBusinessId/{businessId}")
+    public long countPackagesByBusinessId(@PathVariable Long businessId) {
+        return packageService.countByBusinessId(businessId);
     }
 }

@@ -45,4 +45,10 @@ public class ReviewController {
 
         return ResponseEntity.ok(reviews); // Return the reviews
     }
+
+    @GetMapping("/countReviewsByBusinessId/{businessId}")
+    public Integer countPackagesByBusinessId(@PathVariable Integer businessId) {
+        return reviewService.countReviewsByBusinessId(businessId);
+    }
+
 }

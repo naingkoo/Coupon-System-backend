@@ -1,9 +1,9 @@
 package com.coupon.controller;
 
 import com.coupon.entity.CouponEntity;
+import com.coupon.entity.ConfirmStatus;
 import com.coupon.model.CategoryDTO;
 import com.coupon.model.CouponDTO;
-import com.coupon.model.CouponDTO1;
 import com.coupon.model.QRDTO;
 import com.coupon.service.CouponService;
 import com.coupon.service.QRService;
@@ -69,11 +69,11 @@ public class CouponController {
         System.out.println("userId" + userId);
         List<CouponDTO> coupons = couponService.showCouponbyUserId(userId);
 
-        if(coupons.isEmpty()) {
+        if (coupons.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(coupons);
-}
+    }
 
     @GetMapping("/code/{id}")
     public ResponseEntity<QRDTO> getQRCode(@PathVariable("id") Integer id) {
@@ -106,9 +106,9 @@ public class CouponController {
         }
     }
     @GetMapping("/public/findbyUserId/{userId}")
-    public ResponseEntity<List<CouponDTO>> findAllbyUserId(@PathVariable Integer userId){
-        List<CouponDTO> couponList=  couponService.findallByUserId(userId);
-        if(couponList.isEmpty()){
+    public ResponseEntity<List<CouponDTO>> findAllbyUserId(@PathVariable Integer userId) {
+        List<CouponDTO> couponList = couponService.findallByUserId(userId);
+        if (couponList.isEmpty()) {
             throw new RuntimeException("coupon not found");
         }
         return ResponseEntity.ok(couponList);
@@ -126,9 +126,18 @@ public class CouponController {
     }
 
     @GetMapping("/countALlCoupons")
-    public long countALlCoupons(){
+    public long countALlCoupons() {
         return couponService.countConfirmedCoupons();
     }
+
+
+    @GetMapping("/countCouponsByBusinessId/{businessId}")
+    public ResponseEntity<Integer> countCoupons(@PathVariable Integer businessId) {
+        Integer count = couponService.countCouponsByConfirmAndBusinessId(businessId);
+        return ResponseEntity.ok(count);
+    }
+
+
 
     @PostMapping("/searchCoupon")
     public ResponseEntity<CouponDTO> useCoupon(@RequestBody HashMap<String,String> coupon) throws IOException {
