@@ -148,10 +148,10 @@ public class CouponController {
     }
 
     @PutMapping("comfrimedTouse")
-    public ResponseEntity<Map<String,String>> useCoupon(@RequestParam("couponId") Integer couponId) throws IOException {
-        System.out.println("dhgalksdjglkajsdlk" + couponId);
-        if(couponService.useCoupon(couponId)){
-
+    public ResponseEntity<Map<String,String>> useCoupo1(@RequestBody Map<String,Integer> coupon) throws IOException {
+        Integer couponId=coupon.get("couponId");
+        Integer userId=coupon.get("userId");
+        if(couponService.useCoupon(couponId,userId)){
         return ResponseEntity.ok(Collections.singletonMap("message","your coupon is sussfully used"));
     }
 

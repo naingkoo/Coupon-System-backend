@@ -3,10 +3,7 @@ package com.coupon.service;
 import com.coupon.entity.*;
 import com.coupon.model.CouponDTO;
 
-import com.coupon.reposistory.CouponRepository;
-import com.coupon.reposistory.PackageRepository;
-import com.coupon.reposistory.PurchaseRepository;
-import com.coupon.reposistory.QRRepository;
+import com.coupon.reposistory.*;
 import com.coupon.responObject.ResourceNotFoundException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,16 +18,19 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.security.SecureRandom;
+import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 public class CouponService {
+    @Autowired
+    NotificationRepository notificationRepository;
+
+    @Autowired
+    IsUsedRepository isUsedRepository;
 
     @Autowired
     ModelMapper mapper;
@@ -334,9 +334,30 @@ public class CouponService {
             return couponDTO;
         }
     }
-    public boolean useCoupon(Integer id){
-        if(couponRepository.useCoupon(id)!=0){
-            return true;
+    @Transactional
+    public boolean useCoupon(Integer id,Integer userId) {
+        try {
+            if (couponRepository.useCoupon(id) != 0) {
+                IsUsedEntity isUsedEntity = new IsUsedEntity();
+                isUsedEntity.setUsed_date(new Date());
+                CouponEntity couponEntity=new CouponEntity();
+                couponEntity.setId(id);
+                isUsedEntity.setCoupon(couponEntity);
+                NotificationEntity notificationEntity=new NotificationEntity();
+                notificationEntity.setNoti_date(new Date());
+                UserEntity user=new UserEntity();
+                user.setId(userId);
+                notificationEntity.setUser(user);
+                notificationEntity.setNotificationStatus(NotificationStatus.UNREAD);
+                notificationEntity.setTitle("Use Coupon");
+                notificationEntity.setContent("your Coupon is used");
+                notificationRepository.save(notificationEntity);
+                isUsedRepository.save(isUsedEntity);
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Failed to use coupon", e);
         }
         return false;
     }

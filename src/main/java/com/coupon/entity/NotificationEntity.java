@@ -3,7 +3,6 @@ package com.coupon.entity;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
-
 @Entity
 @Table(name="Notification")
 public class NotificationEntity {
@@ -20,19 +19,29 @@ public class NotificationEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @OneToOne
-    @JoinColumn(name = "used_id", nullable = false)
-    private IsUsedEntity isUsed;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private NotificationStatus notificationStatus;
 
-    @Column(name="status", nullable = false)
-    private Boolean status = true;
+    @Column(name = "Title")
+    private String title;
 
-    @OneToOne
-    @JoinColumn(name = "transfer_id", nullable = false)
-    private TransferEntity transfer;
+    @Column(name = "Content")
+    private String content;
 
     public Integer getId() {
         return id;
+    }
+
+    public NotificationEntity() {
+    }
+
+    public NotificationEntity( Date noti_date, UserEntity user, NotificationStatus notificationStatus, String title, String content) {
+        this.noti_date = noti_date;
+        this.user = user;
+        this.notificationStatus = notificationStatus;
+        this.title = title;
+        this.content = content;
     }
 
     public void setId(Integer id) {
@@ -55,27 +64,27 @@ public class NotificationEntity {
         this.user = user;
     }
 
-    public IsUsedEntity getIsUsed() {
-        return isUsed;
+    public NotificationStatus getNotificationStatus() {
+        return notificationStatus;
     }
 
-    public void setIsUsed(IsUsedEntity isUsed) {
-        this.isUsed = isUsed;
+    public void setNotificationStatus(NotificationStatus notificationStatus) {
+        this.notificationStatus = notificationStatus;
     }
 
-    public Boolean getStatus() {
-        return status;
+    public String getTitle() {
+        return title;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public TransferEntity getTransfer() {
-        return transfer;
+    public String getContent() {
+        return content;
     }
 
-    public void setTransfer(TransferEntity transfer) {
-        this.transfer = transfer;
+    public void setContent(String content) {
+        this.content = content;
     }
 }
