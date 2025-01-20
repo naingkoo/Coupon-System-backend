@@ -65,7 +65,7 @@ private JwtService jwtService;
                 image.transferTo(file);
 
                 UserPhotoDTO userPhotoDTO = new UserPhotoDTO();
-                userPhotoDTO.setName("http://localhost:8080/users_images/" + fileName);
+                userPhotoDTO.setName("users_images/" + fileName);
                 userPhotoDTO.setUser_id(userId);
 
                 UserPhotoDTO savedUserPhoto = userPhotoService.saveUserPhoto(userPhotoDTO);

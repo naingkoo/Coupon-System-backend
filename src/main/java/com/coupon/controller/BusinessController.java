@@ -48,7 +48,7 @@ public class BusinessController {
                 File file = new File(filePath);
                 image.transferTo(file);
 
-                dto.setImage("/business_images/" + fileName);  // Ensure the image path is prefixed with `/images/`
+                dto.setImage("business_images/" + fileName);  // Ensure the image path is prefixed with `/images/`
             }
 
             BusinessDTO businessdto = Bservice.saveBusiness(dto);
@@ -106,11 +106,6 @@ public class BusinessController {
         }
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return "hey this is test";
-    }
-
     @PutMapping("/edit/{id}")
     public ResponseEntity<BusinessDTO> updateBusiness(
             @PathVariable Integer id,
@@ -132,7 +127,7 @@ public class BusinessController {
                 String filePath = uploadDir + File.separator + fileName;
                 image.transferTo(new File(filePath));
 
-                businessDTO.setImage("/business_images/" + fileName);
+                businessDTO.setImage("business_images/" + fileName);
             }
 
             // Update business

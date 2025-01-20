@@ -162,7 +162,7 @@ public class BusinessService {
         // Prefix the image path if necessary
         if (businessDTO.getImage() != null && !businessDTO.getImage().isEmpty()) {
             if (!businessDTO.getImage().startsWith("/business_images/")) {
-                businessDTO.setImage("/business_images/" + businessDTO.getImage());
+                businessDTO.setImage(businessDTO.getImage());
             }
         }
 
@@ -289,7 +289,7 @@ public class BusinessService {
                 if (businessDTO.getImage() != null && !businessDTO.getImage().isEmpty()) {
                     // If the image path doesn't already start with '/business_images/', add it
                     if (!businessDTO.getImage().startsWith("/business_images/")) {
-                        businessDTO.setImage("/business_images/" + businessDTO.getImage());
+                        businessDTO.setImage(businessDTO.getImage());
                     }
                 }
 
