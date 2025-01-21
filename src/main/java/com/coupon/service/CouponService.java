@@ -1,6 +1,7 @@
 package com.coupon.service;
 
 import com.coupon.entity.*;
+import com.coupon.model.BusinessDTO;
 import com.coupon.model.CouponDTO;
 
 import com.coupon.reposistory.*;
@@ -306,8 +307,9 @@ public class CouponService {
         return couponRepository.countByConfirm(ConfirmStatus.CONFIRM);
     }
 
-    public Integer countCouponsByConfirmAndBusinessId(Integer businessId) {
-        return couponRepository.countByConfirmAndBusinessId(businessId);
+
+    public Long countConfirmedCouponsByBusinessId(Long businessId) {
+        return couponRepository.countByConfirmAndBusinessId(ConfirmStatus.CONFIRM, businessId);
     }
 
     public CouponDTO searchCoupon(Integer bussinessID, String couponcode) throws ResourceNotFoundException, IOException {
@@ -360,6 +362,32 @@ public class CouponService {
             throw new RuntimeException("Failed to use coupon", e);
         }
         return false;
+    }
+
+
+
+
+    public BusinessDTO getBusinessByCouponId(Integer couponId) {
+        System.out.println("couponId: " + couponId);
+
+        // Fetch the business entity based on couponId
+        BusinessEntity businessEntity = couponRepository.findBusinessByCouponId(couponId);
+
+        // If the businessEntity is null, you can return null or throw an exception
+        if (businessEntity == null) {
+            return null; // or throw new EntityNotFoundException("Business not found");
+        }
+
+        // Map BusinessEntity to BusinessDTO
+        BusinessDTO businessDTO = new BusinessDTO();
+        businessDTO.setId(businessEntity.getId());
+        businessDTO.setName(businessEntity.getName());
+        businessDTO.setPhone(businessEntity.getPhone());
+        businessDTO.setEmail(businessEntity.getEmail());
+        businessDTO.setAddress(businessEntity.getAddress());
+        businessDTO.setImage(businessEntity.getImage());
+
+        return businessDTO;
     }
 
 }

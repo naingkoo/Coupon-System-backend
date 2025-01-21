@@ -1,6 +1,7 @@
 package com.coupon.controller;
 
 import com.coupon.entity.PackageEntity;
+import com.coupon.model.BusinessDTO;
 import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.BusinessRepository;
 import com.coupon.reposistory.PackageRepository;
@@ -153,5 +154,16 @@ public class PackageController {
     @GetMapping("/countPackagesByBusinessId/{businessId}")
     public long countPackagesByBusinessId(@PathVariable Long businessId) {
         return packageService.countByBusinessId(businessId);
+    }
+
+    @GetMapping("/deleted")
+    public List<PackageDTO> getDeletedPackages() {
+        // Call the service method and return the list of deleted businesses
+        return packageService.getDeletePackage();
+    }
+
+    @PutMapping("/restore/{id}")
+    public void restorePackage(@PathVariable Integer id) {
+        packageService.restorePackage(id);
     }
 }

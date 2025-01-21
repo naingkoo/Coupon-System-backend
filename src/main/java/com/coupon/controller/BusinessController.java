@@ -88,7 +88,7 @@ public class BusinessController {
     }
 
     @GetMapping("/countALlBusiness")
-    public long countALlUser(){
+    public long countALlUser() {
         return Bservice.countAll();
     }
 
@@ -104,6 +104,11 @@ public class BusinessController {
             // Handle error if business not found
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "hey this is test";
     }
 
     @PutMapping("/edit/{id}")
@@ -140,7 +145,6 @@ public class BusinessController {
     }
 
 
-
     @PostMapping("/delete/{id}")
     public void deleteBusiness(@PathVariable Integer id) {
         Bservice.deleteBusinessById(id);
@@ -156,5 +160,15 @@ public class BusinessController {
         return new ResponseEntity<>(businesses, HttpStatus.OK);
     }
 
+    @GetMapping("/deleted")
+    public List<BusinessDTO> getDeletedBusinesses() {
+        // Call the service method and return the list of deleted businesses
+        return Bservice.getDeletedBusiness();
+    }
+
+    @PutMapping("/restore/{id}")
+    public void restoreBusiness(@PathVariable Integer id) {
+        Bservice.restoreBusiness(id);
+    }
 }
 

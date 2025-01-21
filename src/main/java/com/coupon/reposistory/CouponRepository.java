@@ -1,5 +1,6 @@
 package com.coupon.reposistory;
 
+import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.ConfirmStatus;
 import com.coupon.entity.CouponEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,9 +31,14 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
     Integer countByConfirm(ConfirmStatus confirm);
 
-    @Query("SELECT COUNT(c) FROM CouponEntity c WHERE c.packageEntity.business.id = :businessId")
-    Integer countByConfirmAndBusinessId( @Param("businessId") Integer businessId);
+    @Query("SELECT COUNT(c) FROM CouponEntity c WHERE c.packageEntity.business.id = :businessId AND c.confirm = :confirm")
+    Long countByConfirmAndBusinessId(@Param("confirm") ConfirmStatus confirm, @Param("businessId") Long businessId);
 
+
+    @Query("SELECT p.business FROM CouponEntity c " +
+            "JOIN c.packageEntity p " +
+            "WHERE c.id = :couponId")
+    BusinessEntity findBusinessByCouponId(@Param("couponId") Integer couponId);
     @Query("SELECT c FROM CouponEntity c WHERE c.qr.code = :couponcode AND c.packageEntity.business.id = :bussinessID AND c.used_status=true")
     Optional<CouponEntity> searchCoupon(@Param("bussinessID") Integer bussinessID, @Param("couponcode") String couponcode);
 

@@ -1,5 +1,6 @@
 package com.coupon.reposistory;
 
+import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.PackageEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,12 @@ public interface PackageRepository extends JpaRepository<PackageEntity,Integer>{
     long countByIsDeleteFalse();
 
     long countPackageByBusinessId(Long businessId);
+
+    @Query("SELECT p FROM PackageEntity p WHERE p.isDelete = true")
+    List<PackageEntity> findAllDeletedPackages();
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE PackageEntity p SET p.isDelete = false WHERE p.id = :id")
+    void restorePackage(@Param("id") Integer id);
 }

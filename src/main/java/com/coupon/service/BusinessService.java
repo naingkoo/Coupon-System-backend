@@ -223,7 +223,7 @@ public class BusinessService {
         // Update Business_CategoryEntity relations if category list exists
         if (dto.getCategoryId() != null && !dto.getCategoryId().isEmpty()) {
             // Remove existing categories to ensure only updated associations exist
-            System.out.println("BusinessId: "+ id);
+            System.out.println("BusinessId: " + id);
             BCrepo.deleteByBusinessId(id); // Delete previous associations
 
             for (Integer categoryId : dto.getCategoryId()) {
@@ -328,4 +328,56 @@ public class BusinessService {
                 return BCrepo.findBusinessesByCategoryName(categoryName);
             }
 
+    public List<BusinessDTO> getDeletedBusiness() {
+        // Fetch deleted businesses using the query
+        List<BusinessEntity> business = Brepo.findAllDeletedBusinesses();  // Use your custom query for deleted businesses
+
+        List<BusinessDTO> dtoList = new ArrayList<>();
+        for (BusinessEntity entity : business) {
+            BusinessDTO dto = new BusinessDTO();
+            dto.setId(entity.getId());
+            dto.setName(entity.getName());
+            dto.setPhone(entity.getPhone());
+            dto.setEmail(entity.getEmail());
+            dto.setLatitude(entity.getLatitude());
+            dto.setLongitude(entity.getLongitude());
+            dto.setAddress(entity.getAddress());
+            dto.setCreated_date(entity.getCreated_date());
+            dto.setImage(entity.getImage());
+
+            // Fetch and set category names for the business
+            List<Integer> categoryIds = BCrepo.findByBusiness(entity).stream()
+                    .map(businessCategory -> businessCategory.getCategory().getId())
+                    .collect(Collectors.toList());
+
+            List<String> categoryName = categoryIds.stream()
+                    .map(categoryId -> {
+                        CategoryEntity category = Crepo.findById(categoryId).orElse(null);
+                        return category != null ? category.getName() : null;
+                    })
+                    .collect(Collectors.toList());
+            dto.setCategoryName(categoryName);
+
+            // Fetch and set service names for the business
+            List<Integer> serviceIds = BSrepo.findByBusiness(entity).stream()
+                    .map(businessService -> businessService.getService().getId())
+                    .collect(Collectors.toList());
+
+            List<String> serviceName = serviceIds.stream()
+                    .map(serviceId -> {
+                        ServiceEntity service = Srepo.findById(serviceId).orElse(null);
+                        return service != null ? service.getName() : null;
+                    })
+                    .collect(Collectors.toList());
+            dto.setServiceName(serviceName);
+
+            // Add the populated DTO to the list
+            dtoList.add(dto);
         }
+        return dtoList;
+    }
+
+    public void restoreBusiness(Integer id) {
+        Brepo.restoreBusiness(id);
+    }
+}

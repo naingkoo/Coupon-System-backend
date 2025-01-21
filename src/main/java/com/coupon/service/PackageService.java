@@ -1,7 +1,9 @@
 package com.coupon.service;
 
 import com.coupon.entity.BusinessEntity;
+import com.coupon.entity.CategoryEntity;
 import com.coupon.entity.PackageEntity;
+import com.coupon.model.CategoryDTO;
 import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.BusinessRepository;
 import com.coupon.reposistory.PackageRepository;
@@ -190,5 +192,29 @@ public class PackageService {
     public long countByBusinessId(Long businessId) {
         return packageRepo.countPackageByBusinessId(businessId);
     }
+
+    public List<PackageDTO> getDeletePackage() {
+
+        List<PackageEntity> packages = packageRepo.findAllDeletedPackages();
+        List<PackageDTO> dtoList = new ArrayList<>();
+        for(PackageEntity entity: packages) {
+            PackageDTO dto = new PackageDTO();
+            dto.setId(entity.getId());
+            dto.setName(entity.getName());
+            dto.setUnit_price(entity.getUnit_price());
+            dto.setQuantity(entity.getQuantity());
+            dto.setExpired_date(entity.getExpired_date());
+            dto.setImage(entity.getImage());
+
+
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    public void restorePackage(Integer id) {
+        packageRepo.restorePackage(id);
+    }
+
 }
 

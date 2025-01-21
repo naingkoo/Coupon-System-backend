@@ -1,7 +1,9 @@
 package com.coupon.controller;
 
+import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.CouponEntity;
 import com.coupon.entity.ConfirmStatus;
+import com.coupon.model.BusinessDTO;
 import com.coupon.model.CategoryDTO;
 import com.coupon.model.CouponDTO;
 import com.coupon.model.QRDTO;
@@ -132,8 +134,8 @@ public class CouponController {
 
 
     @GetMapping("/countCouponsByBusinessId/{businessId}")
-    public ResponseEntity<Integer> countCoupons(@PathVariable Integer businessId) {
-        Integer count = couponService.countCouponsByConfirmAndBusinessId(businessId);
+    public ResponseEntity<Long> countConfirmedCoupons(@PathVariable Long businessId) {
+        Long count = couponService.countConfirmedCouponsByBusinessId(businessId);
         return ResponseEntity.ok(count);
     }
 
@@ -158,6 +160,10 @@ public class CouponController {
         return ResponseEntity.badRequest().body(Collections.singletonMap("message","failed to use"));
     }
 
+    @GetMapping("findBusiness/{couponId}")
+    public BusinessDTO getBusinessByCouponId(@PathVariable Integer couponId) {
+        return couponService.getBusinessByCouponId(couponId);
+    }
 }
 
 

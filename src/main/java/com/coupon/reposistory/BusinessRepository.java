@@ -2,7 +2,9 @@ package com.coupon.reposistory;
 
 import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,7 +19,8 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
 
     Optional<BusinessEntity> findByUserId(Integer userId);
 
-    @Query("UPDATE BusinessEntity b SET b.isDelete = false WHERE b.id = :id")
+    @Modifying
+    @Query("UPDATE BusinessEntity b SET b.isDelete = true WHERE b.id = :id")
     void deleteBusinessById(@Param("id") Integer id);
 
     @Query("SELECT b FROM BusinessEntity b WHERE b.isDelete = false")
@@ -27,4 +30,12 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
     List<BusinessEntity> findAllActiveBusinessesByUserId(@Param("userId") Integer userId);
 
     long countByIsDeleteFalse();
+
+    @Query("SELECT b FROM BusinessEntity b WHERE b.isDelete = true")
+    List<BusinessEntity> findAllDeletedBusinesses();
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE BusinessEntity b SET b.isDelete = false WHERE b.id = :id")
+    void restoreBusiness(@Param("id") Integer id);
 }
