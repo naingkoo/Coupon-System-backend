@@ -33,6 +33,7 @@ public class PackageService {
             PackageEntity packageEntity = new PackageEntity();
             packageEntity.setName(dto.getName());
             packageEntity.setUnit_price(dto.getUnit_price());
+            packageEntity.setTotal_quantity(dto.getQuantity());
             packageEntity.setQuantity(dto.getQuantity());
             packageEntity.setCreate_date(dto.getCreate_date());
             packageEntity.setExpired_date(dto.getExpired_date());

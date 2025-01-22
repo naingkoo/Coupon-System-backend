@@ -19,6 +19,9 @@ public class PackageEntity {
     @Column(name="unit_price",nullable = false)
     private Double unit_price;
 
+    @Column(name="total_quantity",nullable = false)
+    private Integer total_quantity;
+
     @Column(name="quantity",nullable = false)
     private Integer quantity;
 
@@ -64,6 +67,14 @@ public class PackageEntity {
 
     public void setUnit_price(Double unit_price) {
         this.unit_price = unit_price;
+    }
+
+    public Integer getTotal_quantity() {
+        return total_quantity;
+    }
+
+    public void setTotal_quantity(Integer total_quantity) {
+        this.total_quantity = total_quantity;
     }
 
     public Integer getQuantity() {

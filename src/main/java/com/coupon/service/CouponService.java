@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -419,6 +421,53 @@ public class CouponService {
         businessDTO.setImage(businessEntity.getImage());
 
         return businessDTO;
+    }
+
+    public List<Map<String, Object>> getConfirmedCouponsByPurchaseDate(Date startDate, Date endDate) {
+        // Fetch data from the repository
+        List<Object[]> results = couponRepository.countConfirmedCouponsByPurchaseDate(startDate, endDate);
+
+        // Transform the data into the required format
+        List<Map<String, Object>> chartData = new ArrayList<>();
+        for (Object[] result : results) {
+            Date purchaseDate = (Date) result[0];
+            Long count = (Long) result[1];
+
+            Map<String, Object> dataPoint = new HashMap<>();
+            dataPoint.put("name", new SimpleDateFormat("yyyy-MM-dd").format(purchaseDate)); // Format date
+            dataPoint.put("value", count); // Confirmed count
+            chartData.add(dataPoint);
+        }
+
+        return chartData;
+    }
+
+    public Map<String, Integer> getCouponCountByBusinessAndPurchaseDate(Integer businessId, Date startDate, Date endDate) {
+        // Adjust endDate to include the entire day by setting the time to 23:59:59
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        Date adjustedEndDate = calendar.getTime();
+
+        List<Object[]> result = couponRepository.countCouponsByBusinessAndPurchaseDate(businessId, startDate, adjustedEndDate);
+
+        Map<String, Integer> couponCountByDate = new LinkedHashMap<>();
+
+        for (Object[] row : result) {
+            Timestamp purchaseDate = (Timestamp) row[0];
+            Integer couponCount = ((Number) row[1]).intValue();
+
+            // Format the date as yyyy-MM-dd
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(purchaseDate);
+
+            // Accumulate the counts (if there are multiple entries for the same date, sum them)
+            couponCountByDate.put(formattedDate, couponCountByDate.getOrDefault(formattedDate, 0) + couponCount);
+        }
+
+        return couponCountByDate;
     }
 
 }

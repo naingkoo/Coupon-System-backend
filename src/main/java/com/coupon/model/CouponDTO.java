@@ -18,6 +18,8 @@ public class CouponDTO {
     private String image;
     private String QR;
     private String description;
+    private String business;
+    private String owner;
 
     public Integer getId() {
         return id;
@@ -121,5 +123,21 @@ public class CouponDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getBusiness() {
+        return business;
+    }
+
+    public void setBusiness(String business) {
+        this.business = business;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

@@ -12,8 +12,10 @@ import com.coupon.service.QRService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,11 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/coupon")
@@ -163,6 +164,68 @@ public class CouponController {
     @GetMapping("findBusiness/{couponId}")
     public BusinessDTO getBusinessByCouponId(@PathVariable Integer couponId) {
         return couponService.getBusinessByCouponId(couponId);
+    }
+
+    @GetMapping("/confirm-count")
+    public List<Map<String, Object>> getConfirmedCouponsByPurchaseDate(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        // If no endDate is provided, set it to the current date
+        if (endDate == null) {
+            endDate = calendar.getTime();
+        }
+
+        // Strip the time from the endDate (set it to the last moment of the day, 23:59:59.999)
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        endDate = calendar.getTime();
+
+        // If no startDate is provided, set it to 7 days ago from endDate
+        if (startDate == null) {
+            calendar.setTime(endDate);
+            calendar.add(Calendar.DAY_OF_MONTH, -7); // Set start date to 7 days ago
+            startDate = calendar.getTime();
+        }
+
+        // Call the service to get the filtered data
+        return couponService.getConfirmedCouponsByPurchaseDate(startDate, endDate);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                try {
+                    // Try both formats
+                    if (text != null && !text.isEmpty()) {
+                        SimpleDateFormat sdf1 = new SimpleDateFormat("MM/dd/yyyy");
+                        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            setValue(sdf1.parse(text));
+                        } catch (Exception e) {
+                            setValue(sdf2.parse(text));
+                        }
+                    }
+                } catch (Exception e) {
+                    setValue(null);
+                }
+            }
+        });
+    }
+
+    @GetMapping("/coupon-count")
+    public Map<String, Integer> getCouponCountByBusinessAndPurchaseDate(
+            @RequestParam("businessId") Integer businessId,
+            @RequestParam("startDate") Date startDate,
+            @RequestParam("endDate") Date endDate) {
+        return couponService.getCouponCountByBusinessAndPurchaseDate(businessId, startDate, endDate);
     }
 }
 

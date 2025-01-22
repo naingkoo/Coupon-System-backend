@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseService {
@@ -134,5 +135,14 @@ public class PurchaseService {
         }
 
         return purchaseDTOs;
+    }
+
+    public Map<String, Integer> getPaymentTypeDistribution() {
+        return purchaseRepository.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        PurchaseEntity::getPayment_type,
+                        Collectors.summingInt(e -> 1) // Summing integers instead of counting longs
+                ));
     }
 }
