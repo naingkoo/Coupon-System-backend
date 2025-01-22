@@ -3,6 +3,7 @@ import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.ForgetPassword;
 import com.coupon.entity.UserEntity;
+import com.coupon.model.NotificationDTO;
 import com.coupon.model.UserDTO;
 import com.coupon.model.UserPhotoDTO;
 import com.coupon.responObject.HttpResponse;
@@ -178,6 +179,13 @@ private JwtService jwtService;
     @GetMapping("/emails")
     public List<String> getEmailSuggestions(@RequestParam("query") String query) {
         return userService.getEmailSuggestions(query);
+    }
+
+    @GetMapping("getNotification/{userId}")
+    public ResponseEntity<List<NotificationDTO>> getNoti(@PathVariable Integer userId){
+        System.out.println("getNotification/{userId}        :"+ userId);
+        List<NotificationDTO> notificationDTO=userService.getNotification(userId);
+        return ResponseEntity.ok(notificationDTO);
     }
 
 }

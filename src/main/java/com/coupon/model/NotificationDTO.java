@@ -1,20 +1,20 @@
 package com.coupon.model;
 
+import com.coupon.entity.NotificationStatus;
+import com.coupon.entity.UserEntity;
+import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
+import java.util.Map;
 
 public class NotificationDTO {
-
     private Integer id;
-
     private Date noti_date;
-
-    private Integer user_id;
-
-    private Integer isUsed_id;
-
-    private Boolean status;
-
-    private Integer transfer_id;
+    private Integer userId;
+    private NotificationStatus notificationStatus;
+    private String title;
+    private Map<String, Object> content;
 
     public Integer getId() {
         return id;
@@ -32,35 +32,35 @@ public class NotificationDTO {
         this.noti_date = noti_date;
     }
 
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public Integer getIsUsed_id() {
-        return isUsed_id;
+    public NotificationStatus getNotificationStatus() {
+        return notificationStatus;
     }
 
-    public void setIsUsed_id(Integer isUsed_id) {
-        this.isUsed_id = isUsed_id;
+    public void setNotificationStatus(NotificationStatus notificationStatus) {
+        this.notificationStatus = notificationStatus;
     }
 
-    public Boolean getStatus() {
-        return status;
+    public String getTitle() {
+        return title;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Integer getTransfer_id() {
-        return transfer_id;
+    public Map<String, Object> getContent() {
+        return content;
     }
 
-    public void setTransfer_id(Integer transfer_id) {
-        this.transfer_id = transfer_id;
+    public void setContent(Map<String, Object> content) {
+        this.content = content;
     }
 }

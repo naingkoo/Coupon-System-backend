@@ -1,14 +1,22 @@
 package com.coupon.service;
 
 import com.coupon.AuthenConfig.JwtService;
+import com.coupon.entity.NotificationEntity;
 import com.coupon.entity.UserEntity;
 import com.coupon.entity.UserPhotoEntity;
+import com.coupon.model.NotificationDTO;
+import com.coupon.model.PackageDTO;
 import com.coupon.model.ReviewDTO;
 import com.coupon.model.UserDTO;
+import com.coupon.reposistory.NotificationRepository;
 import com.coupon.reposistory.UserPhotoRepository;
 import com.coupon.reposistory.UserRepository;
 import com.coupon.responObject.HttpResponse;
+import com.coupon.responObject.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +32,13 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    @Autowired
+    NotificationRepository notificationRepository;
     private final PasswordEncoder encoder;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @Autowired
     private UserRepository userRepo;
@@ -228,4 +242,31 @@ public class UserService {
     public List<String> getEmailSuggestions(String query) {
         return userRepo.findEmailsByQuery("%" + query.toLowerCase() + "%");
     }
+
+    public List<NotificationDTO> getNotification(Integer id) throws ResourceNotFoundException {
+        try {
+            List<NotificationEntity> notification = notificationRepository.findByUser(id);
+            List<NotificationDTO> dtoList = notification.stream()
+                    .map(noti -> {
+                        NotificationDTO dto = mapper.map(noti, NotificationDTO.class);
+                        return dto;
+                    })
+                    .toList();
+//            notificationDTO.setNotificationStatus(notification.getNotificationStatus());
+//            notificationDTO.setTitle(notification.getTitle());
+//            notificationDTO.setContent(notification.getContent());
+//            notificationDTO.setNoti_date(notification.getNoti_date());
+            return dtoList;
+        } catch (EntityNotFoundException | EmptyResultDataAccessException e) {
+            // Log the error and throw a custom exception
+            System.out.println("No notification found for user with ID: " + id);
+            throw new ResourceNotFoundException("No notification found for user with ID: " + id);
+        } catch (Exception e) {
+            // Handle unexpected exceptions
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+            throw new ResourceNotFoundException("An unexpected error occurred while fetching the notification.");
+        }
+    }
+
 }

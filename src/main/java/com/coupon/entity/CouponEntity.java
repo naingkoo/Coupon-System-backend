@@ -26,7 +26,7 @@ public class CouponEntity {
     @Column(name = "transfer_status", nullable = false)
     private Boolean transfer_status = true;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_id", nullable = false)
     private PurchaseEntity purchase;
 

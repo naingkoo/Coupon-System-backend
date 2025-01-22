@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:4200") // Allow multiple origins for production, staging
+                .setAllowedOrigins("http://localhost:4200","https://cbmf9vrn-4200.asse.devtunnels.ms") // Allow multiple origins for production, staging
                 .addInterceptors(customInterceptor())
                 .withSockJS();
     }

@@ -4,6 +4,7 @@ import com.coupon.entity.*;
 import com.coupon.model.BusinessDTO;
 import com.coupon.model.CouponDTO;
 
+import com.coupon.model.NotificationDTO;
 import com.coupon.reposistory.*;
 import com.coupon.responObject.ResourceNotFoundException;
 import jakarta.servlet.ServletOutputStream;
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 public class CouponService {
     @Autowired
     NotificationRepository notificationRepository;
+
+    @Autowired
+    TransferRepository transferRepository;
 
     @Autowired
     IsUsedRepository isUsedRepository;
@@ -320,6 +324,7 @@ public class CouponService {
             throw new ResourceNotFoundException("your coupon been used or expired");
 
         }else {
+            Boolean istransfer =couponEntity.getTransfer_status();
             CouponDTO couponDTO = new CouponDTO();
             couponDTO.setId(couponEntity.getId());
             couponDTO.setExpired_date(couponEntity.getExpired_date());
@@ -329,30 +334,56 @@ public class CouponService {
             couponDTO.setUnit_price(couponEntity.getPackageEntity().getUnit_price());
             couponDTO.setPurchase_date(couponEntity.getPurchase().getPurchase_date());
             couponDTO.setUsed_status(couponEntity.getUsed_status());
-            String ownner=couponEntity.getPurchase().getUser().getId().toString();
-            messagingTemplate.convertAndSend("/queue/"+ownner,couponDTO);
+            if(istransfer) {
+                String ownner = couponEntity.getPurchase().getUser().getId().toString();
+                messagingTemplate.convertAndSend("/queue/" + ownner, couponDTO);
+                NotificationEntity notification = new NotificationEntity();
+                notification.setTitle("Confrim to Use Coupon");
+                notification.setNotificationStatus(NotificationStatus.UNREAD);
+                notification.setContent(Map.of(
+                        "bussinessID", bussinessID,
+                        "couponcode", couponcode
+                ));
+                notification.setUser(couponEntity.getPurchase().getUser());
+                notificationRepository.save(notification);
+            }else{
+                Integer receiver_id=transferRepository.findOwner(couponEntity.getId());
+                messagingTemplate.convertAndSend("/queue/" + receiver_id.toString(), couponDTO);
+                NotificationEntity notification = new NotificationEntity();
+                notification.setTitle("Confrim to Use Coupon");
+                notification.setNotificationStatus(NotificationStatus.UNREAD);
+                notification.setContent(Map.of(
+                        "bussinessID", bussinessID,
+                        "couponcode", couponcode
+                ));
+                notificationRepository.save(notification);
+            }
        //     messagingTemplate.convertAndSendToUser(ownner,"/usecoupon","your coupon is ready to use");
-            System.out.println("searchCoupon method  send message to :   "+ownner );
             return couponDTO;
         }
     }
     @Transactional
     public boolean useCoupon(Integer id,Integer userId) {
         try {
-            if (couponRepository.useCoupon(id) != 0) {
+                CouponEntity usedCoupon=couponRepository.useCoupon(id);
+            if (usedCoupon != null) {
                 IsUsedEntity isUsedEntity = new IsUsedEntity();
                 isUsedEntity.setUsed_date(new Date());
                 CouponEntity couponEntity=new CouponEntity();
                 couponEntity.setId(id);
                 isUsedEntity.setCoupon(couponEntity);
                 NotificationEntity notificationEntity=new NotificationEntity();
-                notificationEntity.setNoti_date(new Date());
                 UserEntity user=new UserEntity();
                 user.setId(userId);
                 notificationEntity.setUser(user);
                 notificationEntity.setNotificationStatus(NotificationStatus.UNREAD);
                 notificationEntity.setTitle("Use Coupon");
-                notificationEntity.setContent("your Coupon is used");
+                CouponDTO usedcouponDTO=mapper.map(usedCoupon, CouponDTO.class);
+                notificationEntity.setContent(Map.of(
+                        "action","TEXT",
+                        "context","your Coupon is used",
+                        "object",usedcouponDTO
+                ));
                 notificationRepository.save(notificationEntity);
                 isUsedRepository.save(isUsedEntity);
                 return true;

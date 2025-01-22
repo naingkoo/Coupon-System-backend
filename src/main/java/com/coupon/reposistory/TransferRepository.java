@@ -15,4 +15,8 @@ public interface TransferRepository extends JpaRepository<TransferEntity,Integer
 
     @Query("SELECT t FROM TransferEntity t WHERE t.receiver_id = :receiver_id")
     List<TransferEntity> findByReceiverId(@Param("receiver_id") Integer receiver_id);
+
+    @Query("SELECT t.receiver_id FROM TransferEntity t WHERE t.coupon.id = :couponId")
+    Integer findOwner(@Param("couponId") Integer couponId);
+
 }

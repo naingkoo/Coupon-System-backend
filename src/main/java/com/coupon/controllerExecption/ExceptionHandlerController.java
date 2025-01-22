@@ -82,4 +82,14 @@ public class ExceptionHandlerController {
         // Return response with 500 Internal Server Error status and the error message
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> IllegalArgumentExHandler(IllegalArgumentException ex) {
+        // Create a custom error response object
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        System.out.println("IllegalArgumentExHandler from metnhod :"+ex);
+        // Return response with 500 Internal Server Error status and the error message
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
