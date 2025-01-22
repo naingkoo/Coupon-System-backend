@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,28 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     @Query("UPDATE CouponEntity c SET c.used_status = false WHERE c.id = :id")
     int useCoupon(@Param("id") Integer id);
 
+    @Query("SELECT DATE(p.purchase_date) AS purchaseDate, COUNT(c) AS confirmedCount " +
+            "FROM CouponEntity c " +
+            "JOIN c.purchase p " +
+            "WHERE c.confirm = 'CONFIRM' " +
+            "AND (:startDate IS NULL OR p.purchase_date >= :startDate) " +
+            "AND (:endDate IS NULL OR p.purchase_date <= :endDate) " +
+            "GROUP BY DATE(p.purchase_date) " +
+            "ORDER BY DATE(p.purchase_date)")
+    List<Object[]> countConfirmedCouponsByPurchaseDate(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
 
+
+    // Modify the query to accept businessId as a parameter
+    @Query("SELECT p.purchase_date, COUNT(c) " +
+            "FROM CouponEntity c " +
+            "JOIN c.purchase p " +
+            "JOIN c.packageEntity pkg " +
+            "WHERE pkg.business.id = :businessId " +
+            "AND p.purchase_date BETWEEN :startDate AND :endDate " +
+            "GROUP BY p.purchase_date " +
+            "ORDER BY p.purchase_date ASC")
+    List<Object[]> countCouponsByBusinessAndPurchaseDate(Integer businessId, Date startDate, Date endDate);
 
 }

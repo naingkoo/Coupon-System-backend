@@ -103,7 +103,7 @@ public class CartService {
         String imagePath = cartEntity.getPackageEntity().getImage();
         if (imagePath != null && !imagePath.isEmpty()) {
             if (!imagePath.startsWith("/images/")) {
-                imagePath = "/images/" + imagePath;
+                imagePath =  imagePath;
             }
         }
         packageDTO.setImage(imagePath);

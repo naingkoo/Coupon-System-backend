@@ -52,6 +52,7 @@ public class AuthenConfig {
                                 "/user/public/**",
                                 "/Business/public/**",
                                 "/package/public/**",
+                                "/cart/**",
                                 "/Service/public/**",
                                 "/Category/public/**",
                                 "/business_images/**",

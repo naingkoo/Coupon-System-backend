@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/purchases")
@@ -44,6 +45,12 @@ public class PurchaseController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(purchases);
+    }
+
+    @GetMapping("/payment-type-distribution")
+    public ResponseEntity<Map<String, Integer>> getPaymentTypeDistribution() {
+        Map<String, Integer> distribution = purchaseService.getPaymentTypeDistribution();
+        return ResponseEntity.ok(distribution);
     }
 }
 
