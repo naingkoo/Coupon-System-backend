@@ -1,0 +1,203 @@
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="couponReport"
+              pageWidth="555" pageHeight="802" columnWidth="555"
+              leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0"
+              uuid="3a1ad889-9cd7-4e63-9e44-ad6b91fe4daf">
+
+
+    <style name="tableHeader" forecolor="#000000" backcolor="#e6e6e6">
+        <box topBorder="Thin" bottomBorder="Thin" leftBorder="Thin" rightBorder="Thin" borderColor="#000000"/>
+    </style>
+    <style name="tableCell" forecolor="#000000" backcolor="#ffffff">
+        <box bottomBorder="Thin" leftBorder="Thin" rightBorder="Thin" borderColor="#000000"/>
+    </style>
+    <style name="tableFooter" forecolor="#000000" backcolor="#e6e6e6">
+        <box bottomBorder="Thin" leftBorder="Thin" rightBorder="Thin" borderColor="#000000"/>
+    </style>
+
+
+    <parameter name="searchText" class="java.lang.String"/>
+    <parameter name="selectedCategory" class="java.lang.String"/>
+    <parameter name="startDate" class="java.util.Date"/>
+    <parameter name="endDate" class="java.util.Date"/>
+    <parameter name="isExcelExport" class="java.lang.Boolean"/>
+
+    <queryString language="SQL">
+        <![CDATA[
+    SELECT
+        c.id,
+        c.packageName,
+        c.purchase_date,
+        c.expired_date,
+        c.unit_price,
+        c.businessName
+    FROM coupon c
+    JOIN package_entity p ON c.package_id = p.id
+    WHERE c.confirm=CONFIRM
+        AND (
+            ($P{selectedCategory} = "purchase" AND c.purchase_date BETWEEN $P{startDate} AND $P{endDate})
+            OR
+            ($P{selectedCategory} = "expired" AND c.expired_date BETWEEN $P{startDate} AND $P{endDate})
+        )
+        AND (
+            $P{searchText} IS NULL
+            OR c.packageName LIKE CONCAT('%', $P{searchText}, '%')
+
+        )
+    ORDER BY c.purchase_date ASC, c.expired_date ASC;
+    ]]>
+    </queryString>
+
+    <field name="id" class="java.lang.Integer"/>
+    <field name="expired_date" class="java.sql.Timestamp"/>
+    <field name="packageName" class="java.lang.String"/>
+    <field name="businessName" class="java.lang.String"/>
+    <field name="purchase_date" class="java.sql.Timestamp"/>
+    <field name="unit_price" class="java.lang.Double"/>
+
+    <variable name="totalAmount" class="java.lang.Double" calculation="Sum" resetType="Report">
+        <variableExpression><![CDATA[$F{unit_price}]]></variableExpression>
+    </variable>
+
+
+    <title>
+        <band height="61" splitType="Stretch">
+
+            <staticText>
+                <reportElement x="230" y="10" width="540" height="20" uuid="95d3b686-bcf5-4c1d-9b76-284b0b1e8833"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="13" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Coupon Report]]></text>
+            </staticText>
+
+
+            <textField>
+                <reportElement x="20" y="35" width="200" height="20"/>
+                <textFieldExpression><![CDATA[
+        ($P{isExcelExport} == null || !$P{isExcelExport}) && $P{searchText} != null && !$P{searchText}.isEmpty() ?
+        "Package: " + $P{searchText} :
+        ""
+    ]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="335" y="35" width="400" height="20"/> <!-- Adjust 'x' to create the desired space -->
+                <textFieldExpression><![CDATA[
+        ($P{selectedCategory} != null && !$P{selectedCategory}.isEmpty()) ?
+        ($P{selectedCategory}.equals("purchaseDate") ?
+        "Purchase Date from " + new java.text.SimpleDateFormat("MM/dd/yyyy").format($P{startDate}) + " to " + new java.text.SimpleDateFormat("MM/dd/yyyy").format($P{endDate}) :
+        ($P{selectedCategory}.equals("expiredDate") ?
+        "Expired Date from " + new java.text.SimpleDateFormat("MM/dd/yyyy").format($P{startDate}) + " to " + new java.text.SimpleDateFormat("MM/dd/yyyy").format($P{endDate}) :
+        "")
+        ) :
+        ""
+    ]]></textFieldExpression>
+            </textField>
+
+        </band>
+    </title>
+
+
+    <columnHeader>
+        <band height="30" splitType="Stretch">
+            <staticText>
+                <reportElement x="12" y="0" width="45" height="30" uuid="60b2d053-a70c-48c6-bf4f-5f816e3a1295" style="tableHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[No.]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="57" y="0" width="103" height="30" uuid="2e669347-b0b8-4ec5-b739-dd1a925ac956" style="tableHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Package Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="160" y="0" width="103" height="30" uuid="9c2b3004-a90c-4729-b519-abf1f5718af4" style="tableHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Business Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="263" y="0" width="103" height="30" uuid="d148edf8-f481-4b27-86ba-ac087b2a0057" style="tableHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Expired Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="366" y="0" width="103" height="30" uuid="6162f6fd-a898-4f85-8bfb-68ba7e4a711b" style="tableHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Purchase Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="469" y="0" width="77" height="30" uuid="6eb3e32f-37d0-4ab6-a610-280b62926ca0" style="tableHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Unit Price]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="30" splitType="Stretch">
+            <textField>
+                <reportElement x="12" y="0" width="45" height="30" uuid="a0f48fb6-70bb-4fe6-afce-c9676cd7c5ac" style="tableCell"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression> <!-- Displays row number -->
+            </textField>
+
+            <textField>
+                <reportElement x="57" y="0" width="103" height="30" uuid="390c9e83-b6fd-4ad2-84cb-ef0f4d2f7ed1" style="tableCell"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{packageName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="160" y="0" width="103" height="30" uuid="78cb3508-e243-49b4-ae92-6956c37665ca" style="tableCell"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{businessName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="263" y="0" width="103" height="30" uuid="dfd249a2-9178-44a3-8ae4-b86c71e768b1" style="tableCell"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{expired_date}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="366" y="0" width="103" height="30" uuid="fd393aac-2249-4e96-8792-db82c50eb244" style="tableCell"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{purchase_date}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="469" y="0" width="77" height="30" uuid="f94398a6-3bcd-4865-967e-64155459a568" style="tableCell"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{unit_price} + " MMK"]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <summary>
+        <band height="60" splitType="Stretch">
+            <textField>
+                <reportElement x="12" y="0" width="251" height="30" uuid="6efb0002-742a-4e53-a80b-8839e597607b" style="tableFooter"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA["Total Quantity: " + $V{REPORT_COUNT}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="263" y="0" width="283" height="30" uuid="9827d40b-c255-423d-bbe5-b20a6e6b2f8e" style="tableFooter"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA["Total Amount: " + $V{totalAmount} + " MMK"]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+
+</jasperReport>

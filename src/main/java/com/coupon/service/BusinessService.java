@@ -380,4 +380,18 @@ public class BusinessService {
     public void restoreBusiness(Integer id) {
         Brepo.restoreBusiness(id);
     }
+
+    public List<BusinessDTO> getAllBusinessNamesAndIds() {
+        List<BusinessEntity> businessEntities = Brepo.findAll(); // fetch all businesses
+        List<BusinessDTO> businessDTOList = new ArrayList<>();
+
+        for (BusinessEntity business : businessEntities) {
+            BusinessDTO businessDTO = new BusinessDTO();
+            businessDTO.setId(business.getId());
+            businessDTO.setName(business.getName());
+            businessDTOList.add(businessDTO);
+        }
+
+        return businessDTOList;
+    }
 }

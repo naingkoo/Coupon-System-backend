@@ -212,6 +212,7 @@ public class CouponService {
             dto.setPurchase_date(coupon.getPurchase().getPurchase_date());
             dto.setImage(coupon.getPackageEntity().getImage());
             dto.setPackageName(coupon.getPackageEntity().getName());
+            dto.setBusinessName(coupon.getPackageEntity().getBusiness().getName());
 
 
             // Map relationships
@@ -222,6 +223,70 @@ public class CouponService {
         }).toList();
     }
 
+    public List<CouponDTO> findByBusinessId(Integer businessId) {
+        List<CouponEntity> couponEntityList = couponRepository.findCouponsBybusinessId(businessId);
+
+        return couponEntityList.stream().map(coupon -> {
+            CouponDTO dto = new CouponDTO();
+            dto.setId(coupon.getId());
+            dto.setExpired_date(coupon.getExpired_date());
+            dto.setConfirm(coupon.getConfirm().name());
+            dto.setUsed_status(coupon.getUsed_status());
+            dto.setTransfer_status(coupon.getTransfer_status());
+            dto.setUnit_price(coupon.getPackageEntity().getUnit_price());
+            dto.setPurchase_date(coupon.getPurchase().getPurchase_date());
+            dto.setImage(coupon.getPackageEntity().getImage());
+            dto.setPackageName(coupon.getPackageEntity().getName());
+            dto.setBusinessName(coupon.getPackageEntity().getBusiness().getName());
+
+            // Map relationships
+            dto.setPurchase_id(coupon.getPurchase() != null ? coupon.getPurchase().getId() : null);
+            dto.setPackage_id(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getId() : null);
+
+            return dto;
+        }).toList();
+    }
+
+    private CouponDTO convertToDTO(CouponEntity couponEntity) {
+        CouponDTO dto = new CouponDTO();
+
+        dto.setId(couponEntity.getId());
+        dto.setExpired_date(couponEntity.getExpired_date());
+        dto.setConfirm(couponEntity.getConfirm().toString());
+        dto.setUsed_status(couponEntity.getUsed_status());
+        dto.setTransfer_status(couponEntity.getTransfer_status());
+        dto.setPaid_status(couponEntity.getPaid_status());
+        dto.setImage(couponEntity.getPackageEntity().getImage());
+        dto.setUnit_price(couponEntity.getPackageEntity().getUnit_price());
+        // If packageEntity is not null, set package_id
+        if (couponEntity.getPackageEntity() != null) {
+            dto.setPackage_id(couponEntity.getPackageEntity().getId());
+        }
+        if (couponEntity.getPackageEntity() != null) {
+            dto.setPackageName(couponEntity.getPackageEntity().getName());
+        }
+
+        // If purchase is not null, set purchase_id
+        if (couponEntity.getPurchase() != null) {
+            dto.setPurchase_date(couponEntity.getPurchase().getPurchase_date());
+        }
+
+        if (couponEntity.getPackageEntity().getBusiness() != null) {
+            dto.setBusinessName(couponEntity.getPackageEntity().getBusiness().getName());
+        }
+
+        return dto;
+    }
+    public List<CouponDTO> filterCoupons(String searchText, String selectedCategory, Date startDate, Date endDate) {
+        List<CouponEntity> filteredCoupons = couponRepository.filterCoupons(searchText, selectedCategory, startDate, endDate);
+        return filteredCoupons.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+
+    public List<CouponDTO> filterCouponsWithBusinessId(Integer businessId, String searchText, String selectedCategory, Date startDate, Date endDate) {
+        List<CouponEntity> filteredCoupons = couponRepository.filterCouponsWithBusinessId(businessId, searchText, selectedCategory, startDate, endDate);
+        return filteredCoupons.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
     public List<CouponDTO> findallByUserId(Integer userId) {
         List<CouponEntity> couponEntity = couponRepository.findbyUserId(userId);
@@ -230,83 +295,6 @@ public class CouponService {
             return dto;
         }).toList();
         return dtoList;
-    }
-
-    public void exportCouponReport(HttpServletResponse response) {
-        try {
-
-            List<CouponDTO> couponList = findall();
-
-            InputStream reportStream = getClass().getResourceAsStream("/reports/reportCoupon.jrxml");
-
-            if (reportStream == null) {
-                throw new RuntimeException("Jasper report template not found in resources/reports/coupon_report.jrxml");
-            }
-
-            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
-
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
-
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("CreatedBy", "Coupon Admin");
-
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-            response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.pdf");
-
-            ServletOutputStream outputStream = response.getOutputStream();
-            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
-
-            outputStream.flush();
-            outputStream.close();
-
-        } catch (JRException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error occurred while generating the report: " + e.getMessage());
-        }
-    }
-
-    public void exportCouponReportToExcel(HttpServletResponse response) {
-        try {
-            // Fetch data
-            List<CouponDTO> couponList = findall();
-
-            // Load the report template
-            InputStream reportStream = getClass().getResourceAsStream("/reports/reportCoupon.jrxml");
-            if (reportStream == null) {
-                throw new RuntimeException("Jasper report template not found in resources/reports/coupon_report.jrxml");
-            }
-
-            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
-
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
-
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("CreatedBy", "Coupon Admin");
-
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.xlsx");
-
-            JRXlsxExporter exporter = new JRXlsxExporter();
-
-            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
-
-            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
-            configuration.setOnePagePerSheet(false);  // Set true to create a sheet for each page
-            configuration.setDetectCellType(true);   // Detect cell types (e.g., numbers, text)
-            exporter.setConfiguration(configuration);
-
-            // Export the report
-            exporter.exportReport();
-
-        } catch (JRException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error occurred while generating the Excel report: " + e.getMessage());
-        }
     }
 
     public long countConfirmedCoupons() {
@@ -470,6 +458,371 @@ public class CouponService {
         return couponCountByDate;
     }
 
+    public List<CouponDTO> getCouponsByBusinessAndDateRange(Integer businessId, Date startDate, Date endDate) {
+        // Fetch coupons from repository
+        List<CouponEntity> coupons = couponRepository.findCouponsByBusinessAndDateRange(businessId, startDate, endDate);
+
+        // Convert entities to DTOs
+        return coupons.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void exportCouponReport(HttpServletResponse response) {
+        try {
+
+            List<CouponDTO> couponList = findall();
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponReport.jrxml");
+
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found in resources/reports/couponReport.jrxml");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+
+
+
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.pdf");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error occurred while generating the report: " + e.getMessage());
+        }
+    }
+
+    public void exportCouponReportToExcel(HttpServletResponse response) {
+        try {
+            List<CouponDTO> couponList = findall();
+            System.out.println("Number of coupons fetched: " + couponList.size());
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponReport.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.xlsx");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+
+            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+            configuration.setOnePagePerSheet(false);
+            exporter.setConfiguration(configuration);
+
+            System.out.println("Starting the export...");
+            exporter.exportReport();
+            System.out.println("Export complete!");
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while exporting to Excel.");
+        }
+    }
+
+    public void exportCouponReportbybusinessId(HttpServletResponse response, Integer businessId) {
+        try {
+            List<CouponDTO> couponList = findByBusinessId(businessId);
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found in resources/reports/couponReport.jrxml");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+            parameters.put("businessId", businessId);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.pdf");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error occurred while generating the report: " + e.getMessage());
+        }
+    }
+    public void exportCouponReportToExcelBybusinessId(HttpServletResponse response,Integer businessId) {
+        try {
+            List<CouponDTO> couponList = findByBusinessId(businessId);
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found in resources/reports/couponReport.jrxml");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+            parameters.put("businessId", businessId);
+
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.xlsx");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+
+            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+            configuration.setOnePagePerSheet(false);
+            configuration.setDetectCellType(true);
+            exporter.setConfiguration(configuration);
+
+            exporter.exportReport();
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error occurred while generating the Excel report: " + e.getMessage());
+        }
+    }
+
+
+    public void exportReportbyfilterbyPdf(HttpServletResponse response,
+                                          String searchText,
+                                          String selectedCategory,
+                                          Date startDate,
+                                          Date endDate) {
+
+        try {
+            List<CouponDTO> filteredCoupons = filterCoupons(searchText, selectedCategory, startDate, endDate);
+
+            if (filteredCoupons.isEmpty()) {
+                throw new RuntimeException("No coupons found for the given filter criteria.");
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponReport.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+            parameters.put("searchText", searchText);
+            parameters.put("selectedCategory", selectedCategory);
+            parameters.put("startDate", startDate);
+            parameters.put("endDate", endDate);
+            parameters.put("totalQuantity", filteredCoupons.size());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=filtered_coupons_report.pdf");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while exporting report: " + e.getMessage());
+        }
+    }
+    public void exportReportByFilterByExcel(HttpServletResponse response,
+                                            String searchText,
+                                            String selectedCategory,
+                                            Date startDate,
+                                            Date endDate) {
+        try {
+            List<CouponDTO> filteredCoupons = filterCoupons(searchText, selectedCategory, startDate, endDate);
+
+            if (filteredCoupons.isEmpty()) {
+                throw new RuntimeException("No coupons found for the given filter criteria.");
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponReport.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
+            System.out.println("searchText: " + searchText);
+            System.out.println("selectedCategory: " + selectedCategory);
+            System.out.println("startDate: " + startDate);
+            System.out.println("endDate: " + endDate);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+            parameters.put("searchText", searchText);
+            parameters.put("selectedCategory", selectedCategory);
+            parameters.put("startDate", startDate);
+            parameters.put("endDate", endDate);
+            parameters.put("totalQuantity", filteredCoupons.size());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=filtered_coupons_report.xlsx");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+
+            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+            configuration.setOnePagePerSheet(false);  // Optional configuration to set multiple rows on a sheet
+            exporter.setConfiguration(configuration);
+
+            System.out.println("Starting the Excel export...");
+            exporter.exportReport();
+            System.out.println("Excel export complete!");
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while exporting to Excel: " + e.getMessage());
+        }
+    }
+
+
+    public void exportReportbyfilterbyBusinessId(HttpServletResponse response,Integer businessId,
+                                                 String searchText,
+                                                 String selectedCategory,
+                                                 Date startDate,
+                                                 Date endDate
+    ) {
+
+        try {
+            List<CouponDTO> filteredCoupons = filterCouponsWithBusinessId(businessId,searchText, selectedCategory, startDate, endDate);
+
+            if (filteredCoupons.isEmpty()) {
+                throw new RuntimeException("No coupons found for the given filter criteria.");
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Business");
+            parameters.put("businessId", businessId);
+            parameters.put("searchText", searchText);
+            parameters.put("selectedCategory", selectedCategory);
+            parameters.put("startDate", startDate);
+            parameters.put("endDate", endDate);
+
+
+            parameters.put("totalQuantity", filteredCoupons.size());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=filtered_coupons_report.pdf");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while exporting report: " + e.getMessage());
+        }
+    }
+    public void exportReportByFilterByExcelbyBusinessId(HttpServletResponse response,Integer businessId,
+                                                        String searchText,
+                                                        String selectedCategory,
+                                                        Date startDate,
+                                                        Date endDate) {
+        try {
+            List<CouponDTO> filteredCoupons = filterCouponsWithBusinessId(businessId,searchText, selectedCategory, startDate, endDate);
+
+            if (filteredCoupons.isEmpty()) {
+                throw new RuntimeException("No coupons found for the given filter criteria.");
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Business");
+            parameters.put("businessId", businessId);
+            parameters.put("searchText", searchText);
+            parameters.put("selectedCategory", selectedCategory);
+            parameters.put("startDate", startDate);
+            parameters.put("endDate", endDate);
+            parameters.put("totalQuantity", filteredCoupons.size());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=filtered_coupons_report.xlsx");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+
+            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+            configuration.setOnePagePerSheet(false);  // Optional configuration to set multiple rows on a sheet
+            exporter.setConfiguration(configuration);
+
+            System.out.println("Starting the Excel export...");
+            exporter.exportReport();
+            System.out.println("Excel export completed.");
+
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while exporting to Excel: " + e.getMessage());
+        }
+    }
 }
 
 

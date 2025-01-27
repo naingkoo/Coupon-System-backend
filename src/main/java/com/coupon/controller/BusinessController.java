@@ -170,5 +170,10 @@ public class BusinessController {
     public void restoreBusiness(@PathVariable Integer id) {
         Bservice.restoreBusiness(id);
     }
+
+    @GetMapping("/names")
+    public List<BusinessDTO> getAllBusinessNamesAndIds() {
+        return Bservice.getAllBusinessNamesAndIds();
+    }
 }
 

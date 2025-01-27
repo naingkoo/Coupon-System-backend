@@ -10,15 +10,17 @@ public class CouponDTO {
     public  String confirm;
     private Boolean used_status;
     private Boolean transfer_status;
+    private Boolean paid_status;
     private Integer purchase_id;
     private Integer package_id;
+    private Integer businessId;
+    private String businessName;
     private String packageName;
     private Date purchase_date;
     private Double unit_price;
     private String image;
     private String QR;
     private String description;
-    private String business;
     private String owner;
 
     public Integer getId() {
@@ -61,6 +63,14 @@ public class CouponDTO {
         this.transfer_status = transfer_status;
     }
 
+    public Boolean getPaid_status() {
+        return paid_status;
+    }
+
+    public void setPaid_status(Boolean paid_status) {
+        this.paid_status = paid_status;
+    }
+
     public Integer getPurchase_id() {
         return purchase_id;
     }
@@ -75,6 +85,22 @@ public class CouponDTO {
 
     public void setPackage_id(Integer package_id) {
         this.package_id = package_id;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
     }
 
     public String getPackageName() {
@@ -123,14 +149,6 @@ public class CouponDTO {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getBusiness() {
-        return business;
-    }
-
-    public void setBusiness(String business) {
-        this.business = business;
     }
 
     public String getOwner() {

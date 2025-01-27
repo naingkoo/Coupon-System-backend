@@ -116,17 +116,7 @@ public class CouponController {
         }
         return ResponseEntity.ok(couponList);
     }
-    @GetMapping("/report")
-    public void downloadCouponReport(
-            @RequestParam String fileType, HttpServletResponse response) {
-        if ("pdf".equalsIgnoreCase(fileType)) {
-            couponService.exportCouponReport(response);
-        } else if ("excel".equalsIgnoreCase(fileType)) {
-            couponService.exportCouponReportToExcel(response);
-        } else {
-            throw new IllegalArgumentException("Invalid file type: " + fileType);
-        }
-    }
+
 
     @GetMapping("/countALlCoupons")
     public long countALlCoupons() {
@@ -226,6 +216,118 @@ public class CouponController {
             @RequestParam("startDate") Date startDate,
             @RequestParam("endDate") Date endDate) {
         return couponService.getCouponCountByBusinessAndPurchaseDate(businessId, startDate, endDate);
+    }
+
+    @GetMapping("/filter2")
+    public ResponseEntity<List<CouponDTO>> getCouponsByBusinessAndDateRange(
+            @RequestParam Integer businessId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+        List<CouponDTO> coupons = couponService.getCouponsByBusinessAndDateRange(businessId, startDate, endDate);
+        return ResponseEntity.ok(coupons);
+    }
+
+    @GetMapping("/public/findbyBusinessId/{businessId}")
+    public ResponseEntity<List<CouponDTO>> findAllbybusinessId(@PathVariable Integer businessId){
+        List<CouponDTO> couponList=  couponService.findByBusinessId(businessId);
+        if(couponList.isEmpty()){
+            throw new RuntimeException("coupon not found");
+        }
+        return ResponseEntity.ok(couponList);
+    }
+
+    @GetMapping("/report")
+    public void downloadCouponReport(@RequestParam String fileType, HttpServletResponse response) {
+
+        if ("pdf".equalsIgnoreCase(fileType)) {
+            couponService.exportCouponReport(response);
+        } else if ("excel".equalsIgnoreCase(fileType)) {
+            couponService.exportCouponReportToExcel(response);
+        } else {
+            throw new IllegalArgumentException("Invalid file type: " + fileType);
+        }
+    }
+
+    @GetMapping("/exportCouponReport")
+    public void downloadReport(@RequestParam("businessId") Integer businessId,
+                               @RequestParam("fileType") String fileType,
+                               HttpServletResponse response) {
+        System.out.println("Received businessId: " + businessId);
+        try {
+            if ("pdf".equalsIgnoreCase(fileType)) {
+                response.setContentType("application/pdf");
+                response.setHeader("Content-Disposition", "attachment; filename=coupon_report.pdf");
+                couponService.exportCouponReportbybusinessId( response,businessId);
+            } else if ("excel".equalsIgnoreCase(fileType)) {
+                response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                response.setHeader("Content-Disposition", "attachment; filename=coupon_report.xlsx");
+                couponService.exportCouponReportToExcelBybusinessId( response,businessId);
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid file type");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/filter")
+    public List<CouponDTO> filterCoupons(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String selectedCategory,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+
+
+        return couponService.filterCoupons(searchText, selectedCategory, startDate, endDate);
+    }
+    @GetMapping("/filterByBusinessId")
+    public ResponseEntity<List<CouponDTO>> filterCouponsByBusinessId(
+            @RequestParam Integer businessId,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String selectedCategory,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+
+        List<CouponDTO> coupons = couponService.filterCouponsWithBusinessId(businessId, searchText, selectedCategory, startDate, endDate);
+        return ResponseEntity.ok(coupons);
+    }
+
+
+    @GetMapping("/exportFilteredReport")
+    public void downloadFilteredReport(
+            @RequestParam String fileType,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String selectedCategory,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            HttpServletResponse response) {
+
+        if ("pdf".equalsIgnoreCase(fileType)) {
+            couponService.exportReportbyfilterbyPdf(response, searchText, selectedCategory, startDate, endDate);
+        } else if ("excel".equalsIgnoreCase(fileType)) {
+            couponService.exportReportByFilterByExcel(response, searchText, selectedCategory, startDate, endDate);
+        } else {
+            throw new IllegalArgumentException("Invalid file type: " + fileType);
+        }
+    }
+    @GetMapping("/exportFilteredReportbybusinessId")
+    public void downloadFilteredReportBybusinessId(
+            @RequestParam String fileType,
+            @RequestParam(required = false) Integer businessId,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String selectedCategory,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            HttpServletResponse response) {
+
+        if ("pdf".equalsIgnoreCase(fileType)) {
+            couponService.exportReportbyfilterbyBusinessId(response,businessId, searchText, selectedCategory, startDate, endDate);
+        } else if ("excel".equalsIgnoreCase(fileType)) {
+            couponService.exportReportByFilterByExcelbyBusinessId(response, businessId,searchText, selectedCategory, startDate, endDate);
+        } else {
+            throw new IllegalArgumentException("Invalid file type: " + fileType);
+        }
     }
 }
 
