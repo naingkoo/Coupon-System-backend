@@ -4,9 +4,12 @@ import com.coupon.entity.*;
 import com.coupon.model.BusinessDTO;
 import com.coupon.model.CouponDTO;
 
+import com.coupon.model.IsUsedDTO;
 import com.coupon.model.NotificationDTO;
 import com.coupon.reposistory.*;
 import com.coupon.responObject.ResourceNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -41,6 +44,9 @@ public class CouponService {
 
     @Autowired
     ModelMapper mapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private CouponRepository couponRepository;
@@ -319,9 +325,7 @@ public class CouponService {
     }
 
     public CouponDTO searchCoupon(Integer bussinessID, String couponcode) throws ResourceNotFoundException, IOException {
-        CouponEntity couponEntity=couponRepository.searchCoupon(bussinessID,couponcode).orElseThrow(()->new ResourceNotFoundException("CouponCode not found"));
-        couponEntity.getPackageEntity().setBusiness(null);
-
+        CouponEntity couponEntity=couponRepository.searchCoupon(bussinessID,couponcode).orElseThrow(()->new ResourceNotFoundException("Sorry, this coupon is not available or no longer valid."));
         if(!couponEntity.getUsed_status() || couponEntity.getExpired_date().before(new Date(System.currentTimeMillis()))){
             throw new ResourceNotFoundException("your coupon been used or expired");
 
@@ -336,6 +340,7 @@ public class CouponService {
             couponDTO.setUnit_price(couponEntity.getPackageEntity().getUnit_price());
             couponDTO.setPurchase_date(couponEntity.getPurchase().getPurchase_date());
             couponDTO.setUsed_status(couponEntity.getUsed_status());
+            String jsonObject=objectMapper.writeValueAsString(couponDTO);
             if(istransfer) {
                 String ownner = couponEntity.getPurchase().getUser().getId().toString();
                 messagingTemplate.convertAndSend("/queue/" + ownner, couponDTO);
@@ -343,11 +348,17 @@ public class CouponService {
                 notification.setTitle("Confrim to Use Coupon");
                 notification.setNotificationStatus(NotificationStatus.UNREAD);
                 notification.setContent(Map.of(
-                        "bussinessID", bussinessID,
-                        "couponcode", couponcode
+                        "type","TASK",
+                        "context","We have received your request to use the coupon. Please approve to proceed.",
+                        "action","readyUse",
+                        "object",jsonObject
                 ));
                 notification.setUser(couponEntity.getPurchase().getUser());
+               try{
                 notificationRepository.save(notification);
+               } catch (Exception e) {
+                   throw new RuntimeException(e);
+               }
             }else{
                 Integer receiver_id=transferRepository.findOwner(couponEntity.getId());
                 messagingTemplate.convertAndSend("/queue/" + receiver_id.toString(), couponDTO);
@@ -355,8 +366,10 @@ public class CouponService {
                 notification.setTitle("Confrim to Use Coupon");
                 notification.setNotificationStatus(NotificationStatus.UNREAD);
                 notification.setContent(Map.of(
-                        "bussinessID", bussinessID,
-                        "couponcode", couponcode
+                        "type","TASK",
+                        "context","We have received your request to use the coupon. Please approve to proceed.",
+                        "action","readyUse",
+                        "object",jsonObject
                 ));
                 notificationRepository.save(notification);
             }
@@ -365,36 +378,44 @@ public class CouponService {
         }
     }
     @Transactional
-    public boolean useCoupon(Integer id,Integer userId) {
-        try {
-                CouponEntity usedCoupon=couponRepository.useCoupon(id);
-            if (usedCoupon != null) {
+    public boolean useCoupon(Integer id,Integer userId)throws ResourceNotFoundException,IOException{
+            if (couponRepository.useCoupon(id)!=0) {
                 IsUsedEntity isUsedEntity = new IsUsedEntity();
                 isUsedEntity.setUsed_date(new Date());
                 CouponEntity couponEntity=new CouponEntity();
                 couponEntity.setId(id);
                 isUsedEntity.setCoupon(couponEntity);
+                IsUsedEntity isUsed=  isUsedRepository.save(isUsedEntity);
+                couponEntity=couponRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Sorry"));
+                CouponDTO couponDTO=new CouponDTO();
+                couponDTO.setId(couponEntity.getId());
+                couponDTO.setExpired_date(couponEntity.getExpired_date());
+                couponDTO.setImage(couponEntity.getPackageEntity().getImage());
+                couponDTO.setPackageName(couponEntity.getPackageEntity().getName());
+                couponDTO.setDescription(couponEntity.getPackageEntity().getDescription());
+                couponDTO.setUnit_price(couponEntity.getPackageEntity().getUnit_price());
+                couponDTO.setPurchase_date(couponEntity.getPurchase().getPurchase_date());
+                couponDTO.setUsed_status(couponEntity.getUsed_status());
+                IsUsedDTO isUsedDTO= mapper.map(isUsed,IsUsedDTO.class);
+                isUsedDTO.setCoupon(couponDTO);
+                String jsonObject=objectMapper.writeValueAsString(isUsedDTO);
                 NotificationEntity notificationEntity=new NotificationEntity();
                 UserEntity user=new UserEntity();
                 user.setId(userId);
                 notificationEntity.setUser(user);
                 notificationEntity.setNotificationStatus(NotificationStatus.UNREAD);
-                notificationEntity.setTitle("Use Coupon");
-                CouponDTO usedcouponDTO=mapper.map(usedCoupon, CouponDTO.class);
+                notificationEntity.setTitle("Used Coupon");
                 notificationEntity.setContent(Map.of(
-                        "action","TEXT",
-                        "context","your Coupon is used",
-                        "object",usedcouponDTO
+                        "type","TASK",
+                        "context","Your coupon has been successfully applied!",
+                        "action","usedCoupon",
+                        "object",jsonObject
                 ));
                 notificationRepository.save(notificationEntity);
-                isUsedRepository.save(isUsedEntity);
                 return true;
+            }else {
+                throw new ResourceNotFoundException("Sorry, this coupon is not available or no longer valid.");
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException("Failed to use coupon", e);
-        }
-        return false;
     }
 
 

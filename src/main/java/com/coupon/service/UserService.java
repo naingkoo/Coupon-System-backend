@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+gimport org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -246,6 +247,9 @@ public class UserService {
     public List<NotificationDTO> getNotification(Integer id) throws ResourceNotFoundException {
         try {
             List<NotificationEntity> notification = notificationRepository.findByUser(id);
+           if (notification.isEmpty()){
+               throw new ResourceNotFoundException("No notification found for you");
+           }
             List<NotificationDTO> dtoList = notification.stream()
                     .map(noti -> {
                         NotificationDTO dto = mapper.map(noti, NotificationDTO.class);
@@ -257,10 +261,9 @@ public class UserService {
 //            notificationDTO.setContent(notification.getContent());
 //            notificationDTO.setNoti_date(notification.getNoti_date());
             return dtoList;
-        } catch (EntityNotFoundException | EmptyResultDataAccessException e) {
-            // Log the error and throw a custom exception
-            System.out.println("No notification found for user with ID: " + id);
-            throw new ResourceNotFoundException("No notification found for user with ID: " + id);
+        } catch (ResourceNotFoundException e) {
+            // Re-throw custom exception to keep stack trace intact
+            throw e;
         } catch (Exception e) {
             // Handle unexpected exceptions
             System.err.println("An error occurred: " + e.getMessage());
@@ -268,5 +271,7 @@ public class UserService {
             throw new ResourceNotFoundException("An unexpected error occurred while fetching the notification.");
         }
     }
+
+
 
 }

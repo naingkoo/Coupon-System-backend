@@ -2,15 +2,19 @@ package com.coupon.controller;
 import com.coupon.AuthenConfig.JwtService;
 import com.coupon.AuthenConfig.MyuserDetailService;
 import com.coupon.entity.ForgetPassword;
+import com.coupon.entity.IsUsedEntity;
+import com.coupon.entity.NotificationEntity;
 import com.coupon.entity.UserEntity;
-import com.coupon.model.NotificationDTO;
-import com.coupon.model.UserDTO;
-import com.coupon.model.UserPhotoDTO;
+import com.coupon.model.*;
+import com.coupon.reposistory.IsUsedRepository;
+import com.coupon.reposistory.NotificationRepository;
 import com.coupon.responObject.HttpResponse;
 import com.coupon.service.ForgetPasswordService;
+import com.coupon.service.NotificationService;
 import com.coupon.service.UserPhotoService;
 import com.coupon.service.UserService;
 import jakarta.mail.MessagingException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +27,20 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import com.coupon.model.PasswordRequest;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
 public class UserController {
-@Autowired
-private JwtService jwtService;
+    @Autowired
+    NotificationService notificationService;
+    @Autowired
+    IsUsedRepository isUsedRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
+    @Autowired
+    private JwtService jwtService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -187,5 +197,30 @@ private JwtService jwtService;
         List<NotificationDTO> notificationDTO=userService.getNotification(userId);
         return ResponseEntity.ok(notificationDTO);
     }
+    @GetMapping("countNoti/{id}")
+    public ResponseEntity<Map<String,Integer>> getN(@PathVariable Integer id){
+        return ResponseEntity.ok(Collections.singletonMap("unread",notificationService.countUnreadNotifications(id)));
+    }
+    @PutMapping("makeRead/{id}")
+    public ResponseEntity<Void> makeRead(@PathVariable Integer id){
+        boolean isDeleted = notificationService.makeRead(id);
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+@PutMapping("notifications/{id}")
+public ResponseEntity<Void> softDeleteNotification(@PathVariable Integer id) {
+    boolean isDeleted = notificationService.softDeleteNotification(id);
+    if (isDeleted) {
+        return ResponseEntity.noContent().build();
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
+
 
 }

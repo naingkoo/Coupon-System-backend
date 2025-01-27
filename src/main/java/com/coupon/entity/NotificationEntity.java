@@ -7,16 +7,16 @@ import java.util.Map;
 import com.coupon.converter.MapToJsonConverter;
 
 @Entity
-@Table(name="Notification")
+@Table(name = "notification")
 public class NotificationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "noti_date")
+    @Column(name = "noti_date", nullable = false)
     @DateTimeFormat(pattern = "MM/dd/yyyy")
-    private Date noti_date;
+    private Date notiDate = new Date();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -26,38 +26,35 @@ public class NotificationEntity {
     @Column(name = "status", nullable = false)
     private NotificationStatus notificationStatus;
 
-    @Column(name = "Title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "Content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     @Convert(converter = MapToJsonConverter.class)
     private Map<String, Object> content;
-
-    public Integer getId() {
-        return id;
-    }
 
     public NotificationEntity() {
     }
 
-    public NotificationEntity(Date noti_date, UserEntity user, NotificationStatus notificationStatus, String title, Map<String, Object> content) {
-        this.noti_date = noti_date;
+    public NotificationEntity(Date notiDate, UserEntity user, NotificationStatus notificationStatus, String title, Map<String, Object> content) {
+        this.notiDate = notiDate;
         this.user = user;
         this.notificationStatus = notificationStatus;
         this.title = title;
         this.content = content;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+
+    public Integer getId() {
+        return id;
     }
 
-    public Date getNoti_date() {
-        return noti_date;
+    public Date getNotiDate() {
+        return notiDate;
     }
 
-    public void setNoti_date() {
-        this.noti_date =new Date();
+    public void setNotiDate(Date notiDate) {
+        this.notiDate = notiDate;
     }
 
     public UserEntity getUser() {

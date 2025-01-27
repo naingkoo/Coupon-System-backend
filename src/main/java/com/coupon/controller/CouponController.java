@@ -7,6 +7,7 @@ import com.coupon.model.BusinessDTO;
 import com.coupon.model.CategoryDTO;
 import com.coupon.model.CouponDTO;
 import com.coupon.model.QRDTO;
+import com.coupon.responObject.ResourceNotFoundException;
 import com.coupon.service.CouponService;
 import com.coupon.service.QRService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -151,13 +152,12 @@ public class CouponController {
     }
 
     @PutMapping("comfrimedTouse")
-    public ResponseEntity<Map<String,String>> useCoupo1(@RequestBody Map<String,Integer> coupon) throws IOException {
+    public ResponseEntity<Map<String,String>> useCoupo1(@RequestBody Map<String,Integer> coupon)throws IOException {
         Integer couponId=coupon.get("couponId");
         Integer userId=coupon.get("userId");
         if(couponService.useCoupon(couponId,userId)){
         return ResponseEntity.ok(Collections.singletonMap("message","your coupon is sussfully used"));
     }
-
         return ResponseEntity.badRequest().body(Collections.singletonMap("message","failed to use"));
     }
 

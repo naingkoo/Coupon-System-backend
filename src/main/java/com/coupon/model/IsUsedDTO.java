@@ -8,7 +8,7 @@ public class IsUsedDTO {
 
     private Date used_date;
 
-    private Integer coupon_id;
+    private CouponDTO coupon;
 
     public Integer getId() {
         return id;
@@ -26,11 +26,11 @@ public class IsUsedDTO {
         this.used_date = used_date;
     }
 
-    public Integer getCoupon_id() {
-        return coupon_id;
+    public CouponDTO getCoupon() {
+        return coupon;
     }
 
-    public void setCoupon_id(Integer coupon_id) {
-        this.coupon_id = coupon_id;
+    public void setCoupon(CouponDTO coupon) {
+        this.coupon = coupon;
     }
 }

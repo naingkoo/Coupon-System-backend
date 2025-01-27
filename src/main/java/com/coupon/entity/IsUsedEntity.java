@@ -17,7 +17,7 @@ public class IsUsedEntity {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date used_date;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "coupon_id",nullable = false)
     private CouponEntity coupon;
 

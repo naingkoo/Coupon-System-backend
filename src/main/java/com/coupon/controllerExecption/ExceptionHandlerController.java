@@ -35,7 +35,7 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex) {
         // Create a custom error response object
         ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred.");
-        System.out.println("handleUnknownException from metnhod :"+ex);
+        System.out.println("handleUnknownException from metnhod :"+ex.getCause());
         // Return response with 500 Internal Server Error status and the error message
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

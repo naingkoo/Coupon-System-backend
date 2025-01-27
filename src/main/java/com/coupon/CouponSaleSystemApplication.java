@@ -13,17 +13,6 @@ public class CouponSaleSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CouponSaleSystemApplication.class, args);}
-	@Bean
-	public UserDTO userDTOtoEntity(UserEntity entity) {
-		UserDTO userDTO = new UserDTO();
-		userDTO.setName(entity.getName());
-		userDTO.setEmail(entity.getEmail());
-		userDTO.setPassword(entity.getPassword());
-		userDTO.setPhone(entity.getPhone());
-		userDTO.setRole(entity.getRole());
-		return userDTO;
-	}
-
 
 	@Bean
 	public ModelMapper modelMapper() {

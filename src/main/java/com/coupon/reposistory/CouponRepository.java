@@ -45,8 +45,8 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE CouponEntity c SET c.used_status = false WHERE c.id = :id")
-    CouponEntity useCoupon(@Param("id") Integer id);
+    @Query("UPDATE CouponEntity c SET c.used_status = false WHERE c.id = :id and c.used_status = true")
+    int useCoupon(@Param("id") Integer id);
 
     @Query("SELECT DATE(p.purchase_date) AS purchaseDate, COUNT(c) AS confirmedCount " +
             "FROM CouponEntity c " +

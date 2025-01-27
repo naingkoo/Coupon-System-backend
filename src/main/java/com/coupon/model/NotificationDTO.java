@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class NotificationDTO {
     private Integer id;
-    private Date noti_date;
+    private Date notiDate;
     private Integer userId;
     private NotificationStatus notificationStatus;
     private String title;
@@ -24,12 +24,12 @@ public class NotificationDTO {
         this.id = id;
     }
 
-    public Date getNoti_date() {
-        return noti_date;
+    public Date getNotiDate() {
+        return notiDate;
     }
 
-    public void setNoti_date(Date noti_date) {
-        this.noti_date = noti_date;
+    public void setNotiDate(Date notiDate) {
+        this.notiDate = notiDate;
     }
 
     public Integer getUserId() {
