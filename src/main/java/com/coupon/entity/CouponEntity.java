@@ -26,6 +26,9 @@ public class CouponEntity {
     @Column(name = "transfer_status", nullable = false)
     private Boolean transfer_status = true;
 
+    @Column(name = "paid_status", nullable = false)
+    private Boolean paid_status = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_id", nullable = false)
     private PurchaseEntity purchase;
@@ -36,6 +39,9 @@ public class CouponEntity {
 
     @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private QREntity qr;
+
+    @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PaidCouponEntity paidCouponEntity;
 
     public Integer getId() {
         return id;
@@ -77,6 +83,14 @@ public class CouponEntity {
         this.transfer_status = transfer_status;
     }
 
+    public Boolean getPaid_status() {
+        return paid_status;
+    }
+
+    public void setPaid_status(Boolean paid_status) {
+        this.paid_status = paid_status;
+    }
+
     public PurchaseEntity getPurchase() {
         return purchase;
     }
@@ -99,8 +113,13 @@ public class CouponEntity {
 
     public void setQr(QREntity qr) {
         this.qr = qr;
-        if (qr != null) {
-            qr.setCoupon(this);
-        }
+    }
+
+    public PaidCouponEntity getPaidCouponEntity() {
+        return paidCouponEntity;
+    }
+
+    public void setPaidCouponEntity(PaidCouponEntity paidCouponEntity) {
+        this.paidCouponEntity = paidCouponEntity;
     }
 }

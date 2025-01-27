@@ -72,4 +72,53 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             "ORDER BY p.purchase_date ASC")
     List<Object[]> countCouponsByBusinessAndPurchaseDate(Integer businessId, Date startDate, Date endDate);
 
+    @Query("SELECT c FROM CouponEntity c JOIN c.packageEntity p WHERE p.business.id = :businessId AND c.confirm = CONFIRM")
+    List<CouponEntity> findCouponsBybusinessId(@Param("businessId") Integer businessId);
+
+
+    @Query("SELECT c FROM CouponEntity c " +
+            "JOIN c.packageEntity p " +
+            "JOIN p.business b " +
+            "JOIN c.purchase pu " +
+            "WHERE b.id = :businessId " +
+            "AND pu.purchase_date BETWEEN :startDate AND :endDate " +
+            "AND c.confirm = 'CONFIRM'")
+    List<CouponEntity> findCouponsByBusinessAndDateRange(
+            @Param("businessId") Integer businessId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+
+    @Query("SELECT c FROM CouponEntity c WHERE "
+            + "(LOWER(c.packageEntity.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR :searchText IS NULL OR :searchText = '') "
+            + "AND (:startDate <= :endDate) "
+            + "AND ("
+            + "    (:selectedCategory = 'purchaseDate' "
+            + "     AND ((DATE(c.purchase.purchase_date) = DATE(:startDate)) "
+            + "          OR (DATE(c.purchase.purchase_date) BETWEEN DATE(:startDate) AND DATE(:endDate)))) "
+            + "    OR (:selectedCategory = 'expiredDate' "
+            + "        AND DATE(c.expired_date) BETWEEN DATE(:startDate) AND DATE(:endDate)) "
+            + "    OR :selectedCategory IS NULL OR :selectedCategory = ''"
+            + ")")
+    List<CouponEntity> filterCoupons(@Param("searchText") String searchText,
+                                     @Param("selectedCategory") String selectedCategory,
+                                     @Param("startDate") Date startDate,
+                                     @Param("endDate") Date endDate);
+
+
+    @Query("SELECT c FROM CouponEntity c WHERE c.packageEntity.business.id = :businessId "
+            + "AND (LOWER(c.packageEntity.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR :searchText IS NULL OR :searchText = '') "
+            + "AND (:startDate <= :endDate) "
+            + "AND ("
+            + "    (:selectedCategory = 'purchaseDate' "
+            + "     AND ((DATE(c.purchase.purchase_date) = DATE(:startDate)) "
+            + "          OR (DATE(c.purchase.purchase_date) BETWEEN DATE(:startDate) AND DATE(:endDate)))) "
+            + "    OR (:selectedCategory = 'expiredDate' "
+            + "        AND DATE(c.expired_date) BETWEEN DATE(:startDate) AND DATE(:endDate)) "
+            + "    OR :selectedCategory IS NULL OR :selectedCategory = ''"
+            + ")")
+    List<CouponEntity> filterCouponsWithBusinessId(@Param("businessId") Integer businessId,
+                                                   @Param("searchText") String searchText,
+                                                   @Param("selectedCategory") String selectedCategory,
+                                                   @Param("startDate") Date startDate,
+                                                   @Param("endDate") Date endDate);
 }
