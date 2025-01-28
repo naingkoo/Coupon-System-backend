@@ -40,6 +40,11 @@ public class BusinessEntity {
     @Column(name="is_delete", columnDefinition ="boolean default false")
     private boolean isDelete;
 
+    @Enumerated(EnumType.STRING) // Store as a string in the database
+    @Column(name = "isOpen", nullable = false)
+    private OpenStatus isOpen = OpenStatus.OPEN;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
@@ -130,5 +135,13 @@ public class BusinessEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public OpenStatus getIsOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(OpenStatus isOpen) {
+        this.isOpen = isOpen;
     }
 }

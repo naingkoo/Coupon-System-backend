@@ -43,6 +43,10 @@ public class CouponEntity {
     @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private PaidCouponEntity paidCouponEntity;
 
+    @OneToOne(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private IsUsedEntity isUsed;
+
+
     public Integer getId() {
         return id;
     }
@@ -122,4 +126,14 @@ public class CouponEntity {
     public void setPaidCouponEntity(PaidCouponEntity paidCouponEntity) {
         this.paidCouponEntity = paidCouponEntity;
     }
+
+
+    public IsUsedEntity getIsUsed() {
+        return isUsed;
+    }
+
+    public void setIsUsed(IsUsedEntity isUsed) {
+        this.isUsed = isUsed;
+    }
+
 }

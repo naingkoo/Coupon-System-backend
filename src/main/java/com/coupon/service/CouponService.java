@@ -6,6 +6,7 @@ import com.coupon.model.CouponDTO;
 
 import com.coupon.model.IsUsedDTO;
 import com.coupon.model.NotificationDTO;
+import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.*;
 import com.coupon.responObject.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -243,15 +244,42 @@ public class CouponService {
             dto.setPurchase_date(coupon.getPurchase().getPurchase_date());
             dto.setImage(coupon.getPackageEntity().getImage());
             dto.setPackageName(coupon.getPackageEntity().getName());
-            dto.setBusinessName(coupon.getPackageEntity().getBusiness().getName());
 
             // Map relationships
+            dto.setBusinessName(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getBusiness().getName(): null);
+
             dto.setPurchase_id(coupon.getPurchase() != null ? coupon.getPurchase().getId() : null);
             dto.setPackage_id(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getId() : null);
 
             return dto;
         }).toList();
     }
+
+    public List<CouponDTO> findscanedByBusinessId(Integer businessId) {
+        List<CouponEntity> couponEntityList = couponRepository.findscanedCouponsBybusinessId(businessId);
+
+        return couponEntityList.stream().map(coupon -> {
+            CouponDTO dto = new CouponDTO();
+            dto.setId(coupon.getId());
+            dto.setExpired_date(coupon.getExpired_date());
+            dto.setConfirm(coupon.getConfirm().name());
+            dto.setUsed_status(coupon.getUsed_status());
+            dto.setTransfer_status(coupon.getTransfer_status());
+            dto.setUnit_price(coupon.getPackageEntity().getUnit_price());
+            dto.setPurchase_date(coupon.getPurchase().getPurchase_date());
+            dto.setImage(coupon.getPackageEntity().getImage());
+            dto.setPackageName(coupon.getPackageEntity().getName());
+
+            // Map relationships
+            dto.setBusinessName(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getBusiness().getName(): null);
+
+            dto.setPurchase_id(coupon.getPurchase() != null ? coupon.getPurchase().getId() : null);
+            dto.setPackage_id(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getId() : null);
+
+            return dto;
+        }).toList();
+    }
+
 
     private CouponDTO convertToDTO(CouponEntity couponEntity) {
         CouponDTO dto = new CouponDTO();
@@ -291,6 +319,10 @@ public class CouponService {
 
     public List<CouponDTO> filterCouponsWithBusinessId(Integer businessId, String searchText, String selectedCategory, Date startDate, Date endDate) {
         List<CouponEntity> filteredCoupons = couponRepository.filterCouponsWithBusinessId(businessId, searchText, selectedCategory, startDate, endDate);
+        return filteredCoupons.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+    public List<CouponDTO> filterScanedCouponsWithBusinessId(Integer businessId, String searchText, String selectedCategory, Date startDate, Date endDate) {
+        List<CouponEntity> filteredCoupons = couponRepository.findScanedCoupon(businessId, searchText, selectedCategory, startDate, endDate);
         return filteredCoupons.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -359,6 +391,9 @@ public class CouponService {
                         "action","readyUse",
                         "object",jsonObject
                 ));
+                UserEntity receiver=new UserEntity();
+                receiver.setId(receiver_id);
+                notification.setUser(receiver);
                 notificationRepository.save(notification);
             }
        //     messagingTemplate.convertAndSendToUser(ownner,"/usecoupon","your coupon is ready to use");
@@ -405,8 +440,6 @@ public class CouponService {
                 throw new ResourceNotFoundException("Sorry, this coupon is not available or no longer valid.");
             }
     }
-
-
 
 
     public BusinessDTO getBusinessByCouponId(Integer couponId) {
@@ -706,10 +739,6 @@ public class CouponService {
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
-            System.out.println("searchText: " + searchText);
-            System.out.println("selectedCategory: " + selectedCategory);
-            System.out.println("startDate: " + startDate);
-            System.out.println("endDate: " + endDate);
 
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("CreatedBy", "Coupon Admin");
@@ -848,6 +877,209 @@ public class CouponService {
     public long countPendingCoupons() {
         return couponRepository.countByConfirmStatus(ConfirmStatus.PENDING);
     }
+
+    public void exportScanedCouponReportbybusinessId(HttpServletResponse response, Integer businessId) {
+        try {
+            List<CouponDTO> couponList = findscanedByBusinessId(businessId);
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found in resources/reports/couponReport.jrxml");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+            parameters.put("businessId", businessId);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.pdf");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error occurred while generating the report: " + e.getMessage());
+        }
+    }
+    public void exportScanedCouponReportToExcelBybusinessId(HttpServletResponse response,Integer businessId) {
+        try {
+            List<CouponDTO> couponList = findscanedByBusinessId(businessId);
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found in resources/reports/couponReport.jrxml");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(couponList);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Coupon Admin");
+            parameters.put("businessId", businessId);
+
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=coupons_report.xlsx");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+
+            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+            configuration.setOnePagePerSheet(false);
+            configuration.setDetectCellType(true);
+            exporter.setConfiguration(configuration);
+
+            exporter.exportReport();
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error occurred while generating the Excel report: " + e.getMessage());
+        }
+    }
+
+    public void exportScanedfilterbyBusinessId(HttpServletResponse response,Integer businessId,
+                                                 String searchText,
+                                                 String selectedCategory,
+                                                 Date startDate,
+                                                 Date endDate
+    ) {
+
+        try {
+            List<CouponDTO> filteredCoupons = filterScanedCouponsWithBusinessId(businessId,searchText, selectedCategory, startDate, endDate);
+
+            if (filteredCoupons.isEmpty()) {
+                throw new RuntimeException("No coupons found for the given filter criteria.");
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Business");
+            parameters.put("businessId", businessId);
+            parameters.put("searchText", searchText);
+            parameters.put("selectedCategory", selectedCategory);
+            parameters.put("startDate", startDate);
+            parameters.put("endDate", endDate);
+
+
+            parameters.put("totalQuantity", filteredCoupons.size());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=filtered_coupons_report.pdf");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while exporting report: " + e.getMessage());
+        }
+    }
+    public void exportScanedByFilterByExcelbyBusinessId(HttpServletResponse response,Integer businessId,
+                                                        String searchText,
+                                                        String selectedCategory,
+                                                        Date startDate,
+                                                        Date endDate) {
+        try {
+            List<CouponDTO> filteredCoupons = filterScanedCouponsWithBusinessId(businessId,searchText, selectedCategory, startDate, endDate);
+
+            if (filteredCoupons.isEmpty()) {
+                throw new RuntimeException("No coupons found for the given filter criteria.");
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/couponbyBusinessId.jrxml");
+            if (reportStream == null) {
+                throw new RuntimeException("Jasper report template not found.");
+            }
+
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(filteredCoupons);
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("CreatedBy", "Business");
+            parameters.put("businessId", businessId);
+            parameters.put("searchText", searchText);
+            parameters.put("selectedCategory", selectedCategory);
+            parameters.put("startDate", startDate);
+            parameters.put("endDate", endDate);
+            parameters.put("totalQuantity", filteredCoupons.size());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=filtered_coupons_report.xlsx");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+
+            SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+            configuration.setOnePagePerSheet(false);  // Optional configuration to set multiple rows on a sheet
+            exporter.setConfiguration(configuration);
+
+            System.out.println("Starting the Excel export...");
+            exporter.exportReport();
+            System.out.println("Excel export completed.");
+
+
+        } catch (JRException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while exporting to Excel: " + e.getMessage());
+        }
+    }
+
+    public List<CouponDTO> getUsedCouponsByUserId(Integer userId) {
+        List<CouponEntity> couponEntityList = couponRepository.findUsedCouponsByUserId(userId);
+
+        return couponEntityList.stream().map(coupon -> {
+            CouponDTO dto = new CouponDTO();
+            dto.setId(coupon.getId());
+            dto.setExpired_date(coupon.getExpired_date());
+            dto.setConfirm(coupon.getConfirm().name());
+            dto.setUsed_status(coupon.getUsed_status());
+            dto.setTransfer_status(coupon.getTransfer_status());
+            dto.setUnit_price(coupon.getPackageEntity().getUnit_price());
+            dto.setPurchase_date(coupon.getPurchase().getPurchase_date());
+            dto.setImage(coupon.getPackageEntity().getImage());
+            dto.setPackageName(coupon.getPackageEntity().getName());
+            //dto.setUsed_date(coupon.getIsUsed().getUsed_date());
+            dto.setUsed_date(coupon.getIsUsed() != null ? coupon.getIsUsed().getUsed_date() : null);
+
+            // Map relationships
+            dto.setPurchase_id(coupon.getPurchase() != null ? coupon.getPurchase().getId() : null);
+            dto.setPackage_id(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getId() : null);
+
+            return dto;
+        }).toList();
+    }
+
 }
 
 

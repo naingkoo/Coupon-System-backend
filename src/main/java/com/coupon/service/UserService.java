@@ -26,12 +26,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -86,7 +87,7 @@ public class UserService {
 
     public List<UserDTO> getAllUser() {
         // Fetch all UserEntities from the database
-        List<UserEntity> users = userRepo.findAll();
+        List<UserEntity> users = userRepo.findAllActiveUser();
 
         // Create a list to store the mapped UserDTOs
         List<UserDTO> dtoList = new ArrayList<>();
@@ -272,6 +273,8 @@ public class UserService {
         }
     }
 
-
+    public void deleteUserById(Integer id) {
+        userRepo.deleteUserById(id);
+    }
 
 }

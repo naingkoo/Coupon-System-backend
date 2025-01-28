@@ -13,7 +13,7 @@ public class BusinessDTO {
     private String longitude;
     private String address;
     private String image;
-    private boolean status;
+    private String isOpen;
     private Integer user_id;
     private List<Integer> categoryId;
     private List<Integer> serviceId;
@@ -92,13 +92,6 @@ public class BusinessDTO {
         this.image = image;
     }
 
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
 
     public Integer getUser_id() {
         return user_id;
@@ -138,5 +131,13 @@ public class BusinessDTO {
 
     public void setServiceName(List<String> serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getIsOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(String isOpen) {
+        this.isOpen = isOpen;
     }
 }

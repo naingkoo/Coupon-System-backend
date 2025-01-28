@@ -166,4 +166,11 @@ public class PackageController {
     public void restorePackage(@PathVariable Integer id) {
         packageService.restorePackage(id);
     }
+
+
+    @GetMapping("couponbyPackageId/{id}")
+    public long getConfirmedCouponCount(@PathVariable Integer id) {
+        PackageEntity packageEntity = packageService.getPackageById(id); // Assume you have a method to get package by ID
+        return packageService.countConfirmedCouponsByPackageId(packageEntity);
+    }
 }

@@ -2,10 +2,12 @@ package com.coupon.service;
 
 import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.CategoryEntity;
+import com.coupon.entity.ConfirmStatus;
 import com.coupon.entity.PackageEntity;
 import com.coupon.model.CategoryDTO;
 import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.BusinessRepository;
+import com.coupon.reposistory.CouponRepository;
 import com.coupon.reposistory.PackageRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -27,6 +30,9 @@ public class PackageService {
 
     @Autowired
     private BusinessRepository Brepo;
+
+    @Autowired
+    private CouponRepository couponRepository;
 
     public PackageDTO savePackage(PackageDTO dto) {
         try {
@@ -217,5 +223,15 @@ public class PackageService {
         packageRepo.restorePackage(id);
     }
 
+
+    public Integer countConfirmedCouponsByPackageId(PackageEntity entity) {
+        return couponRepository.countConfirmedCoupons(entity.getId(), ConfirmStatus.CONFIRM);
+    }
+
+    public PackageEntity getPackageById(Integer id) {
+        Optional<PackageEntity> packageEntity = packageRepo.findById(id);
+        // Return the PackageEntity if present, otherwise throw an exception or return null
+        return packageEntity.orElseThrow(() -> new RuntimeException("Package not found with id " + id));
+    }
 }
 

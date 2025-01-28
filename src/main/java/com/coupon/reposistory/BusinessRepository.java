@@ -1,6 +1,7 @@
 package com.coupon.reposistory;
 
 import com.coupon.entity.BusinessEntity;
+import com.coupon.entity.OpenStatus;
 import com.coupon.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,4 +39,17 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
     @Transactional
     @Query("UPDATE BusinessEntity b SET b.isDelete = false WHERE b.id = :id")
     void restoreBusiness(@Param("id") Integer id);
+
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE BusinessEntity b SET b.isOpen = :status WHERE b.id = :id")
+    void closeBusiness(@Param("id") Integer id, @Param("status")OpenStatus status);
+
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE BusinessEntity b SET b.isOpen = :status WHERE b.id = :id")
+    void openBusiness(@Param("id") Integer id, @Param("status")OpenStatus status);
+
 }

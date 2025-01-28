@@ -1,6 +1,8 @@
 package com.coupon.reposistory;
+import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.UserEntity;
 
+import org.apache.catalina.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +30,13 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     @Query("SELECT u.email FROM UserEntity u WHERE LOWER(u.email) LIKE :query")
     List<String> findEmailsByQuery(String query);
+
+    @Modifying
+    @Query("UPDATE UserEntity u SET u.isdelete = true WHERE u.id = :id")
+    void deleteUserById(@Param("id") Integer id);
+
+
+    @Query("SELECT u FROM UserEntity u WHERE u.isdelete = false")
+    List<UserEntity> findAllActiveUser();
+
 }

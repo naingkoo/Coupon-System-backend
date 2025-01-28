@@ -223,4 +223,10 @@ public ResponseEntity<Void> softDeleteNotification(@PathVariable Integer id) {
 }
 
 
+
+    @PostMapping("/delete/{id}")
+    public void deleteUser(@PathVariable Integer id) {
+        userService.deleteUserById(id);
+    }
+
 }

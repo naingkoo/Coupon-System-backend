@@ -110,6 +110,7 @@ public class BusinessService {
             dto.setAddress(entity.getAddress());
             dto.setCreated_date(entity.getCreated_date());
             dto.setImage(entity.getImage());
+            dto.setIsOpen(entity.getIsOpen().name());
 
             List<Integer> categoryIds = BCrepo.findByBusiness(entity).stream()
                     .map(businessCategory -> businessCategory.getCategory().getId())
@@ -393,5 +394,42 @@ public class BusinessService {
         }
 
         return businessDTOList;
+    }
+
+
+    // Method to close the business
+    public boolean closeBusiness(Integer id) {
+        try {
+            Brepo.closeBusiness(id, OpenStatus.CLOSE);  // Update status to true (closed)
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    // Method to open the business
+    public boolean openBusiness(Integer id) {
+        try {
+            Brepo.openBusiness(id, OpenStatus.OPEN);  // Update status to false (open)
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Method to toggle business status (open/close)
+    public boolean toggleBusinessStatus(Integer id) {
+        BusinessEntity business = Brepo.findById(id).orElse(null);
+        if (business != null) {
+            OpenStatus newStatus = business.getIsOpen();  // Toggle the current status
+            if (newStatus == OpenStatus.CLOSE) {
+                Brepo.openBusiness(id,OpenStatus.OPEN);
+            } else {
+                Brepo.closeBusiness(id,OpenStatus.CLOSE);
+            }
+           return true;
+      }
+       return false;
     }
 }

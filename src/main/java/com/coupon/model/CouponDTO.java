@@ -22,6 +22,8 @@ public class CouponDTO {
     private String QR;
     private String description;
     private String owner;
+    private Date used_date;
+
 
     public Integer getId() {
         return id;
@@ -157,5 +159,13 @@ public class CouponDTO {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public Date getUsed_date() {
+        return used_date;
+    }
+
+    public void setUsed_date(Date used_date) {
+        this.used_date = used_date;
     }
 }

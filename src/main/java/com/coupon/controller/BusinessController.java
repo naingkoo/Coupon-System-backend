@@ -18,7 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLOutput;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -175,5 +177,43 @@ public class BusinessController {
     public List<BusinessDTO> getAllBusinessNamesAndIds() {
         return Bservice.getAllBusinessNamesAndIds();
     }
+
+//    @PutMapping("closeBusiness/{id}")
+//    public ResponseEntity<String> closeBusiness(@PathVariable("id") Integer id) {
+//        boolean isClosed = Bservice.closeBusiness(id);
+//        if (isClosed) {
+//            return ResponseEntity.ok("Business with ID " + id + " is now closed.");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("Failed to close the business with ID " + id + ".");
+//        }
+//    }
+//
+//
+//    @PutMapping("openBusiness/{id}")
+//    public ResponseEntity<String> openBusiness(@PathVariable("id") Integer id) {
+//        boolean isOpened = Bservice.openBusiness(id);
+//        if (isOpened) {
+//            return ResponseEntity.ok("Business with ID " + id + " is now open.");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("Failed to open the business with ID " + id + ".");
+//        }
+//    }
+
+    @PutMapping("toggle/{id}")
+    public ResponseEntity<Map<String, String>> toggleBusinessStatus(@PathVariable("id") Integer id) {
+        boolean isToggled = Bservice.toggleBusinessStatus(id);
+        Map<String, String> response = new HashMap<>();
+        if (isToggled) {
+            response.put("message", "Business with ID " + id + " status has been toggled.");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("message", "Failed to toggle the business with ID " + id + ".");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+
 }
 
