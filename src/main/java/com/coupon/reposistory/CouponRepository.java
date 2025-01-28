@@ -121,4 +121,7 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
                                                    @Param("selectedCategory") String selectedCategory,
                                                    @Param("startDate") Date startDate,
                                                    @Param("endDate") Date endDate);
+
+    @Query("SELECT COUNT(c) FROM CouponEntity c WHERE c.confirm = :status")
+    long countByConfirmStatus(@Param("status") ConfirmStatus status);
 }

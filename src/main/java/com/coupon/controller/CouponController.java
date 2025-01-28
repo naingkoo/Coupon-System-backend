@@ -329,6 +329,11 @@ public class CouponController {
             throw new IllegalArgumentException("Invalid file type: " + fileType);
         }
     }
+
+    @GetMapping("/count-pending")
+    public long getPendingCouponCount() {
+        return couponService.countPendingCoupons();
+    }
 }
 
 

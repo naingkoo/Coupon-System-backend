@@ -844,6 +844,10 @@ public class CouponService {
             throw new RuntimeException("Error while exporting to Excel: " + e.getMessage());
         }
     }
+
+    public long countPendingCoupons() {
+        return couponRepository.countByConfirmStatus(ConfirmStatus.PENDING);
+    }
 }
 
 
