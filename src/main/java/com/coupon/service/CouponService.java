@@ -1,12 +1,8 @@
 package com.coupon.service;
 
 import com.coupon.entity.*;
-import com.coupon.model.BusinessDTO;
-import com.coupon.model.CouponDTO;
+import com.coupon.model.*;
 
-import com.coupon.model.IsUsedDTO;
-import com.coupon.model.NotificationDTO;
-import com.coupon.model.PackageDTO;
 import com.coupon.reposistory.*;
 import com.coupon.responObject.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,10 +34,16 @@ public class CouponService {
     NotificationRepository notificationRepository;
 
     @Autowired
+    NotificationService notificationService;
+
+    @Autowired
     TransferRepository transferRepository;
 
     @Autowired
     IsUsedRepository isUsedRepository;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     ModelMapper mapper;
@@ -361,13 +363,14 @@ public class CouponService {
             couponDTO.setUnit_price(couponEntity.getPackageEntity().getUnit_price());
             couponDTO.setPurchase_date(couponEntity.getPurchase().getPurchase_date());
             couponDTO.setUsed_status(couponEntity.getUsed_status());
-            String jsonObject=objectMapper.writeValueAsString(couponDTO);
             if(istransfer) {
-                String ownner = couponEntity.getPurchase().getUser().getId().toString();
-                messagingTemplate.convertAndSend("/queue/" + ownner, couponDTO);
+                Integer ownner = couponEntity.getPurchase().getUser().getId();
+                couponDTO.setOwner(couponEntity.getPurchase().getUser().getName());
+                notificationService.sendByWebsocket("readyTouse",couponDTO,ownner);
                 NotificationEntity notification = new NotificationEntity();
                 notification.setTitle("Confrim to Use Coupon");
                 notification.setNotificationStatus(NotificationStatus.UNREAD);
+                String jsonObject=objectMapper.writeValueAsString(couponDTO);
                 notification.setContent(Map.of(
                         "type","TASK",
                         "context","We have received your request to use the coupon. Please approve to proceed.",
@@ -382,10 +385,13 @@ public class CouponService {
                }
             }else{
                 Integer receiver_id=transferRepository.findOwner(couponEntity.getId());
-                messagingTemplate.convertAndSend("/queue/" + receiver_id.toString(), couponDTO);
+                UserDTO owner=userService.getUserById(receiver_id);
+                couponDTO.setOwner(owner.getName());
+                notificationService.sendByWebsocket("readyTouse",couponDTO,receiver_id);
                 NotificationEntity notification = new NotificationEntity();
                 notification.setTitle("Confrim to Use Coupon");
                 notification.setNotificationStatus(NotificationStatus.UNREAD);
+                String jsonObject=objectMapper.writeValueAsString(couponDTO);
                 notification.setContent(Map.of(
                         "type","TASK",
                         "context","We have received your request to use the coupon. Please approve to proceed.",
@@ -1080,6 +1086,7 @@ public class CouponService {
             return dto;
         }).toList();
     }
+
 
 }
 

@@ -12,12 +12,15 @@ import com.coupon.reposistory.PaidCouponRepository;
 import com.coupon.reposistory.RevenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class RevenueService {
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private RevenueRepository revenueRepository;
@@ -40,7 +43,7 @@ public class RevenueService {
         this.businessRepository = businessRepository;
         this.couponRepository = couponRepository;
     }
-
+@Transactional
     public void saveRevenue(RevenueDTO revenueDTO) {
         // Retrieve BusinessEntity
         BusinessEntity businessEntity = businessRepository.findById(revenueDTO.getBusinessId())
@@ -60,6 +63,7 @@ public class RevenueService {
         // Save RevenueEntity
         RevenueEntity savedRevenue = revenueRepository.save(revenueEntity);
 
+
         // Create and save PaidCouponEntities
         List<PaidCouponDTO> paidCoupons = revenueDTO.getPaidCoupons();
         for (PaidCouponDTO paidCouponDTO : paidCoupons) {
@@ -78,6 +82,8 @@ public class RevenueService {
 
             // Save PaidCouponEntity
             paidCouponRepository.save(paidCouponEntity);
+            String content="You have recevied revenue from "+revenueDTO.getFromDate()+"to"+revenueDTO.getToDate();
+            notificationService.sendTextNotification("Cash In",content,businessEntity.getUser());
         }
     }
 

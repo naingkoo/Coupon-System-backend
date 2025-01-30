@@ -23,6 +23,7 @@ public class TransferController {
             TransferDTO transferDTO = transferService.transferCoupon(dto.getSender_id(), dto.getReceiverEmail(), dto.getCoupon_id());
             return ResponseEntity.ok(transferDTO);
         } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // or provide a detailed message
         }
     }
@@ -42,6 +43,20 @@ public class TransferController {
     public ResponseEntity<List<TransferDTO>> showCouponByReceiverId(@PathVariable("receiver_id") Integer receiver_id) {
         try {
             List<TransferDTO> transferDTOList = transferService.showCouponByReceiverId(receiver_id);
+            return ResponseEntity.ok(transferDTOList);
+        } catch (RuntimeException e) {
+            // Handle exception (user not found, etc.)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+
+    @GetMapping("/usedtransfer/{receiverId}")
+    public ResponseEntity<List<TransferDTO>> getUsedCouponsByReceiverId(@PathVariable Integer receiverId) {
+
+        try {
+            System.out.println("receiverId" + receiverId);
+            List<TransferDTO> transferDTOList = transferService.showUsedCouponbyreceiverId(receiverId);
             return ResponseEntity.ok(transferDTOList);
         } catch (RuntimeException e) {
             // Handle exception (user not found, etc.)

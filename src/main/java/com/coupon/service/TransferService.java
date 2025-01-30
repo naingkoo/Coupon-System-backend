@@ -15,12 +15,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TransferService {
+@Autowired
+private NotificationService notificationService;
 
     @Autowired
     private TransferRepository transferRepo;
@@ -33,13 +33,6 @@ public class TransferService {
 
     @Autowired
     private PackageRepository packageRepo;
-
-    @Autowired
-    private final SimpMessagingTemplate messagingTemplate;
-
-    public TransferService(SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
-    }
 
 
     @Transactional
@@ -90,11 +83,9 @@ public class TransferService {
         String receiverIdString = receiver.getId().toString();
         String senderName = sender.getName();
 
-
-        messagingTemplate.convertAndSend(
-                "/queue/" + receiverIdString,
-                "You have received a new coupon from " + senderName
-        );;
+        UserEntity receiverId= new UserEntity();
+        receiverId.setId(receiver.getId());
+        notificationService.sendTextNotification("Transfer Coupon","You have received a new coupon from " + senderName, receiverId);
 
         System.out.println("Transfer completed successfully for receiver ID: " + receiverIdString);
 
@@ -157,6 +148,29 @@ public class TransferService {
         return transferDTOList;
     }
 
+
+    public List<TransferDTO> showUsedCouponbyreceiverId(Integer receiverId) {
+
+        List<TransferEntity> coupon = transferRepo.findUsedCouponsByReceiverId(receiverId);
+
+        List<TransferDTO> dtoList = new ArrayList<>();
+        for(TransferEntity entity: coupon) {
+
+            TransferDTO dto = new TransferDTO();
+            dto.setId(entity.getId());
+            dto.setImage(entity.getCoupon().getPackageEntity().getImage());
+            dto.setPackageName(entity.getCoupon().getPackageEntity().getName());
+            dto.setUsed_date(entity.getCoupon().getIsUsed().getUsed_date());
+            dto.setSenderName(entity.getUser().getName());
+
+            System.out.println("packageName: " + dto.getPackageName());
+            System.out.println("senderName: " + dto.getSenderName());
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
 
 
 

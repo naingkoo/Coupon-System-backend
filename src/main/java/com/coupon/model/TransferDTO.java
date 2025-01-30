@@ -16,6 +16,7 @@ public class TransferDTO {
     private String PackageName;
     private String image;
     private Date expired_date;
+    private Date used_date;
 
     public Integer getId() {
         return id;
@@ -111,5 +112,13 @@ public class TransferDTO {
 
     public void setExpired_date(Date expired_date) {
         this.expired_date = expired_date;
+    }
+
+    public Date getUsed_date() {
+        return used_date;
+    }
+
+    public void setUsed_date(Date used_date) {
+        this.used_date = used_date;
     }
 }

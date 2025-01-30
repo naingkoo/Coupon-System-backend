@@ -22,7 +22,6 @@ public class TransferEntity {
     @Column(name="receiver_id", nullable = false)
     private Integer receiver_id;
 
-
     @ManyToOne
     @JoinColumn(name = "sender_id",nullable = false)
     private UserEntity user;
