@@ -367,41 +367,19 @@ public class CouponService {
                 Integer ownner = couponEntity.getPurchase().getUser().getId();
                 couponDTO.setOwner(couponEntity.getPurchase().getUser().getName());
                 notificationService.sendByWebsocket("readyTouse",couponDTO,ownner);
-                NotificationEntity notification = new NotificationEntity();
-                notification.setTitle("Confrim to Use Coupon");
-                notification.setNotificationStatus(NotificationStatus.UNREAD);
-                String jsonObject=objectMapper.writeValueAsString(couponDTO);
-                notification.setContent(Map.of(
-                        "type","TASK",
-                        "context","We have received your request to use the coupon. Please approve to proceed.",
-                        "action","readyUse",
-                        "object",jsonObject
-                ));
-                notification.setUser(couponEntity.getPurchase().getUser());
-               try{
-                notificationRepository.save(notification);
-               } catch (Exception e) {
-                   throw new RuntimeException(e);
-               }
+                notificationService.sendTaskNotification("Approval Request for Coupon Usage","We have received your request to use the coupon. Please approve to proceed.","readyUse",couponEntity.getPurchase().getUser(),couponDTO);
+
             }else{
                 Integer receiver_id=transferRepository.findOwner(couponEntity.getId());
+
                 UserDTO owner=userService.getUserById(receiver_id);
                 couponDTO.setOwner(owner.getName());
                 notificationService.sendByWebsocket("readyTouse",couponDTO,receiver_id);
-                NotificationEntity notification = new NotificationEntity();
-                notification.setTitle("Confrim to Use Coupon");
-                notification.setNotificationStatus(NotificationStatus.UNREAD);
-                String jsonObject=objectMapper.writeValueAsString(couponDTO);
-                notification.setContent(Map.of(
-                        "type","TASK",
-                        "context","We have received your request to use the coupon. Please approve to proceed.",
-                        "action","readyUse",
-                        "object",jsonObject
-                ));
+
                 UserEntity receiver=new UserEntity();
                 receiver.setId(receiver_id);
-                notification.setUser(receiver);
-                notificationRepository.save(notification);
+                notificationService.sendTaskNotification("Approval Request for Coupon Usage","We have received your request to use the coupon. Please approve to proceed.","readyUse",receiver,couponDTO);
+
             }
        //     messagingTemplate.convertAndSendToUser(ownner,"/usecoupon","your coupon is ready to use");
             return couponDTO;
@@ -879,10 +857,6 @@ public class CouponService {
             e.printStackTrace();
             throw new RuntimeException("Error while exporting to Excel: " + e.getMessage());
         }
-    }
-
-    public long countPendingCoupons() {
-        return couponRepository.countByConfirmStatus(ConfirmStatus.PENDING);
     }
 
     public void exportScanedCouponReportbybusinessId(HttpServletResponse response, Integer businessId) {

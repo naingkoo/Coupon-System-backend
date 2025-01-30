@@ -57,5 +57,10 @@ public class PurchaseController {
     public long countConfirmedPurchases() {
         return purchaseService.getConfirmedPurchasesCount();
     }
+
+    @GetMapping("/count-pending")
+    public long getPendingPurchaseCount() {
+        return purchaseService.countPendingPurchases();
+    }
 }
 

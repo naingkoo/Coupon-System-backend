@@ -149,4 +149,8 @@ public class PurchaseService {
     public long getConfirmedPurchasesCount() {
         return purchaseRepository.countByConfirm(ConfirmStatus.CONFIRM);
     }
+
+    public long countPendingPurchases() {
+        return purchaseRepository.countByPending(ConfirmStatus.PENDING);
+    }
 }

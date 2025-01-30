@@ -231,13 +231,8 @@ public class UserService {
     }
 
     public boolean updatePassword(String email, String newPassword) {
-        // Encrypt the new password
         String encodedPassword = encoder.encode(newPassword);
-
-        // Perform the update on the password field only
         int rowsAffected = userRepo.updatePasswordByEmail(email, encodedPassword);
-
-        // Return true if at least one row was updated, false otherwise
         return rowsAffected > 0;
     }
 
