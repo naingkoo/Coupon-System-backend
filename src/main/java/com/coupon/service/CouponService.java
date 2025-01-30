@@ -269,6 +269,7 @@ public class CouponService {
             dto.setPurchase_date(coupon.getPurchase().getPurchase_date());
             dto.setImage(coupon.getPackageEntity().getImage());
             dto.setPackageName(coupon.getPackageEntity().getName());
+            dto.setUsed_date(coupon.getIsUsed().getUsed_date());
 
             // Map relationships
             dto.setBusinessName(coupon.getPackageEntity() != null ? coupon.getPackageEntity().getBusiness().getName(): null);

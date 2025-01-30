@@ -52,5 +52,10 @@ public class PurchaseController {
         Map<String, Integer> distribution = purchaseService.getPaymentTypeDistribution();
         return ResponseEntity.ok(distribution);
     }
+
+    @GetMapping("/countConfirmed")
+    public long countConfirmedPurchases() {
+        return purchaseService.getConfirmedPurchasesCount();
+    }
 }
 

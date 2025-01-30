@@ -145,4 +145,8 @@ public class PurchaseService {
                         Collectors.summingInt(e -> 1) // Summing integers instead of counting longs
                 ));
     }
+
+    public long getConfirmedPurchasesCount() {
+        return purchaseRepository.countByConfirm(ConfirmStatus.CONFIRM);
+    }
 }
