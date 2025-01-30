@@ -34,15 +34,7 @@ public class RevenueService {
     @Autowired
     private CouponRepository couponRepository;
 
-    public RevenueService(RevenueRepository revenueRepository,
-                          PaidCouponRepository paidCouponRepository,
-                          BusinessRepository businessRepository,
-                          CouponRepository couponRepository) {
-        this.revenueRepository = revenueRepository;
-        this.paidCouponRepository = paidCouponRepository;
-        this.businessRepository = businessRepository;
-        this.couponRepository = couponRepository;
-    }
+
 @Transactional
     public void saveRevenue(RevenueDTO revenueDTO) {
         // Retrieve BusinessEntity
@@ -72,7 +64,7 @@ public class RevenueService {
                     .orElseThrow(() -> new RuntimeException("Coupon not found with ID: " + paidCouponDTO.getCouponId()));
 
             // Update the status of the coupon to true (indicating it's paid)
-            couponEntity.setPaid_status(true); // Assuming the status field is a boolean, adjust accordingly
+            couponEntity.setPaid_status(false); // Assuming the status field is a boolean, adjust accordingly
             couponRepository.save(couponEntity); // Save the updated coupon entity
 
             // Create PaidCouponEntity
