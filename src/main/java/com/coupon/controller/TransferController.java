@@ -49,4 +49,18 @@ public class TransferController {
         }
     }
 
+
+    @GetMapping("/usedtransfer/{receiverId}")
+    public ResponseEntity<List<TransferDTO>> getUsedCouponsByReceiverId(@PathVariable Integer receiverId) {
+
+        try {
+            System.out.println("receiverId" + receiverId);
+            List<TransferDTO> transferDTOList = transferService.showUsedCouponbyreceiverId(receiverId);
+            return ResponseEntity.ok(transferDTOList);
+        } catch (RuntimeException e) {
+            // Handle exception (user not found, etc.)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }

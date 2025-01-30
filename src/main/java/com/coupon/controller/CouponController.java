@@ -4,10 +4,7 @@ import com.coupon.entity.BusinessEntity;
 import com.coupon.entity.CouponEntity;
 import com.coupon.entity.ConfirmStatus;
 import com.coupon.entity.PackageEntity;
-import com.coupon.model.BusinessDTO;
-import com.coupon.model.CategoryDTO;
-import com.coupon.model.CouponDTO;
-import com.coupon.model.QRDTO;
+import com.coupon.model.*;
 import com.coupon.responObject.ResourceNotFoundException;
 import com.coupon.service.CouponService;
 import com.coupon.service.QRService;
@@ -406,6 +403,9 @@ public class CouponController {
         }
         return ResponseEntity.ok(coupons);
     }
+
+
+
 }
 
 

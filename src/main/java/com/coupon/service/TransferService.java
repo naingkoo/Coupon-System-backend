@@ -158,6 +158,29 @@ public class TransferService {
     }
 
 
+    public List<TransferDTO> showUsedCouponbyreceiverId(Integer receiverId) {
+
+        List<TransferEntity> coupon = transferRepo.findUsedCouponsByReceiverId(receiverId);
+
+        List<TransferDTO> dtoList = new ArrayList<>();
+        for(TransferEntity entity: coupon) {
+
+            TransferDTO dto = new TransferDTO();
+            dto.setId(entity.getId());
+            dto.setImage(entity.getCoupon().getPackageEntity().getImage());
+            dto.setPackageName(entity.getCoupon().getPackageEntity().getName());
+            dto.setUsed_date(entity.getCoupon().getIsUsed().getUsed_date());
+            dto.setSenderName(entity.getUser().getName());
+
+            System.out.println("packageName: " + dto.getPackageName());
+            System.out.println("senderName: " + dto.getSenderName());
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
+
 
 
 }
