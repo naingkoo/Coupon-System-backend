@@ -7,6 +7,7 @@ public class PackageDTO {
     private Integer id;
     private String name;
     private Double unit_price;
+    private Integer total_quantity;
     private Integer quantity;
     private Date create_date;
     private Date expired_date;
@@ -39,6 +40,14 @@ public class PackageDTO {
 
     public void setUnit_price(Double unit_price) {
         this.unit_price = unit_price;
+    }
+
+    public Integer getTotal_quantity() {
+        return total_quantity;
+    }
+
+    public void setTotal_quantity(Integer total_quantity) {
+        this.total_quantity = total_quantity;
     }
 
     public Integer getQuantity() {

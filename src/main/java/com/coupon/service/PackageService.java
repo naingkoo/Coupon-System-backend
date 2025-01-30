@@ -170,6 +170,7 @@ public class PackageService {
 
         resDTO.setName(dto.getName());
         resDTO.setUnit_price(dto.getUnit_price());
+        resDTO.setTotal_quantity(dto.getQuantity());
         resDTO.setQuantity(dto.getQuantity());
         resDTO.setDescription(dto.getDescription());
         resDTO.setCreate_date(dto.getCreate_date());
