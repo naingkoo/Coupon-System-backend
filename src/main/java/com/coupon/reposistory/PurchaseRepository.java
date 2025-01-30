@@ -2,7 +2,7 @@ package com.coupon.reposistory;
 
 import com.coupon.entity.ConfirmStatus;
 import com.coupon.entity.PurchaseEntity;
-import com.coupon.model.PurchaseDTO;
+import com.coupon.entity.ConfirmStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +15,6 @@ public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Intege
     List<PurchaseEntity> findByUserId(Integer user_id);
 
     long countByConfirm(ConfirmStatus confirm);
+    @Query("SELECT COUNT(n) FROM PurchaseEntity n WHERE n.confirm = ConfirmStatus.PENDING")
+    long countByPending(ConfirmStatus pending);
 }

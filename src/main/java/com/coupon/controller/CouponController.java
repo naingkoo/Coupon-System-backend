@@ -215,6 +215,7 @@ public class CouponController {
         return couponService.getCouponCountByBusinessAndPurchaseDate(businessId, startDate, endDate);
     }
 
+
     @GetMapping("/filter2")
     public ResponseEntity<List<CouponDTO>> getCouponsByBusinessAndDateRange(
             @RequestParam Integer businessId,
@@ -223,7 +224,6 @@ public class CouponController {
         List<CouponDTO> coupons = couponService.getCouponsByBusinessAndDateRange(businessId, startDate, endDate);
         return ResponseEntity.ok(coupons);
     }
-
     @GetMapping("/public/findbyBusinessId/{businessId}")
     public ResponseEntity<List<CouponDTO>> findAllbybusinessId(@PathVariable Integer businessId){
         List<CouponDTO> couponList=  couponService.findByBusinessId(businessId);
@@ -358,10 +358,7 @@ public class CouponController {
         }
     }
 
-    @GetMapping("/count-pending")
-    public long getPendingCouponCount() {
-        return couponService.countPendingCoupons();
-    }
+
 
     @GetMapping("/ScanedfilterByBusinessId")
     public ResponseEntity<List<CouponDTO>> filterScanedCouponsByBusinessId(

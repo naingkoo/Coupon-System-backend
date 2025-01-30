@@ -71,8 +71,8 @@ public class NotificationService {
                 "action",action,
                 "object",jsonObject
         ));
-        notificationRepository.save(notification);
-        sendByWebsocket("notification",object,reciver_user.getId());
+        NotificationDTO notificationDTO=modelMapper.map(notificationRepository.save(notification),NotificationDTO.class);
+        sendByWebsocket("notification",notificationDTO,reciver_user.getId());
     }
 
     public void sendByWebsocket(String title,Object object,Integer reciver_user){

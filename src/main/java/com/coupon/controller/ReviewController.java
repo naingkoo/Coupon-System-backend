@@ -34,7 +34,7 @@ public class ReviewController {
         return reviewService.showAllReviews();
     }
 
-    @GetMapping("/business/{businessId}")
+    @GetMapping("/public/business/{businessId}")
     public ResponseEntity<List<ReviewDTO>> getshowAllReviewsByBusinessId(@PathVariable Integer businessId) {
         List<ReviewDTO> reviews = reviewService.getReviewByBusinessId(businessId);
 

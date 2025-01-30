@@ -34,15 +34,7 @@ public class RevenueService {
     @Autowired
     private CouponRepository couponRepository;
 
-    public RevenueService(RevenueRepository revenueRepository,
-                          PaidCouponRepository paidCouponRepository,
-                          BusinessRepository businessRepository,
-                          CouponRepository couponRepository) {
-        this.revenueRepository = revenueRepository;
-        this.paidCouponRepository = paidCouponRepository;
-        this.businessRepository = businessRepository;
-        this.couponRepository = couponRepository;
-    }
+
 @Transactional
     public void saveRevenue(RevenueDTO revenueDTO) {
         // Retrieve BusinessEntity
@@ -72,7 +64,7 @@ public class RevenueService {
                     .orElseThrow(() -> new RuntimeException("Coupon not found with ID: " + paidCouponDTO.getCouponId()));
 
             // Update the status of the coupon to true (indicating it's paid)
-            couponEntity.setPaid_status(true); // Assuming the status field is a boolean, adjust accordingly
+            couponEntity.setPaid_status(false); // Assuming the status field is a boolean, adjust accordingly
             couponRepository.save(couponEntity); // Save the updated coupon entity
 
             // Create PaidCouponEntity
@@ -82,9 +74,9 @@ public class RevenueService {
 
             // Save PaidCouponEntity
             paidCouponRepository.save(paidCouponEntity);
-            String content="You have recevied revenue from "+revenueDTO.getFromDate()+"to"+revenueDTO.getToDate();
-            notificationService.sendTextNotification("Cash In",content,businessEntity.getUser());
         }
+    String content="You have recevied revenue from "+revenueDTO.getFromDate().getTime()+"to"+revenueDTO.getToDate();
+    notificationService.sendTextNotification("Cash In",content,businessEntity.getUser());
     }
 
     public List<RevenueDTO> getAllRevenueWithBusinessName() {

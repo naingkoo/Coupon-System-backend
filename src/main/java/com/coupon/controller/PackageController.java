@@ -46,7 +46,7 @@ public class PackageController {
         return ResponseEntity.ok(packageList);
     }
 
-    @GetMapping("/find/{id}")
+    @GetMapping("/public/find/{id}")
     public ResponseEntity<PackageDTO> findById(@PathVariable("id") Integer id) {
         PackageEntity packageEntity = packageRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Package with ID " + id + " not found"));
@@ -63,14 +63,14 @@ public class PackageController {
     }
 
 
-    @GetMapping("/findByBusinessId/{id}")
+    @GetMapping("/public/findByBusinessId/{id}")
     public List<PackageDTO> findByBusinessId(@PathVariable("id") Integer id) {
         System.out.println(id);
         // Fetch the list of packages based on the business ID from the service
         return packageService.getByBusinessId(id);
     }
 
-    @GetMapping("/findByBusinessName/{businessName}")
+    @GetMapping("/public/findByBusinessName/{businessName}")
     public List<PackageDTO> findByBusinessName(@PathVariable("businessName") String businessName) {
 
         System.out.println(businessName);

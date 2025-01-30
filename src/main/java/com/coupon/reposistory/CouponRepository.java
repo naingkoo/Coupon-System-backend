@@ -90,11 +90,13 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             "JOIN c.purchase pu " +
             "WHERE b.id = :businessId " +
             "AND pu.purchase_date BETWEEN :startDate AND :endDate " +
-            "AND c.confirm = 'CONFIRM'")
+            "AND c.confirm = 'CONFIRM' " +
+            "AND c.paid_status = true")
     List<CouponEntity> findCouponsByBusinessAndDateRange(
             @Param("businessId") Integer businessId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
+
 
     @Query("SELECT c FROM CouponEntity c WHERE "
             + "(LOWER(c.packageEntity.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR :searchText IS NULL OR :searchText = '') "
