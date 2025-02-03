@@ -25,29 +25,7 @@
     <parameter name="isExcelExport" class="java.lang.Boolean"/>
 
     <queryString language="SQL">
-        <![CDATA[
-    SELECT
-        c.id,
-        c.packageName,
-        c.purchase_date,
-        c.expired_date,
-        c.unit_price,
-        c.businessName
-    FROM coupon c
-    JOIN package_entity p ON c.package_id = p.id
-    WHERE c.confirm=CONFIRM
-        AND (
-            ($P{selectedCategory} = "purchase" AND c.purchase_date BETWEEN $P{startDate} AND $P{endDate})
-            OR
-            ($P{selectedCategory} = "expired" AND c.expired_date BETWEEN $P{startDate} AND $P{endDate})
-        )
-        AND (
-            $P{searchText} IS NULL
-            OR c.packageName LIKE CONCAT('%', $P{searchText}, '%')
-
-        )
-    ORDER BY c.purchase_date ASC, c.expired_date ASC;
-    ]]>
+        <![CDATA[ ]]>
     </queryString>
 
     <field name="id" class="java.lang.Integer"/>
@@ -76,6 +54,9 @@
 
             <textField>
                 <reportElement x="20" y="35" width="200" height="20"/>
+                <textElement >
+                    <font size="12" isBold="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA[
         ($P{isExcelExport} == null || !$P{isExcelExport}) && $P{searchText} != null && !$P{searchText}.isEmpty() ?
         "Package: " + $P{searchText} :
@@ -84,7 +65,11 @@
             </textField>
 
             <textField>
-                <reportElement x="335" y="35" width="400" height="20"/> <!-- Adjust 'x' to create the desired space -->
+                <reportElement x="300" y="35" width="400" height="20"/> <!-- Adjust 'x' to create the desired space -->
+                <textElement >
+                    <font size="12" isBold="true"/>
+                </textElement>
+
                 <textFieldExpression><![CDATA[
         ($P{selectedCategory} != null && !$P{selectedCategory}.isEmpty()) ?
         ($P{selectedCategory}.equals("purchaseDate") ?
@@ -189,12 +174,16 @@
         <band height="60" splitType="Stretch">
             <textField>
                 <reportElement x="12" y="0" width="251" height="30" uuid="6efb0002-742a-4e53-a80b-8839e597607b" style="tableFooter"/>
-                <textElement textAlignment="Right"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA["Total Quantity: " + $V{REPORT_COUNT}]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="263" y="0" width="283" height="30" uuid="9827d40b-c255-423d-bbe5-b20a6e6b2f8e" style="tableFooter"/>
-                <textElement textAlignment="Right"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA["Total Amount: " + $V{totalAmount} + " MMK"]]></textFieldExpression>
             </textField>
         </band>

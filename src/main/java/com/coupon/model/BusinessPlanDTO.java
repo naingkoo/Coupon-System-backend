@@ -13,11 +13,77 @@ public class BusinessPlanDTO {
 
     private String paymentType;
 
-    private Integer transaction_id;
+    private String transaction_id;
 
     private Date payment_date;
 
-    private BusinessEntity business;
+    private Integer businessId;
 
-    private PlanEntity plan;
+    private Integer planId;
+
+    private Integer max_package;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Double getTotal_amount() {
+        return total_amount;
+    }
+
+    public void setTotal_amount(Double total_amount) {
+        this.total_amount = total_amount;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String getTransaction_id() {
+        return transaction_id;
+    }
+
+    public void setTransaction_id(String transaction_id) {
+        this.transaction_id = transaction_id;
+    }
+
+    public Date getPayment_date() {
+        return payment_date;
+    }
+
+    public void setPayment_date(Date payment_date) {
+        this.payment_date = payment_date;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public Integer getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Integer planId) {
+        this.planId = planId;
+    }
+
+    public Integer getMax_package() {
+        return max_package;
+    }
+
+    public void setMax_package(Integer max_package) {
+        this.max_package = max_package;
+    }
 }
