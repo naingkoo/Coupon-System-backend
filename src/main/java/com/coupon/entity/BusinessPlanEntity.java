@@ -19,7 +19,7 @@ public class BusinessPlanEntity {
     private String paymentType;
 
     @Column(name = "transaction_id")
-    private Integer transaction_id;
+    private String transaction_id;
 
     @Column(name = "payment_date")
     @DateTimeFormat(pattern = "MM/dd/yy")
@@ -57,11 +57,11 @@ public class BusinessPlanEntity {
         this.paymentType = paymentType;
     }
 
-    public Integer getTransaction_id() {
+    public String getTransaction_id() {
         return transaction_id;
     }
 
-    public void setTransaction_id(Integer transaction_id) {
+    public void setTransaction_id(String transaction_id) {
         this.transaction_id = transaction_id;
     }
 
