@@ -22,6 +22,9 @@ public class TransferEntity {
     @Column(name="receiver_id", nullable = false)
     private Integer receiver_id;
 
+    @Column(name="note", nullable = false)
+    private String note;
+
     @ManyToOne
     @JoinColumn(name = "sender_id",nullable = false)
     private UserEntity user;
@@ -76,5 +79,13 @@ public class TransferEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

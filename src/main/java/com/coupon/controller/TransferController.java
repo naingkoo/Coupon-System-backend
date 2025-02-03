@@ -20,7 +20,7 @@ public class TransferController {
     @PostMapping("/transfer")
     public ResponseEntity<TransferDTO> transferCoupon(@RequestBody TransferDTO dto) {
         try {
-            TransferDTO transferDTO = transferService.transferCoupon(dto.getSender_id(), dto.getReceiverEmail(), dto.getCoupon_id());
+            TransferDTO transferDTO = transferService.transferCoupon(dto.getSender_id(), dto.getReceiverEmail(), dto.getCoupon_id(), dto.getNote());
             return ResponseEntity.ok(transferDTO);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());

@@ -17,6 +17,8 @@ public class TransferDTO {
     private String image;
     private Date expired_date;
     private Date used_date;
+    private String note;
+
 
     public Integer getId() {
         return id;
@@ -120,5 +122,13 @@ public class TransferDTO {
 
     public void setUsed_date(Date used_date) {
         this.used_date = used_date;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

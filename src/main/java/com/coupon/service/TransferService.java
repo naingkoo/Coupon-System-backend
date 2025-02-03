@@ -36,7 +36,7 @@ private NotificationService notificationService;
 
 
     @Transactional
-    public TransferDTO transferCoupon(Integer sender_id, String receiverEmail, Integer coupon_id) {
+    public TransferDTO transferCoupon(Integer sender_id, String receiverEmail, Integer coupon_id,String note) {
 
         // Fetch the coupon
         CouponEntity couponEntity = couponRepo.findById(coupon_id)
@@ -66,6 +66,7 @@ private NotificationService notificationService;
         transferEntity.setReceiver_id(receiver.getId());
         transferEntity.setTransfer_date(new Date());
         transferEntity.setStatus(true);
+        transferEntity.setNote(note);
 
         // Save transfer entity
         transferEntity = transferRepo.save(transferEntity);
@@ -75,6 +76,7 @@ private NotificationService notificationService;
         transferDTO.setId(transferEntity.getId());
         transferDTO.setTransfer_date(transferEntity.getTransfer_date());
         transferDTO.setStatus(transferEntity.getStatus());
+        transferDTO.setNote(transferEntity.getNote());
         transferDTO.setSender_id(transferEntity.getUser().getId());
         transferDTO.setCoupon_id(transferEntity.getCoupon().getId());
         transferDTO.setReceiver_id(transferEntity.getReceiver_id());
@@ -102,6 +104,7 @@ private NotificationService notificationService;
             TransferDTO transferDTO = new TransferDTO();
             transferDTO.setId(transferEntity.getId());
             transferDTO.setTransfer_date(transferEntity.getTransfer_date());
+            transferDTO.setNote(transferEntity.getNote());
 
 
             if(transferEntity.getCoupon() != null && transferEntity.getCoupon().getPackageEntity() != null) {
@@ -131,6 +134,7 @@ private NotificationService notificationService;
             TransferDTO transferDTO = new TransferDTO();
             transferDTO.setId(transferEntity.getId());
             transferDTO.setTransfer_date(transferEntity.getTransfer_date());
+            transferDTO.setNote(transferEntity.getNote());
 
             if(transferEntity.getCoupon() != null && transferEntity.getCoupon().getPackageEntity() != null) {
 
@@ -162,6 +166,7 @@ private NotificationService notificationService;
             dto.setPackageName(entity.getCoupon().getPackageEntity().getName());
             dto.setUsed_date(entity.getCoupon().getIsUsed().getUsed_date());
             dto.setSenderName(entity.getUser().getName());
+            dto.setNote(entity.getNote());
 
             System.out.println("packageName: " + dto.getPackageName());
             System.out.println("senderName: " + dto.getSenderName());
